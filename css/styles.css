@@ -1,0 +1,33 @@
+body {
+    margin: 40px;
+	background: #202e38;
+	font-family: "Poppins", sans-serif;
+    color: #14d0ff;
+    
+   
+}
+  
+#cards {
+    display: grid;
+    grid-template-columns: repeat(5, 10em);
+    grid-gap: 1em; 
+    color: #14d0ff;
+   
+  }
+  
+#cards div {
+    background-color: #444;
+    color:#30e65d;
+    border: solid 5px #30e65d;
+    padding: 20px;
+    font-size: 150%;
+    text-align: center;
+}
+
+p {
+    max-width: 400px;
+}
+
+.invisible {
+    display: none;
+}
