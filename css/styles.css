@@ -12,6 +12,7 @@ body {
     grid-template-columns: repeat(5, 10em);
     grid-gap: 1em; 
     color: #14d0ff;
+    
    
   }
   
@@ -19,9 +20,17 @@ body {
     background-color: #444;
     color:#30e65d;
     border: solid 5px #30e65d;
+    border-radius: 15px;
     padding: 20px;
     font-size: 150%;
     text-align: center;
+}
+
+#languages {
+    display: grid;
+    grid-template-columns: repeat(5, 10em);
+    grid-gap: 1em; 
+    color: #14d0ff;
 }
 
 p {
