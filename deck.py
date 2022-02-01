@@ -42,6 +42,15 @@ class Deck:
             cards += self.create_cards_for_word(word)
         return cards
     
+    def get_all_translations(self, source) -> List[Word]:
+        translations = []
+        for card in self.cards:
+            if card.source_word == source:
+                translations.append(card.translation)
+        return translations
+            
+            
+    
     def get_matched_translations(self, translations: List[str]) -> List[Word]:
         target_language = self.target_language
         target_language_vocab = lingo.get_vocabulary(target_language)
