@@ -1,50 +1,23 @@
-from typing import Optional
+from fastapi import Query
+from typing import List
+from app import app
+from deck import Deck
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+def ready_for_api(content: str) -> bool:
+    for char in content:
+        if char is None or not char.isalpha() or char == '':
+            return False
+    return True
 
-import os
-import json
-
-app = FastAPI()
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-
-# return a list of all available audio clips
-@app.get("/")
-def get_available_audio(language ="Finnish"):
-    arr = []
-    audio_clips = os.listdir(f"Audio/{language}")
-    audio_info = { language: arr }
-    for file_name in audio_clips:
-        split = file_name.split("_")
-        # for alphabet
-        dict = {
-                "sound":f"Audio/{language}/{file_name}",
-                "letter": split[0],
-                "example": split[1],
-                "translation": split[2].split(".")[0]
-            }
-        # for numbers
-        # for days and months
-        # for colours
-        arr.append(dict)
-    return audio_info
-
-@app.get("/languages")
-def languages():
-    languages = os.listdir(f"Audio")
-    return languages
-        
-
+@app.post("/login/")
+def login(username: str, password: str):
+    pass
+      
+@app.get("/cards/") 
+def get_cards(source_language: str, target_language: str, source_word: List[str] = Query(None)):
+    for word in source_word:
+        if ready_for_api(word):
+            print(word)
+            return Deck(source_word, source_language, target_language)
+    return "No words provided"
 

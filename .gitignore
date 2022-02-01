@@ -1,0 +1,9 @@
+.env
+__pycache__
+Audio
+old
+output_mp3
+response.txt
+test.json
+todo.md
+voices.txt
