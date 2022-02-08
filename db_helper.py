@@ -2,56 +2,41 @@ from gettext import translation
 from app import db
 from models import *
 
-# def some_db_shit():
-#     db.connect()
-#     db.create_tables([User])
-#     uncle_bob = User(name='Bob')
-#     uncle_bob.save()
-#     grandma = User.get(User.name =='Bob')
-#     print(grandma.name)
-#     db.close()
 
-# user chooses two language.
-# each side has one the correpsonding word for the chosen lanaguge
-# all these words are taken  from the db
-# these words are put in the db by a refresh button of some sort where the user gets all words
-# ... from the source language duo vocab and then finds those words that exist in the other langauge duo vocab
-def get_words(word_count, source_language, target_language):
+def get_words(word_count, language):
     db.connect()
-    return Word.select()
-    # for word in Word.select():
-    #     print(word)
+    words = WordModel.select().where(WordModel.language == language).order_by(WordModel.difficulty).limit(word_count)
+    return words
     
 def word_answered_wrong(word, language):
     db.connect()
-    update = Word.get(Word.word == word, Word.language == language)
+    update = WordModel.get(WordModel.word == word, WordModel.language == language)
     update.answered_wrong_count += 1
     update.save()
 
 def word_answered_correctly(word):
     db.connect()
-    update = Word.get(Word.word == word)
+    update = WordModel.get(WordModel.word == word)
     update.answered_correctly_count += 1
     update.save()
 
 def get_difficult_words(date):
     db.connect()
-    words = Word.select().where(Word.answered_wrong_count > Word.answered_correctly_count)
+    words = WordModel.select().where(WordModel.answered_wrong_count > WordModel.answered_correctly_count)
     return words
+
+def create_tables():
+    db.connect(reuse_if_open=True)
+    models = Model.__subclasses__()
+    db.drop_tables(models)
+    db.create_tables(models)
            
 def add_word(source, source_language, translations, translation_language):
-    # create the source word
-    db.connect()
-    for word in Word.select():
-        print(f"penis {word.word}")
-    db.drop_tables([Word])
-    db.create_tables([Word])
-    word = Word(word=source.word, language=source_language)
+    create_tables()
+    word = WordModel(word=source.word, language=source_language)
     word.save()
-    # trans_word = Word(word=translation, parent=word, language=translation_language)
-    # trans_word.save
     for translation in translations:
-          new_word = Word(word=translation.word, parent=word, language=translation_language)
+          new_word = WordModel(word=translation.word, parent=word, language=translation_language)
           new_word.save()
          #word.translations.add(new_word)
     # for translation in translations:
@@ -69,8 +54,8 @@ def add_word(source, source_language, translations, translation_language):
         
     # for word in word.translations:
     #     print(f"word {word.word}")
-    for word in Word.select():
-        print(f"word {word.word}")
+    # for word in Word.select():
+    #     print(f"word {word.word}")
     db.close()
     
     
