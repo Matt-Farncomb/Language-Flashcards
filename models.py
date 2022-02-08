@@ -1,5 +1,5 @@
 from fnmatch import translate
-from peewee import CharField, DeferredForeignKey, IntegerField, ForeignKeyField, ManyToManyField # type: ignore
+from peewee import CharField, IntegerField, ForeignKeyField, DateTimeField # type: ignore
 from peewee import * 
 
 from app import db 
@@ -12,7 +12,10 @@ class BaseModel(Model): # type: ignore
 #    username = CharField()
 #    password = CharField() 
 
-
+class WordInfo(BaseModel):
+    last_tested = DateTimeField()
+    answered_correctly_count = IntegerField()
+    answered_wrong_count = IntegerField()
    
 class Word(BaseModel):
     word = CharField()

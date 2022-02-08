@@ -10,10 +10,40 @@ from models import *
 #     grandma = User.get(User.name =='Bob')
 #     print(grandma.name)
 #     db.close()
+
+# user chooses two language.
+# each side has one the correpsonding word for the chosen lanaguge
+# all these words are taken  from the db
+# these words are put in the db by a refresh button of some sort where the user gets all words
+# ... from the source language duo vocab and then finds those words that exist in the other langauge duo vocab
+def get_words(word_count, source_language, target_language):
+    db.connect()
+    return Word.select()
+    # for word in Word.select():
+    #     print(word)
     
+def word_answered_wrong(word, language):
+    db.connect()
+    update = Word.get(Word.word == word, Word.language == language)
+    update.answered_wrong_count += 1
+    update.save()
+
+def word_answered_correctly(word):
+    db.connect()
+    update = Word.get(Word.word == word)
+    update.answered_correctly_count += 1
+    update.save()
+
+def get_difficult_words(date):
+    db.connect()
+    words = Word.select().where(Word.answered_wrong_count > Word.answered_correctly_count)
+    return words
+           
 def add_word(source, source_language, translations, translation_language):
     # create the source word
     db.connect()
+    for word in Word.select():
+        print(f"penis {word.word}")
     db.drop_tables([Word])
     db.create_tables([Word])
     word = Word(word=source.word, language=source_language)
@@ -37,7 +67,9 @@ def add_word(source, source_language, translations, translation_language):
         # now add the source word as a possible translation to the new trans word
         
         
-    for word in word.translations:
+    # for word in word.translations:
+    #     print(f"word {word.word}")
+    for word in Word.select():
         print(f"word {word.word}")
     db.close()
     
