@@ -2,7 +2,7 @@ from fastapi import Query
 from typing import List
 from app import app
 from deck import Deck
-import db_helper
+from database import Database
 
 def validate(content: str) -> bool:
     for char in content:
@@ -25,17 +25,22 @@ def create_cards(source_language: str, target_language: str, source_word: List[s
             for card in deck.cards:
                 translations = deck.get_all_translations(card.source_word)
                 # need to get all translations at once then add them
-                db_helper.add_word(card.source_word, deck.source_language, translations, deck.target_language)
+                db = Database()
+                db.add_word(card.source_word, deck.source_language, translations, deck.target_language)
+                # db_helper.add_word(card.source_word, deck.source_language, translations, deck.target_language)
                 
             
             #return Deck(source_word, source_language, target_language)
     return "No words provided"
 
-def get_cards(source_language, count):
-    source_words = db_helper.get_words(count, source_language)
-    # [x for x in fruits if "a" in x]
-    # Deck should maybe retrive all data from database.
-    # So when creating the deck it rebuilds from the db
-    # if no such entry exists in the db, then it rerives it from the API
-    translations = [ trans.translations for trans in source_words]
+@app.get("/") 
+def get_cards():
+    print("starting")
+    ##db_helper.create_tables()
+    ##source_words = db_helper.get_words(count, source_language)
+    deck = Deck("fi", "es")
+    deck.build_deck_from_duo()
+    print(deck)
+    return deck
+
     

@@ -7,6 +7,9 @@ from app import db
 class BaseModel(Model): # type: ignore
     class Meta:
         database = db
+        
+# class Difficulty(IntegerField):
+    
     
 class WordModel(BaseModel):
     word = CharField()
@@ -22,6 +25,7 @@ class WordInfo(BaseModel):
     answered_correctly_count = IntegerField()
     answered_wrong_count = IntegerField()
     word = ForeignKeyField(WordModel, null=True, backref='info')
+    difficulty = IntegerField()
     
-    def difficulty(self):
-        return self.answered_correctly_count - self.answered_wrong_count
+    # def get_difficulty(self):
+    #      return self.answered_correctly_count - self.answered_wrong_count
