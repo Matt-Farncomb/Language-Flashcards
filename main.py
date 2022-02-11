@@ -40,7 +40,22 @@ def get_cards():
     ##source_words = db_helper.get_words(count, source_language)
     deck = Deck("fi", "es")
     deck.build_deck_from_duo()
+    
+    db = Database()
+    db.connect()
+    db.create_tables()
+    db.upload_deck(deck)
+    db.close()
+    query = db.get_words(2, "fi")
+    print(f"query: {query}")
+    
     print(deck)
     return deck
 
+def update_db():
+    db = Database()
+    deck = Deck("fi", "es")
+    deck.build_deck_from_duo()
+    db.connect()
+    db.upload_deck(deck)
     
