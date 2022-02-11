@@ -21,12 +21,12 @@ class Word:
         # self.audio_url = self.voice.speak(word)
         self.language = language
 
-class NewCard:
+class Card:
     def __init__(self, source_word: Word, translations :List[Word]):
         self.source_word = source_word
         self.translations = translations  
          
-class Card:
+class OldCard:
     def __init__(self, source_word: Word, translation :Word):
         self.source_word = source_word
         self.translation = translation
@@ -75,9 +75,9 @@ class Deck:
     
     def _create_card_deck(self, source_words: List[str]) -> List[Card]:
         # cards = []
-        cards = self.create_cards_for_word("tämä")
-        cards += self.create_cards_for_word("tyttö")
-        cards += self.create_cards_for_word("sinä")
+        cards = self.create_card_for_word("tämä")
+        cards += self.create_card_for_word("tyttö")
+        cards += self.create_card_for_word("sinä")
         #print(f"one word is: {source_words[1]}")
         # for word in source_words:
         #     cards += self.create_cards_for_word(word)
@@ -118,23 +118,23 @@ class Deck:
         # for word in words:
         #     card = Card()
     
-    def create_cards_for_word(self, source_word) -> List[Card]: 
-        source = Word(source_word, self.source_language)
-        translations: List[str] = self._get_translations(source_word)
-        matched_translations: List[Word] = self._get_matched_translations(translations)
-        print(matched_translations)
-        cards = [ Card(source, translation) for translation in matched_translations ]
-        return cards 
+    # def create_cards_for_word(self, source_word) -> List[Card]: 
+    #     source = Word(source_word, self.source_language)
+    #     translations: List[str] = self._get_translations(source_word)
+    #     matched_translations: List[Word] = self._get_matched_translations(translations)
+    #     print(matched_translations)
+    #     cards = [ Card(source, translation) for translation in matched_translations ]
+    #     return cards 
     
     # will be easier to insert into db
     # each card will have the one source word and all the possible translations and possible answers
     # makes more sense because like le and la in spansih  just mean the. So that should just be one card.
-    def create_card_for_word(self, source_word) -> NewCard: 
+    def create_card_for_word(self, source_word) -> Card: 
         source = Word(source_word, self.source_language)
         translations: List[str] = self._get_translations(source_word)
         matched_translations: List[Word] = self._get_matched_translations(translations)
         print(matched_translations)
-        card = NewCard(source, [])
+        card = Card(source, [])
         for trans in matched_translations:
             card.translations.append(trans)
         return card

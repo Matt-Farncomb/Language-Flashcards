@@ -45,10 +45,29 @@ class Database:
         
         # data = []
         
-        data = [ 
-            ( card.translation.word, card.source_word.language, card.source_word.word ) 
-            for card in deck.deck 
-        ]  
+        card_ids = {}
+        
+        for card in deck.deck:
+            if card.word not in card_ids:
+                card_id = WordModel.create(word=card.word, language=card.language)
+                card_ids[card.word] = card_id.id
+            data = []
+            data.append(c.word, c.language)
+            for c in card.translations:
+                # entry = WordModel.create(
+                #     source_word=c.word, 
+                #     language=c.language,
+                #     parent=card.source_word.word
+                # )
+                data.append(c.word, c.language, card.source_word.word)
+            # entry.save()
+            with self.db.atomic():
+                WordModel.insert_many(data, fields=fields).execute()
+        
+        # data = [ 
+        #     ( card.translation.word, card.source_word.language, card.source_word.word ) 
+        #     for card in deck.deck 
+        # ]  
         # for card in deck.deck:
         #     data.append(
         #         card.translation.word,
@@ -56,8 +75,8 @@ class Database:
         #         card.source_word.word
         #     )
         
-        with self.db.atomic():
-            WordModel.insert_many(data, fields=fields).execute()
+        # with self.db.atomic():
+        #     WordModel.insert_many(data, fields=fields).execute()
             
         # for card in deck.deck:
         #     entry = WordModel.create(
