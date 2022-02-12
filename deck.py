@@ -74,10 +74,10 @@ class Deck:
         pass    
     
     def _create_card_deck(self, source_words: List[str]) -> List[Card]:
-        # cards = []
-        cards = self.create_card_for_word("tämä")
-        cards += self.create_card_for_word("tyttö")
-        cards += self.create_card_for_word("sinä")
+        cards = []
+        cards.append(self.create_card_for_word("tämä"))
+        cards.append(self.create_card_for_word("tyttö"))
+        cards.append(self.create_card_for_word("sinä"))
         #print(f"one word is: {source_words[1]}")
         # for word in source_words:
         #     cards += self.create_cards_for_word(word)

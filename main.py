@@ -59,3 +59,4 @@ def update_db():
     db.connect()
     db.upload_deck(deck)
     
+    
