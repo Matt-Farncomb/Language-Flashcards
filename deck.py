@@ -3,6 +3,7 @@ from decouple import config # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 import requests 
 from typing import List
+from database import Database
 
 languages = {
     "es":4,
@@ -39,11 +40,20 @@ class Deck:
         # self.target_vocab = []
         self.deck = []
         self.deck_type = ""
+        self.db = Database()
+        
+        # For debugging only
+        #self.db.create_tables()
+        
+        
         # self.vocab = self._get_vocab(source_language)
         # self.target_vocab = self._get_vocab(source_language)
+      
+    def upload_deck(self):
+        self.db.upload_deck(self.deck)
         
-    def _get_words_from_db(self, count: int):
-        return db_helper.get_words(count, self.source_language) # type: ignore
+    def _get_words_from_db(self, count: int,):
+        return self.db.get_words(count, self.source_language) # type: ignore
     
     def build_deck_from_db(self, count):
         if len(self.deck) != 0:
@@ -78,6 +88,7 @@ class Deck:
         cards.append(self.create_card_for_word("tämä"))
         cards.append(self.create_card_for_word("tyttö"))
         cards.append(self.create_card_for_word("sinä"))
+        print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
         # for word in source_words:
         #     cards += self.create_cards_for_word(word)

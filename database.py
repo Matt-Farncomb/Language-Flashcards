@@ -1,11 +1,13 @@
 #from app import db
 from peewee import *
 from models import WordModel, Audio, WordInfo
-from deck import Deck
+#from deck import Deck
+from app import db
 
 class Database:
     def __init__(self) -> None:
-        self.db = SqliteDatabase('words.db')
+        #self.db = SqliteDatabase('words.db')
+        self.db = db
         # self._connect()
     
     def __enter__(self):
@@ -20,7 +22,8 @@ class Database:
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
-        
+        print("uploading")
+        ##self.connect()
         fields = [ WordModel.word, WordModel.language, WordModel.parent ]
         # cards_added = set()
         
@@ -47,7 +50,8 @@ class Database:
         
         card_ids = {}
         
-        for card in deck.deck:
+        for card in deck:
+            
             if card.source_word not in card_ids:
                 card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
                 card_ids[card.source_word] = card_id.id
@@ -64,6 +68,12 @@ class Database:
             # entry.save()
             with self.db.atomic():
                 WordModel.insert_many(data, fields=fields).execute()
+        query = WordModel.select()
+        for e in query:
+            print(f"fart: {e.word}")
+
+        
+        ##self.close()
         
         # data = [ 
         #     ( card.translation.word, card.source_word.language, card.source_word.word ) 
@@ -98,8 +108,13 @@ class Database:
         #query = WordModel.select().where(WordModel.language == language).order_by(WordInfo.difficulty).limit(word_count)
         # query = WordModel.select().where(WordModel.language == language).limit(word_count)
         #print(f"language: {language}")
-        query = WordModel.select().where(WordModel.language == language).limit(word_count)
-        print(f"word: {query[1].word}")
+        #print(f"WordModel.select(): {WordModel.select().word}")
+        print("get words")
+        query = WordModel.select()
+        print(f"{query}")
+        for e in query:
+            print(e.word)
+        #print(f"word: {query[1].word}")
         # words = [ word.word for word in query ]
         return query
     
@@ -149,6 +164,6 @@ class Database:
         #     print(f"word {word.word}")
         # for word in Word.select():
         #     print(f"word {word.word}")
-        self.db.close()
+        #self.db.close()
         
     

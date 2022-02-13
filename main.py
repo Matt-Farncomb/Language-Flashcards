@@ -3,6 +3,9 @@ from typing import List
 from app import app
 from deck import Deck
 from database import Database
+import logging
+
+db = Database()
 
 def validate(content: str) -> bool:
     for char in content:
@@ -34,29 +37,22 @@ def create_cards(source_language: str, target_language: str, source_word: List[s
     return "No words provided"
 
 @app.get("/") 
-def get_cards():
-    print("starting")
-    ##db_helper.create_tables()
-    ##source_words = db_helper.get_words(count, source_language)
-    deck = Deck("fi", "es")
-    deck.build_deck_from_duo()
-    
-    db = Database()
-    db.connect()
-    db.create_tables()
-    db.upload_deck(deck)
-    db.close()
-    query = db.get_words(2, "fi")
-    print(f"query: {query}")
-    
-    print(deck)
-    return deck
+def get_cards(count: str, source_language: str, target_language: str):
+    logging.info(f"get_cards called to get {count} in total")
+    deck = Deck(source_language, target_language)
+    deck.build_deck_from_db(count)
+    return deck.deck
 
-def update_db():
-    db = Database()
-    deck = Deck("fi", "es")
+#change to post
+@app.get("/refresh/") 
+def update_db(source_language: str, target_language: str):
+    logging.info(f"update_db has been called for sl {source_language} and tl {target_language}")
+    deck = Deck(source_language, target_language)
     deck.build_deck_from_duo()
-    db.connect()
-    db.upload_deck(deck)
+    deck.upload_deck()
+    #db.connect()
+    #db.upload_deck(deck)
+    #db.close()
+
     
     
