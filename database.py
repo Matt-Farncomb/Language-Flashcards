@@ -22,80 +22,18 @@ class Database:
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
-        print("uploading")
-        ##self.connect()
         fields = [ WordModel.word, WordModel.language, WordModel.parent ]
-        # cards_added = set()
-        
-        # translations = []
-        # data_to_add = ("", []) # one source word and many translatiojns
-        # temp = {
-        #     "word":"",
-        #     "translations":[]
-        # }
-        # for card in deck:
-        #     word = card.source_word
-        #     if word not in cards_added:
-        #         if len(cards_added) != 0:
-        #             pass
-        #         cards_added.add(card.source_word)
-        #         temp["word"] = card.source_word
-        #         temp["translations"].append(card.translation)
-                
-        #     else:
-        #         temp["translations"].append(card.translation)
-            
-        
-        # data = []
-        
         card_ids = {}
         
         for card in deck:
-            
             if card.source_word not in card_ids:
                 card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
                 card_ids[card.source_word] = card_id.id
             data = []
-            #data.append( (c.word, c.language) ) 
             for c in card.translations:
-                # entry = WordModel.create(
-                #     source_word=c.word, 
-                #     language=c.language,
-                #     parent=card.source_word.word
-                # )
-                # data.append( (c.word, c.language, card.source_word.word) )
                 data.append( (c.word, c.language, card_ids[card.source_word]) )
-            # entry.save()
             with self.db.atomic():
                 WordModel.insert_many(data, fields=fields).execute()
-        query = WordModel.select()
-        for e in query:
-            print(f"fart: {e.word}")
-
-        
-        ##self.close()
-        
-        # data = [ 
-        #     ( card.translation.word, card.source_word.language, card.source_word.word ) 
-        #     for card in deck.deck 
-        # ]  
-        # for card in deck.deck:
-        #     data.append(
-        #         card.translation.word,
-        #         card.source_word.word,
-        #         card.source_word.word
-        #     )
-        
-        # with self.db.atomic():
-        #     WordModel.insert_many(data, fields=fields).execute()
-            
-        # for card in deck.deck:
-        #     entry = WordModel.create(
-        #         source_word=card.translation.word, 
-        #         language=card.source_word.word,
-        #         parent=card.source_word.word
-        #     )
-        #     entry.save()
     
     def connect(self):
         self.db.connect(reuse_if_open=True)
@@ -106,16 +44,7 @@ class Database:
     def get_words(self, word_count, language):
         #query = WordModel.select().where(WordModel.language == language).order_by(WordModel.info.difficulty).limit(word_count)
         #query = WordModel.select().where(WordModel.language == language).order_by(WordInfo.difficulty).limit(word_count)
-        # query = WordModel.select().where(WordModel.language == language).limit(word_count)
-        #print(f"language: {language}")
-        #print(f"WordModel.select(): {WordModel.select().word}")
-        print("get words")
-        query = WordModel.select()
-        print(f"{query}")
-        for e in query:
-            print(e.word)
-        #print(f"word: {query[1].word}")
-        # words = [ word.word for word in query ]
+        query = WordModel.select().where(WordModel.language == language).limit(word_count)
         return query
     
     def word_answered_wrong(word, language):

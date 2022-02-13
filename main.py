@@ -44,15 +44,13 @@ def get_cards(count: str, source_language: str, target_language: str):
     return deck.deck
 
 #change to post
-@app.get("/refresh/") 
+@app.post("/refresh/") 
 def update_db(source_language: str, target_language: str):
     logging.info(f"update_db has been called for sl {source_language} and tl {target_language}")
     deck = Deck(source_language, target_language)
     deck.build_deck_from_duo()
     deck.upload_deck()
-    #db.connect()
-    #db.upload_deck(deck)
-    #db.close()
+
 
     
     
