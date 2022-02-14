@@ -5,7 +5,19 @@ from deck import Deck
 from database import Database
 import logging
 
-db = Database()
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# db = Database()
 
 def validate(content: str) -> bool:
     for char in content:
@@ -37,10 +49,11 @@ def create_cards(source_language: str, target_language: str, source_word: List[s
     return "No words provided"
 
 @app.get("/") 
-def get_cards(count: str, source_language: str, target_language: str):
-    logging.info(f"get_cards called to get {count} in total")
+def get_cards(count: int, source_language: str, target_language: str):
+    # logging.info(f"get_cards called to get {count} in total")
     deck = Deck(source_language, target_language)
     deck.build_deck_from_db(count)
+    #return "farted in your face"
     return deck.deck
 
 #change to post
