@@ -6,6 +6,7 @@ window.onload = () => {
     const DECK = new Deck("fi", "es");
     console.log(SERVER);
     DECK.getDeck(SERVER, 3);
-    console.log(deck);
+    console.log(DECK);
+    const DISPLAY = new CardDisplay(DECK);
 
 }

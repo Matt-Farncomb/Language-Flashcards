@@ -34,6 +34,7 @@ class Server {
                 console.error('Error:', error);
             });
     }
+// return fetch(url).then((response) => response.json());
 
     fetchDeck(count, source_language, target_language) {
         const url = this.#cardsURL(count, source_language, target_language)
