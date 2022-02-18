@@ -1,12 +1,24 @@
 class Word {
-    
-    word;
-    langauge;
-    audio;
+
+    #word;
+    #language;
+    #audio;
 
     constructor(word, language) {
-        this.word = word;
-        this.language = language;
-        this.audio = "";
+        this.#word = word;
+        this.#language = language;
+        this.#audio = "";
+    }
+
+    get word() {
+        return this.#word;
+    }
+
+    get language() {
+        return this.#language;
+    }
+
+    get audio() {
+        return this.audio;
     }
 }

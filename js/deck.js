@@ -4,7 +4,7 @@ class Deck {
     #target_language;
     #cards;
     #drawPile;
-    
+
     constructor(source_language, target_language) {
         this.#source_language = source_language;
         this.#target_language = target_language;
@@ -17,7 +17,13 @@ class Deck {
         this.#cards.push(card);
     }
 
-   
+    get source_language() {
+        return this.#source_language;
+    }
+
+    get target_language() {
+        return this.#target_language;
+    }
 
     // drawCard(index) {
     //     const card = drawPile[index];
