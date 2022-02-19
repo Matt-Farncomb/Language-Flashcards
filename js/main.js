@@ -8,6 +8,6 @@ window.onload = () => {
     console.log(SERVER);
     DECK.getDeck(SERVER, DECKSIZE);
     console.log(DECK);
-    const DISPLAY = new CardDisplay(DECK, SERVER, DECKSIZE);
+    const UserInterface = new UI(DECK, SERVER, DECKSIZE);
 
 }

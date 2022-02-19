@@ -1,5 +1,5 @@
 
-class CardDisplay {
+class UI {
 
     #deck;
     #front;
@@ -9,6 +9,8 @@ class CardDisplay {
     #newCardButton;
     #newDeckButton;
     #submitButton;
+    #submitResult;
+    #flipOverButton;
     #textInput;
 
     #server;
@@ -21,6 +23,8 @@ class CardDisplay {
         this.#newCardButton = document.querySelector("#new-card");
         this.#newDeckButton = document.querySelector("#new-deck");
         this.#submitButton = document.querySelector("#submit");
+        this.#submitResult = document.querySelector("#submit-result");
+        this.#flipOverButton = document.querySelector("#flipOver");
         this.#textInput = document.querySelector("textarea");
         
         this.#newCardButton.addEventListener('click', () => {
@@ -28,22 +32,27 @@ class CardDisplay {
             this.#updateDisplay();
         } );
 
-        this.#newDeckButton.addEventListener('click', () => {
-            this.#deck = new Deck("fi", "es");
-            this.#deck.getDeck(this.#server, this.#deckSize);
+        this.#flipOverButton.addEventListener('click', () => {
+        const inner = document.querySelector(".flip-card-inner");
+           inner.classList.toggle("rotate");
+        } );
+
+        this.#newCardButton.addEventListener('click', () => {
+            this.#drawCard();
+            this.#updateDisplay();
+        } );
+
+        this.#submitResult.addEventListener('click', () => {
+            this.#server.submitResult(this.#deck);
         } );
 
         this.#submitButton.addEventListener('click', () => {
            const input = this.#textInput.value;
-           console.log(this.#textInput.value);
            if (this.#card.isCorrectTranslation(input)) {
                console.log("Correct");
            } else {
                 console.log("wrong");
            }
-           const inner = document.querySelector(".flip-card-inner");
-           inner.classList.add("rotate");
-
         } );
     }
 

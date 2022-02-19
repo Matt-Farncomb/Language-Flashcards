@@ -10,11 +10,16 @@ class Deck {
         this.#target_language = target_language;
         this.#cards = [];
         this.#drawPile = this.#cards;
+        //this.#hand = [];
         // this.drawPi = this.drawPile();
     }
 
     #addCard(card) {
         this.#cards.push(card);
+    }
+
+    cardsRemaining() {
+        return this.#drawPile.length;
     }
 
     get source_language() {
@@ -23,6 +28,10 @@ class Deck {
 
     get target_language() {
         return this.#target_language;
+    }
+
+    get cards() {
+        return this.#cards;
     }
 
     // drawCard(index) {
@@ -37,6 +46,7 @@ class Deck {
         try {
             const nextCard = this.#drawPile[index];
             this.#drawPile = this.#drawPile.filter(card => card.word.word != nextCard.word.word);
+            //this.#hand = this.#hand.concat(nextCard);
             return nextCard;
         } catch (error) {
             console.error(`DrawPile is only ${this.#drawPile.length} which is shorter than the index of ${index}`);
@@ -46,7 +56,7 @@ class Deck {
     randomCard() {
         const length = this.#drawPile.length;
         if (length < 1) {
-            this.shuffle();
+            this.shuffleMistakes();
             return this.randomCard();
         }
         else {
@@ -59,8 +69,26 @@ class Deck {
         }
     }
 
+    // Only redraw cards answered incorrectly
+    shuffleMistakes() {
+        this.#drawPile = this.#cards.filter(card => !card.answeredCorrectly);
+    }
+
     shuffle() {
         this.#drawPile = this.#cards;
+    }
+
+    score() {    
+        // let val = 0;
+        // this.#cards.forEach(card => {
+        //     if (card.answeredCorrectly()) {
+        //         val += 1;
+        //     }
+        // });
+        return this.#cards.reduce(
+            (total, card) => (
+                card.answeredCorrectly() ? total+1 : total), 
+            0)
     }
 
     // randomCard() {

@@ -7,7 +7,7 @@
 <script src="js/card.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/word.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/deck.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/cardDisplay.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/ui.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/server.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/main.js" type="text/javascript" charset="utf-8"></script>
 </head>
@@ -16,10 +16,12 @@
 <button id="new-deck">New Deck</button>
 <div class="flip-card">
   <div class="flip-card-inner">
+    <button id="flipOver">Flip</button>
     <div class="flip-card-front">
         <p>source word</p> 
         <textarea name="" cols="30" rows="10"></textarea>
         <button id="submit">Submit</button>
+        <button id="submit-result">Submit Result</button>
     </div>
     <div class="flip-card-back">
       <p>translated word</p> 
