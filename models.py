@@ -21,11 +21,11 @@ class Audio(BaseModel):
     word = ForeignKeyField(WordModel, null=True, backref='file')
 
 class WordInfo(BaseModel):
-    last_tested = DateTimeField()
-    used_count = IntegerField()
-    answered_wrong_count = IntegerField()
-    word = ForeignKeyField(WordModel, null=True, backref='info')
-    difficulty = IntegerField()
+    last_tested = DateTimeField(null=True)
+    used_count = IntegerField(null=True, default=0)
+    answered_wrong_count = IntegerField(null=True, default=0)
+    word = ForeignKeyField(WordModel, backref='info')
+    difficulty = IntegerField(null=True, default=0)
     
     # def get_difficulty(self):
     #      return self.answered_correctly_count - self.answered_wrong_count

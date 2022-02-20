@@ -61,7 +61,7 @@ def get_cards(count: int, source_language: str, target_language: str):
     return deck.deck
 
 #change to post
-@app.post("/refresh/") 
+@app.get("/refresh/") 
 def update_db(source_language: str, target_language: str):
     logging.info(f"update_db has been called for sl {source_language} and tl {target_language}")
     deck = Deck(source_language, target_language)
@@ -69,11 +69,11 @@ def update_db(source_language: str, target_language: str):
     deck.upload_deck()
     
 @app.post("/results/")
-def update_results(test: List[CardTest]):
-    print(f"data: {test[0]}")
-    for card in test:
-        db.update_word(card)
-    return test
+def update_results(cards: List[CardTest]):
+    print(f"data: {cards[0]}")
+    db = Database()
+    db.update_words(cards)
+    return "all good"
 
 
     

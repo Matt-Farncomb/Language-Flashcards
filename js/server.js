@@ -46,25 +46,20 @@ class Server {
         console.log(deck);
         const url = `${this.#serverURL}results/`
         
-        const data = deck.cards.concat( card => 
+        const data = deck.cards.map( (card)  => (
             {
-                "card_id"; card.id,
-                "wrong_count"; card.incorrectCount
+                "id": parseInt(card.id),
+                "wrong_count": parseInt(card.incorrectCount)
             }
+        )
         );
 
+        console.log(data)
 
-
-        const data2 = [{
-            "card_id": "2",
-            "wrong_count": "3"
-        }]
-
-        console.log(data2);
         fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data2)
+            body: JSON.stringify(data)
         })
         .then((response) => response.json())
         .then((response) => console.log(response));

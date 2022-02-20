@@ -11,7 +11,7 @@ languages = {
     "en":3,
 }
 
-lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))
+# lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))
 
 
 class Word:
@@ -59,13 +59,13 @@ class Deck:
             raise Exception(f"Deck already created from {self.deck_type}")
         else:
             cards = []
-            print("word")
+            #print("word")
             words = self._get_words_from_db(count)
             print(f"words: {words}")
             for word in words:
-                print(f"word: {word}")
+                #¤print(f"word: {word}")
                 new_word = Word(word.word, word.language)
-                print(f"id: {word.id}")
+                #print(f"id: {word.id}")
                 new_card = Card(word.id, new_word, [])
                 #¤ new_word = Word(word.word, word.language)
                 for trans in word.translations:
@@ -79,6 +79,7 @@ class Deck:
         if len(self.deck) != 0:
             raise Exception(f"Deck already created from {self.deck_type}")
         else:
+            #self.db.create_tables()
             vocab = self._get_vocab(self.source_language)
             # self.target_vocab = self._get_vocab(self.target_language)
             self.deck = self._create_card_deck(vocab)
@@ -127,6 +128,7 @@ class Deck:
         return translated_words
     
     def _get_vocab(self, language):
+        lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))
         vocab = lingo.get_vocabulary(language)
         words = [ word["word_string"] for word in vocab["vocab_overview"] ]
         return words
@@ -149,7 +151,7 @@ class Deck:
         translations: List[str] = self._get_translations(source_word)
         matched_translations: List[Word] = self._get_matched_translations(translations)
         print(matched_translations)
-        card = Card(source, [])
+        card = Card(None, source, [])
         for trans in matched_translations:
             card.translations.append(trans)
         return card

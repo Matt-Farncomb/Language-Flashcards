@@ -19,21 +19,29 @@ class Database:
     def refresh_db(self, source_language, target_language):
         pass
     
+    # def upload_from_duo():
+        
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
+        self.create_tables()
         fields = [ WordModel.word, WordModel.language, WordModel.parent ]
+        info_fields = [ WordInfo.word ]
+        info_data = []
         card_ids = {}
         
+        print("running")
         for card in deck:
             if card.source_word not in card_ids:
                 card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
+                WordInfo.create(word=card_id)
                 card_ids[card.source_word] = card_id.id
             data = []
             for c in card.translations:
                 data.append( (c.word, c.language, card_ids[card.source_word]) )
             with self.db.atomic():
                 WordModel.insert_many(data, fields=fields).execute()
+                #WordInfo.insert_many(info_data, fields=info_fields).execute()
     
     def connect(self):
         self.db.connect(reuse_if_open=True)
@@ -73,10 +81,17 @@ class Database:
         self.word_answered_wrong(card.id, card.wrong_count)
         
     def update_words(self, cards):
-        data = [ (card.id, card.wrong_count) for card in cards ]
-        fields = [ WordModel.id, WordInfo.answered_wrong_count ] 
-        with self.db.atomic():
-            WordModel.update(data, fields=fields).execute()
+ 
+        def update_query(card):
+            query = WordInfo.select().join(WordModel).where(WordModel.id == card.id).get()
+            query.answered_wrong_count = card.wrong_count
+            return query
+        
+        data = [ update_query(card) for card in cards ]
+  
+        WordInfo.bulk_update(data, fields=[WordInfo.answered_wrong_count])
+        
+       
             
     def add_word(self, source, source_language, translations, translation_language):
         self.create_tables()
@@ -84,7 +99,12 @@ class Database:
         word.save()
         for translation in translations:
             new_word = WordModel(word=translation.word, parent=word, language=translation_language)
+            new_info = WordInfo(None, 0, 0, new_word, 0)
             new_word.save()
+            new_info.save()
+            print("trtewst")
+            
+       
             #word.translations.add(new_word)
         # for translation in translations:
         #     # create a translation word

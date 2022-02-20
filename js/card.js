@@ -25,6 +25,10 @@ class Card {
         return this.#translations
     }
 
+    get incorrectCount() {
+        return this.#incorrectCount;
+    }
+
     isCorrectTranslation(userInput) {
         this.#answeredCorrectly =  !(this.#translations.every(translation => translation.word !== userInput)); 
         if (!this.#answeredCorrectly) {
