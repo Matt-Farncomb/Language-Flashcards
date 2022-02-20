@@ -53,10 +53,12 @@ class Server {
             }
         );
 
-        const data2 = {
+
+
+        const data2 = [{
             "card_id": "2",
             "wrong_count": "3"
-        }
+        }]
 
         console.log(data2);
         fetch(url, {

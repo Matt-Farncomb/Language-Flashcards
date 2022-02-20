@@ -1,14 +1,20 @@
 class Card {
 
+    #id;
     #word;
     #translations;
     #answeredCorrectly;
     #incorrectCount;
 
-    constructor(word, translations) {
+    constructor(id, word, translations) {
+        this.#id = id;
         this.#word = word;
         this.#translations = translations;
         this.#incorrectCount = 0;
+    }
+
+    get id() {
+        return this.#id;
     }
 
     get word() {

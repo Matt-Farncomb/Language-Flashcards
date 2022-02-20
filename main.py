@@ -1,17 +1,13 @@
 from fastapi import Query, Request
 from typing import List
-from app import app
+from app import app, db
 from deck import Deck
 from database import Database
 import logging
+from schemas import CardTest
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from pydantic import BaseModel
-
-class CardTest(BaseModel):
-    card_id: str
-    wrong_count: str
 
 origins = ["*"]
 
@@ -60,6 +56,8 @@ def get_cards(count: int, source_language: str, target_language: str):
     deck = Deck(source_language, target_language)
     deck.build_deck_from_db(count)
     #return "farted in your face"
+    # for e in deck.deck:
+    #     print(e.id)
     return deck.deck
 
 #change to post
@@ -71,8 +69,10 @@ def update_db(source_language: str, target_language: str):
     deck.upload_deck()
     
 @app.post("/results/")
-def update_results(test: CardTest):
-    print(f"data: {test}")
+def update_results(test: List[CardTest]):
+    print(f"data: {test[0]}")
+    for card in test:
+        db.update_word(card)
     return test
 
 

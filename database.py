@@ -47,15 +47,16 @@ class Database:
         query = WordModel.select().where(WordModel.language == language).limit(word_count)
         return query
     
-    def word_answered_wrong(word, language):
-        update = WordModel.get(WordModel.word == word, WordModel.language == language)
-        update.answered_wrong_count += 1
+    def word_answered_wrong(word_id, count):
+        update = WordModel.get(WordModel.id == word_id)
+        update.answered_wrong_count += count
+        update.used_count += 1
         update.save()
 
-    def word_answered_correctly(word):
-        update = WordModel.get(WordModel.word == word)
-        update.answered_correctly_count += 1
-        update.save()
+    # def word_used(word_id):
+    #     update = WordModel.get(WordModel.id == word_id)
+    #     update.used_count += 1
+    #     update.save()
 
     def get_difficult_words(date):
         words = WordModel.select().where(WordModel.answered_wrong_count > WordModel.answered_correctly_count)
@@ -67,6 +68,15 @@ class Database:
         print(models)
         self.db.drop_tables(models)
         self.db.create_tables(models)
+    
+    def update_word(self, card):
+        self.word_answered_wrong(card.id, card.wrong_count)
+        
+    def update_words(self, cards):
+        data = [ (card.id, card.wrong_count) for card in cards ]
+        fields = [ WordModel.id, WordInfo.answered_wrong_count ] 
+        with self.db.atomic():
+            WordModel.update(data, fields=fields).execute()
             
     def add_word(self, source, source_language, translations, translation_language):
         self.create_tables()

@@ -4,7 +4,7 @@ class Word {
     #language;
     #audio;
 
-    constructor(word, language) {
+    constructor(id, word, language) {
         this.#word = word;
         this.#language = language;
         this.#audio = "";

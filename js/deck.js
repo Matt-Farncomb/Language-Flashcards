@@ -138,7 +138,8 @@ class Deck {
                 const translation_list = card.translations.map((translation) => {
                     return new Word(translation.__data__.word, this.#target_language);
                 })
-                return new Card(card.source_word, translation_list);
+                console.log(card)
+                return new Card(card.id, card.source_word, translation_list);
             });
             
         })

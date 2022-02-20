@@ -23,17 +23,13 @@ class Word:
         self.language = language
 
 class Card:
-    def __init__(self, source_word: Word, translations :List[Word]):
+    def __init__(self, id, source_word: Word, translations :List[Word]):
+        self.id = id
         self.source_word = source_word
         self.translations = translations  
     
     def addTranslation(self, newTranslation):
         self.translations.append(newTranslation)
-         
-class OldCard:
-    def __init__(self, source_word: Word, translation :Word):
-        self.source_word = source_word
-        self.translation = translation
 
 class Deck:
     def __init__(self, source_language, target_language):
@@ -69,7 +65,8 @@ class Deck:
             for word in words:
                 print(f"word: {word}")
                 new_word = Word(word.word, word.language)
-                new_card = Card(new_word, [])
+                print(f"id: {word.id}")
+                new_card = Card(word.id, new_word, [])
                 #¤ new_word = Word(word.word, word.language)
                 for trans in word.translations:
                     new_card.addTranslation(trans)

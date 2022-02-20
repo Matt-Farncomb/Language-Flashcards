@@ -22,7 +22,7 @@ class Audio(BaseModel):
 
 class WordInfo(BaseModel):
     last_tested = DateTimeField()
-    answered_correctly_count = IntegerField()
+    used_count = IntegerField()
     answered_wrong_count = IntegerField()
     word = ForeignKeyField(WordModel, null=True, backref='info')
     difficulty = IntegerField()
