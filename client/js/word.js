@@ -19,6 +19,6 @@ class Word {
     }
 
     get audio() {
-        return this.audio;
+        return this.#audio;
     }
 }

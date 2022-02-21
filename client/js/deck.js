@@ -1,13 +1,13 @@
 class Deck {
 
-    #source_language;
-    #target_language;
+    // #source_language;
+    // #target_language;
     #cards;
     #drawPile;
 
     constructor() {
-        this.#source_language = localStorage.getItem('source_language');
-        this.#target_language = localStorage.getItem('target_language');
+        // this.#source_language = localStorage.getItem('source_language');
+        // this.#target_language = localStorage.getItem('target_language');
         this.#cards = [];
         this.#drawPile = this.#cards;
         //this.#hand = [];
@@ -22,13 +22,13 @@ class Deck {
         return this.#drawPile.length;
     }
 
-    get source_language() {
-        return this.#source_language;
-    }
+    // get source_language() {
+    //     return this.#source_language;
+    // }
 
-    get target_language() {
-        return this.#target_language;
-    }
+    // get target_language() {
+    //     return this.#target_language;
+    // }
 
     get cards() {
         return this.#cards;
@@ -133,12 +133,12 @@ class Deck {
     // }
 
     getDeck(server, count) {
-        server.fetchDeck(count, this.#source_language, this.#target_language).then((data) => {
+        // server.fetchDeck(count, this.#source_language, this.#target_language).then((data) => {
+        server.fetchDeck(count).then((data) => {
             this.#cards = data.map((card) => {
                 const translation_list = card.translations.map((translation) => {
-                    return new Word(translation.__data__.word, this.#target_language);
+                    return new Word(translation.__data__.id, translation.__data__.word, translation.__data__.language);
                 })
-                console.log(card)
                 return new Card(card.id, card.source_word, translation_list);
             });
             

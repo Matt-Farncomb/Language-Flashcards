@@ -8,20 +8,26 @@ class UI {
 
     #newCardButton;
     #newDeckButton;
+    #deckDiv;
     #submitButton;
     #submitResult;
     #refreshButton;
     #flipOverButton;
     #form;
     #textInput;
+    #logout;
+    #loggedIn;
 
     #server;
     #deckSize;
 
     constructor(deck, server, deckSize) {
+        this.#loggedIn = this.#loggedInFunc();
         this.#deck = deck;
         this.#server = server;
         this.#deckSize = deckSize;
+        this.#logout = document.querySelector("#logout");
+        this.#deckDiv = document.querySelector("#deck");
         this.#newCardButton = document.querySelector("#new-card");
         this.#newDeckButton = document.querySelector("#new-deck");
         this.#submitButton = document.querySelector("#submit");
@@ -46,6 +52,10 @@ class UI {
             this.#updateDisplay();
         } );
 
+        this.#logout.addEventListener('click', () => {
+            this.logout();
+        } );
+
         this.#submitResult.addEventListener('click', () => {
             this.#server.submitResult(this.#deck);
         } );
@@ -56,13 +66,11 @@ class UI {
 
         this.#form.addEventListener('submit', (e) => {
             e.preventDefault();
-            let name = document.querySelector("#entername");
             let source_language = document.querySelector("#source_language");
             let target_language = document.querySelector("#target_language");
-            console.log(name.value);
-            localStorage.setItem('userName', name.value);
             localStorage.setItem('source_language', source_language.value);
             localStorage.setItem('target_language', target_language.value);
+            this.reveal();
         });
 
         this.#submitButton.addEventListener('click', () => {
@@ -73,6 +81,29 @@ class UI {
                 console.log("wrong");
            }
         } );
+    }
+
+    reveal() {
+        if (this.#loggedInFunc()) {
+            console.log("logged in")
+            this.#deckDiv.classList.remove("hidden");
+        }
+    }
+
+   
+    #loggedInFunc() {
+        if (localStorage.getItem('source_language', 'lang')) {
+            console.log("logged in here too")
+            return true;
+        }
+        else return false;
+    }
+
+    logout() {
+        localStorage.removeItem("source_language");
+        localStorage.removeItem("target_language");
+        this.#deckDiv.classList.add("hidden");
+        this.#loggedIn = false;
     }
 
     #drawCard() {
