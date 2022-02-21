@@ -5,9 +5,9 @@ class Deck {
     #cards;
     #drawPile;
 
-    constructor(source_language, target_language) {
-        this.#source_language = source_language;
-        this.#target_language = target_language;
+    constructor() {
+        this.#source_language = localStorage.getItem('source_language');
+        this.#target_language = localStorage.getItem('target_language');
         this.#cards = [];
         this.#drawPile = this.#cards;
         //this.#hand = [];

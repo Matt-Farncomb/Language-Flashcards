@@ -12,6 +12,7 @@ class UI {
     #submitResult;
     #refreshButton;
     #flipOverButton;
+    #form;
     #textInput;
 
     #server;
@@ -28,6 +29,7 @@ class UI {
         this.#flipOverButton = document.querySelector("#flipOver");
         this.#textInput = document.querySelector("textarea");
         this.#refreshButton = document.querySelector("#refresh-button");
+        this.#form = document.querySelector("form");
         
         this.#newCardButton.addEventListener('click', () => {
             this.#drawCard();
@@ -51,6 +53,17 @@ class UI {
         this.#refreshButton.addEventListener('click', () => {
             this.#server.refresh(this.#refreshButton);
         } );
+
+        this.#form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let name = document.querySelector("#entername");
+            let source_language = document.querySelector("#source_language");
+            let target_language = document.querySelector("#target_language");
+            console.log(name.value);
+            localStorage.setItem('userName', name.value);
+            localStorage.setItem('source_language', source_language.value);
+            localStorage.setItem('target_language', target_language.value);
+        });
 
         this.#submitButton.addEventListener('click', () => {
            const input = this.#textInput.value;

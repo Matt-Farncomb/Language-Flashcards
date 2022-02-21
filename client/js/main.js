@@ -4,7 +4,7 @@ window.onload = () => {
     const DECKSIZE = 3;
     console.log("Fart");
     const SERVER = new Server(SERVER_URL);
-    const DECK = new Deck("fi", "es");
+    const DECK = new Deck();
     console.log(SERVER);
     DECK.getDeck(SERVER, DECKSIZE);
     console.log(DECK);

@@ -51,7 +51,7 @@ def login(username: str, password: str):
 #     return "No words provided"
 
 @app.get("/") 
-def get_cards(count: int, source_language: str, target_language: str):
+def get_cards(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
     deck = Deck(source_language, target_language)
     deck.build_deck_from_db(count)

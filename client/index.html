@@ -12,23 +12,41 @@
 <script src="js/main.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-<button id="new-card">New Card</button>
-<button id="new-deck">New Deck</button>
-<button id="refresh-button">Refresh</button>
-<div class="flip-card">
-  <div class="flip-card-inner">
-    <button id="flipOver">Flip</button>
-    <div class="flip-card-front">
-        <p>source word</p> 
-        <textarea name="" cols="30" rows="10"></textarea>
-        <button id="submit">Submit</button>
-        <button id="submit-result">Submit Result</button>
+
+  <form>
+    <div>
+      <label for="entername">Enter your name:</label><input id="entername" type="text" required>
+      <br>
+      <label for="source_language">Your language:</label><input id="source_language" type="text" required>
+      <br>
+      <label for="target_language">Target language:</label><input id="target_language" type="text" required>
+      <br>
+      <input id="submitname" type="submit" value="Update User">
     </div>
-    <div class="flip-card-back">
-      <p>translated word</p> 
+  </form>
+
+
+  <button id="new-card">New Card</button>
+  <button id="new-deck">New Deck</button>
+  <button id="refresh-button">Refresh</button>
+  <div class="flip-card">
+    <div class="flip-card-inner">
+      <button id="flipOver">Flip</button>
+      <div class="flip-card-front">
+          <p>source word</p> 
+          <textarea name="" cols="30" rows="10"></textarea>
+          <button id="submit">Submit</button>
+          <button id="submit-result">Submit Result</button>
+      </div>
+      <div class="flip-card-back">
+        <p>translated word</p> 
+      </div>
     </div>
   </div>
-</div>
+
+  <br>
+
+  
 
 </body>
 </html>
