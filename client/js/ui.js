@@ -6,82 +6,114 @@ class UI {
     #back;
     #card;
 
-    #newCardButton;
-    #newDeckButton;
-    #deckDiv;
-    #submitButton;
-    #submitResult;
-    #refreshButton;
-    #flipOverButton;
-    #form;
-    #textInput;
-    #logout;
     #loggedIn;
-
     #server;
     #deckSize;
+
+    // #logout = document.querySelector("#logout");
+    #deckDiv = document.querySelector("#deck");
+    // #newCardButton = document.querySelector("#new-card");
+    #newDeckButton = document.querySelector("#new-deck");
+    #submitButton = document.querySelector("#submit");
+    // #submitResult = document.querySelector("#submit-result");
+    // #flipOverButton = document.querySelector("#flipOver");
+    #textInput = document.querySelector("textarea");
+    #refreshButton = document.querySelector("#refresh-button");
+    #form = document.querySelector("form");
 
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
         this.#deck = deck;
         this.#server = server;
         this.#deckSize = deckSize;
-        this.#logout = document.querySelector("#logout");
-        this.#deckDiv = document.querySelector("#deck");
-        this.#newCardButton = document.querySelector("#new-card");
-        this.#newDeckButton = document.querySelector("#new-deck");
-        this.#submitButton = document.querySelector("#submit");
-        this.#submitResult = document.querySelector("#submit-result");
-        this.#flipOverButton = document.querySelector("#flipOver");
-        this.#textInput = document.querySelector("textarea");
-        this.#refreshButton = document.querySelector("#refresh-button");
-        this.#form = document.querySelector("form");
-        
-        this.#newCardButton.addEventListener('click', () => {
-            this.#drawCard();
-            this.#updateDisplay();
-        } );
 
-        this.#flipOverButton.addEventListener('click', () => {
-        const inner = document.querySelector(".flip-card-inner");
-           inner.classList.toggle("rotate");
-        } );
+        this.whenClicked("flipOver", () => this.flipOverCard());
+        this.whenClicked("new-card", () => this.#drawCard()); 
+        this.whenClicked("logout", () => this.logout());    
+        this.whenClicked("submit-result", () => this.#server.submitResult(this.#deck));  
+        this.whenClicked("refresh-button", () => this.#server.refresh());
+        this.whenClicked("submit", () => checkAnswer()); 
+        // this.#newCardButton.addEventListener('click', () => {
+        //     this.#drawCard();
+        //     this.#updateDisplay();
+        // } );
 
-        this.#newCardButton.addEventListener('click', () => {
-            this.#drawCard();
-            this.#updateDisplay();
-        } );
+        // this.#flipOverButton.addEventListener('click', () => {
+        // const inner = document.querySelector(".flip-card-inner");
+        //    inner.classList.toggle("rotate");
+        // } );
 
-        this.#logout.addEventListener('click', () => {
-            this.logout();
-        } );
+        // this.#logout.addEventListener('click', () => {
+        //     this.logout();
+        // } );
 
-        this.#submitResult.addEventListener('click', () => {
-            this.#server.submitResult(this.#deck);
-        } );
+        // this.#submitResult.addEventListener('click', () => {
+        //     this.#server.submitResult(this.#deck);
+        // } );
 
-        this.#refreshButton.addEventListener('click', () => {
-            this.#server.refresh(this.#refreshButton);
-        } );
+        // this.#refreshButton.addEventListener('click', () => {
+        //     this.#server.refresh();
+        // } );
 
         this.#form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            let source_language = document.querySelector("#source_language");
-            let target_language = document.querySelector("#target_language");
-            localStorage.setItem('source_language', source_language.value);
-            localStorage.setItem('target_language', target_language.value);
-            this.reveal();
+            this.login(e);
+            // e.preventDefault();
+            // let source_language = document.querySelector("#source_language");
+            // let target_language = document.querySelector("#target_language");
+            // localStorage.setItem('source_language', source_language.value);
+            // localStorage.setItem('target_language', target_language.value);
+            // this.reveal();
         });
 
-        this.#submitButton.addEventListener('click', () => {
-           const input = this.#textInput.value;
-           if (this.#card.isCorrectTranslation(input)) {
-               console.log("Correct");
-           } else {
-                console.log("wrong");
-           }
+        // this.#submitButton.addEventListener('click', () => {
+        //    const input = this.#textInput.value;
+        //    if (this.#card.isCorrectTranslation(input)) {
+        //        console.log("Correct");
+        //    } else {
+        //         console.log("wrong");
+        //    }
+        // } );
+    }
+
+    login(e) {
+        e.preventDefault();
+        let source_language = document.querySelector("#source_language");
+        let target_language = document.querySelector("#target_language");
+        localStorage.setItem('source_language', source_language.value);
+        localStorage.setItem('target_language', target_language.value);
+        this.reveal();
+    }
+
+
+    whenClicked(id, func) {
+        const button = document.querySelector(`#${id}`);
+        button.addEventListener('click', () => { 
+            func()
         } );
     }
+
+    checkAnswer() {
+        const input = this.#textInput.value;
+        if (this.#card.isCorrectTranslation(input)) {
+            console.log("Correct");
+        } else {
+             console.log("wrong");
+        }
+    }
+
+    flipOverCard() {
+        const inner = document.querySelector(".flip-card-inner");
+        inner.classList.toggle("rotate");
+    }
+
+    #drawCard() {
+        this.#card = this.#deck.randomCard();
+        console.log(this.#card)
+        this.#front = this.#card.word;
+        this.#back = this.#card.translations;
+        this.#updateDisplay();
+    }
+
 
     reveal() {
         if (this.#loggedInFunc()) {
@@ -106,12 +138,7 @@ class UI {
         this.#loggedIn = false;
     }
 
-    #drawCard() {
-        this.#card = this.#deck.randomCard();
-        console.log(this.#card)
-        this.#front = this.#card.word;
-        this.#back = this.#card.translations;
-    }
+    
 
     #updateDisplay() {
         this.#updateFace();
