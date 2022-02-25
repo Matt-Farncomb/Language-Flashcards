@@ -26,20 +26,20 @@ class Server {
         return url;
     }
 
-    refreshServer() {
-        fetch(this.#refreshURL(), {
-            method: 'POST', // or 'PUT'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not OK');
-                }
-                return response.blob();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    }
+    // refreshServer() {
+    //     fetch(this.#refreshURL(), {
+    //         method: 'POST', // or 'PUT'
+    //         })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error('Network response was not OK');
+    //             }
+    //             return response.blob();
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error:', error);
+    //         });
+    // }
 // return fetch(url).then((response) => response.json());
 
     fetchDeck(count) {

@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup # type: ignore
 import requests 
 from typing import List
 from database import Database
+import threading
 
 languages = {
     "es":4,
@@ -21,6 +22,7 @@ class Word:
         # self.voice = voice
         # self.audio_url = self.voice.speak(word)
         self.language = language
+
 
 class Card:
     def __init__(self, id, source_word: Word, translations :List[Word]):
@@ -40,6 +42,8 @@ class Deck:
         self.deck = []
         self.deck_type = ""
         self.db = Database()
+        self.logged_in = False
+        self.lingo = ""
         
         # For debugging only
         #self.db.create_tables()
@@ -89,16 +93,52 @@ class Deck:
     def build_deck_from_user_input(self, words_to_add):
         pass    
     
+    
+    
+    def run_thread(self, word, cards):
+        print(f"running thread on: {word}")
+        thread = threading.Thread(
+            target=self.create_card_for_word, 
+            args=[word, cards]
+        )
+        thread.start()
+        return thread
+    
+    def spawn_threads(self, words):
+        cards = []
+        threads = []
+        break_int = 0
+        for word in words:
+            break_int += 1
+            if break_int > 10:
+                break
+            else:
+                print(word)
+                thread = self.run_thread(word, cards)
+                threads.append(thread)
+                
+        # threads = [ self.run_thread(word, cards) for word in words ]
+        for thread in threads:
+            thread.join()
+
+        return cards
+    
+    
+    
     def _create_card_deck(self, source_words: List[str]) -> List[Card]:
         cards = []
-        cards.append(self.create_card_for_word("tämä"))
-        cards.append(self.create_card_for_word("tyttö"))
-        cards.append(self.create_card_for_word("sinä"))
-        print(f"cards: {cards}")
+        # cards.append(self.create_card_for_word("tämä"))
+        # cards.append(self.create_card_for_word("tyttö"))
+        # cards.append(self.create_card_for_word("sinä"))
+        # print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
-        # for word in source_words:
-        #     cards += self.create_cards_for_word(word)
+        cards = self.spawn_threads(source_words)
         return cards
+        
+        # for word in source_words:
+        #     print(f"adding: {word}")
+        #     cards.append(self.create_card_for_word(word))
+        # return cards
     
     def _get_translations(self, word: str) -> List[str]:
         translations: List[str] = []
@@ -129,13 +169,20 @@ class Deck:
         return translated_words
     
     def _get_vocab(self, language):
-        lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))
+        lingo  = self._duo_login()
         vocab = lingo.get_vocabulary(language)
         words = [ word["word_string"] for word in vocab["vocab_overview"] ]
         return words
         # for word in words:
         #     card = Card()
-    
+    def _duo_login(self):
+        if self.logged_in:
+            return self.lingo
+        else:
+            self.lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))
+            self.logged_in = True
+            return self.lingo
+            
     # def create_cards_for_word(self, source_word) -> List[Card]: 
     #     source = Word(source_word, self.source_language)
     #     translations: List[str] = self._get_translations(source_word)
@@ -147,7 +194,7 @@ class Deck:
     # will be easier to insert into db
     # each card will have the one source word and all the possible translations and possible answers
     # makes more sense because like le and la in spansih  just mean the. So that should just be one card.
-    def create_card_for_word(self, source_word) -> Card: 
+    def old_create_card_for_word(self, source_word) -> Card: 
         source = Word(source_word, self.source_language)
         translations: List[str] = self._get_translations(source_word)
         matched_translations: List[Word] = self._get_matched_translations(translations)
@@ -156,6 +203,17 @@ class Deck:
         for trans in matched_translations:
             card.translations.append(trans)
         return card
+    
+    def create_card_for_word(self, source_word, cards) -> Card: 
+        source = Word(source_word, self.source_language)
+        translations: List[str] = self._get_translations(source_word)
+        matched_translations: List[Word] = self._get_matched_translations(translations)
+        print(matched_translations)
+        card = Card(None, source, [])
+        for trans in matched_translations:
+            card.translations.append(trans)
+        cards.append(card)
+        #return card
     
     
     

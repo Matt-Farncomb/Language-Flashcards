@@ -31,6 +31,7 @@ class Card {
 
     isCorrectTranslation(userInput) {
         this.#answeredCorrectly =  !(this.#translations.every(translation => translation.word !== userInput)); 
+        console.log(this.#incorrectCount);
         if (!this.#answeredCorrectly) {
             this.#incorrectCount++;
         }
