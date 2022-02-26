@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup # type: ignore
 import requests 
 from typing import List
 from database import Database
-import threading
+import threading, queue
+
 
 languages = {
     "es":4,
@@ -94,34 +95,61 @@ class Deck:
         pass    
     
     
-    
-    def run_thread(self, word, cards):
-        print(f"running thread on: {word}")
-        thread = threading.Thread(
-            target=self.create_card_for_word, 
-            args=[word, cards]
-        )
-        thread.start()
-        return thread
-    
-    def spawn_threads(self, words):
-        cards = []
-        threads = []
-        break_int = 0
-        for word in words:
-            break_int += 1
-            if break_int > 10:
-                break
-            else:
-                print(word)
-                thread = self.run_thread(word, cards)
-                threads.append(thread)
-                
-        # threads = [ self.run_thread(word, cards) for word in words ]
-        for thread in threads:
-            thread.join()
+    def bob(self, q, cards):
+        while True:
+            word = q.get()
+            
+            # sleep(1)
+            print(f"getting:{word}")
+            self.create_card_for_word(word, cards)
+            print(f"got:{word}")
+            q.task_done()
+            
+            
+    def launch(self, words):
+        num_threads = 10
 
+        q = queue.Queue(len(words))
+        cards = []
+        for i in range(num_threads):
+            print(f"launching thread")
+            thread = threading.Thread(target=self.bob, args=[q, cards])
+            thread.start()
+        for e in words:
+            print(f"putting{e}")
+            q.put(e)
+        q.join()
+        print("only once hopefully")
         return cards
+    
+    
+    # def run_thread(self, word, cards):
+    #     print(f"running thread on: {word}")
+    #     thread = threading.Thread(
+    #         target=self.create_card_for_word, 
+    #         args=[word, cards]
+    #     )
+    #     thread.start()
+    #     return thread
+    
+    # def spawn_threads(self, words):
+    #     cards = []
+    #     threads = []
+    #     break_int = 0
+    #     for word in words:
+    #         break_int += 1
+    #         if break_int > 10:
+    #             break
+    #         else:
+    #             print(word)
+    #             thread = self.run_thread(word, cards)
+    #             threads.append(thread)
+                
+    #     # threads = [ self.run_thread(word, cards) for word in words ]
+    #     for thread in threads:
+    #         thread.join()
+
+    #     return cards
     
     
     
@@ -132,7 +160,8 @@ class Deck:
         # cards.append(self.create_card_for_word("sinä"))
         # print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
-        cards = self.spawn_threads(source_words)
+        cards = self.launch(source_words)
+        print(f"only once: {cards}")
         return cards
         
         # for word in source_words:

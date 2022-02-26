@@ -50,10 +50,12 @@ def login(username: str, password: str):
 #             #return Deck(source_word, source_language, target_language)
 #     return "No words provided"
 
-@app.get("/") 
+@app.get("/cards/") 
 def get_cards(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
+    print("getting cards")
     deck = Deck(source_language, target_language)
+    
     deck.build_deck_from_db(count)
     #return "farted in your face"
     # for e in deck.deck:
@@ -66,6 +68,8 @@ def update_db(refresh: Refresh):
     deck = Deck(refresh.source_language, refresh.target_language)
     deck.build_deck_from_duo()
     deck.upload_deck()
+    print("Deck uploaded")
+    return "fart"
     
 @app.post("/results/")
 def update_results(cards: List[Result]):

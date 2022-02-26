@@ -16,6 +16,7 @@ class UI {
         this.#server = server;
         this.#deckSize = deckSize;
 
+        this.#whenClicked("new-deck", () => this.#newDeck());
         this.#whenClicked("flipOver", () => this.#flipOverCard());
         this.#whenClicked("new-card", () => this.#drawCard()); 
         this.#whenClicked("logout", () => this.logout());    
@@ -110,6 +111,10 @@ class UI {
             li.innerText = element.word;
             back.appendChild(li);
         });
+    }
+
+    #newDeck() {
+        this.#deck.getDeck(this.#server, 3);
     }
 
     #refreshServer() {

@@ -13,7 +13,7 @@ class Server {
 // myName
 
     #cardsURL(size) {
-        const url = `${SERVER_URL}?`+
+        const url = `${SERVER_URL}cards/?`+
             `&source_language=${localStorage.getItem('source_language')}`+
             `&target_language=${localStorage.getItem('target_language')}&count=${size}`;
         return url;

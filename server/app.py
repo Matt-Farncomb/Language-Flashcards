@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from peewee import * # type: ignore
 
+print("running app")
 app = FastAPI()
+
 
 db = SqliteDatabase('words.db') # type: ignore
 

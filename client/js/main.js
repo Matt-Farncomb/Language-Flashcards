@@ -27,8 +27,8 @@ function loadMain() {
     const SERVER = new Server(SERVER_URL);
     const DECK = new Deck();
     console.log(SERVER);
-    DECK.getDeck(SERVER, DECKSIZE);
-    console.log(DECK);
+    //DECK.getDeck(SERVER, DECKSIZE);
+    // console.log(DECK);
     const UserInterface = new UI(DECK, SERVER, DECKSIZE);
     UserInterface.reveal();
 }
