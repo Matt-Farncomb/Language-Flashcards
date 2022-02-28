@@ -4,6 +4,9 @@ from models import WordModel, Audio, WordInfo
 #from deck import Deck
 from app import db
 
+from base_logger import logging
+logger = logging.getLogger(__name__)
+
 class Database:
     def __init__(self) -> None:
         #self.db = SqliteDatabase('words.db')
@@ -21,6 +24,7 @@ class Database:
     
     # def upload_from_duo():
         
+        
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
@@ -30,8 +34,9 @@ class Database:
         info_data = []
         card_ids = {}
         
-        print("running")
+        logger.info(f"Deck will be uploaded")
         for card in deck:
+            logger.info(f"Uploading {card.source_word.word,}")
             if card.source_word not in card_ids:
                 card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
                 WordInfo.create(word=card_id)
@@ -73,7 +78,7 @@ class Database:
     def create_tables(self):
         #models = Model.__subclasses__()
         models = [ WordModel, Audio, WordInfo ]
-        print(models)
+        #print(models)
         self.db.drop_tables(models)
         self.db.create_tables(models)
     
@@ -102,7 +107,6 @@ class Database:
             new_info = WordInfo(None, 0, 0, new_word, 0)
             new_word.save()
             new_info.save()
-            print("trtewst")
             
        
             #word.translations.add(new_word)

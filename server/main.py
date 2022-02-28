@@ -3,11 +3,13 @@ from typing import List
 from app import app
 from deck import Deck
 from database import Database
-import logging
+
 from schemas import Result, Refresh
 
 from fastapi.middleware.cors import CORSMiddleware
 
+from base_logger import logging
+logger = logging.getLogger(__name__)
 
 origins = ["*"]
 
@@ -20,6 +22,7 @@ app.add_middleware(
 )
 
 # db = Database()
+
 
 def validate(content: str) -> bool:
     for char in content:
@@ -53,7 +56,7 @@ def login(username: str, password: str):
 @app.get("/cards/") 
 def get_cards(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
-    print("getting cards")
+    logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
     
     deck.build_deck_from_db(count)
@@ -64,16 +67,16 @@ def get_cards(source_language: str, target_language: str, count: int):
 
 @app.post("/refresh/") 
 def update_db(refresh: Refresh):
-    logging.info(f"update_db has been called for sl {refresh.source_language} and tl {refresh.target_language}")
+    logger.info(f"update_db has been called for sl {refresh.source_language} and tl {refresh.target_language}")
     deck = Deck(refresh.source_language, refresh.target_language)
     deck.build_deck_from_duo()
     deck.upload_deck()
-    print("Deck uploaded")
+    logger.info("Deck uploaded")
     return "fart"
     
 @app.post("/results/")
 def update_results(cards: List[Result]):
-    print(f"data: {cards[0]}")
+    logger.info(f"data: {cards[0]}")
     db = Database()
     db.update_words(cards)
     return "all good"

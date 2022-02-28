@@ -6,6 +6,9 @@ from typing import List
 from database import Database
 import threading, queue
 
+from base_logger import logging
+logger = logging.getLogger(__name__)
+
 
 languages = {
     "es":4,
@@ -41,10 +44,10 @@ class Deck:
         # self.vocab = [] # thisbegins empty because user can build deck from requested vocab
         # self.target_vocab = []
         self.deck = []
-        self.deck_type = ""
+        self.deck_type = None
         self.db = Database()
         self.logged_in = False
-        self.lingo = ""
+        self.lingo = None
         
         # For debugging only
         #self.db.create_tables()
@@ -56,7 +59,7 @@ class Deck:
     def upload_deck(self):
         self.db.upload_deck(self.deck)
         
-    def _get_words_from_db(self, count: int,):
+    def __get_words_from_db(self, count: int,):
         return self.db.get_words(count, self.source_language) # type: ignore
     
     def build_deck_from_db(self, count):
@@ -65,7 +68,7 @@ class Deck:
         else:
             cards = []
             #print("word")
-            words = self._get_words_from_db(count)
+            words = self.__get_words_from_db(count)
             print(f"words: {words}")
             for word in words:
                 #¤print(f"word: {word}")
@@ -86,40 +89,36 @@ class Deck:
         else:
             print("called")
             #self.db.create_tables()
-            vocab = self._get_vocab(self.source_language)
+            vocab = self.__get_vocab(self.source_language)
             # self.target_vocab = self._get_vocab(self.target_language)
-            self.deck = self._create_card_deck(vocab)
+            self.deck = self.__create_card_deck(vocab)
             self.deck_type = "Duo"
     
     def build_deck_from_user_input(self, words_to_add):
         pass    
     
     
-    def bob(self, q, cards):
+    def __run_thread(self, q, cards):
         while True:
             word = q.get()
-            
-            # sleep(1)
-            print(f"getting:{word}")
+            logger.info(f"getting:{word}")
             self.create_card_for_word(word, cards)
-            print(f"got:{word}")
+            logger.info(f"got:{word}")
             q.task_done()
             
             
-    def launch(self, words):
+    def __spawn_threads(self, words):
         num_threads = 10
-
         q = queue.Queue(len(words))
         cards = []
         for i in range(num_threads):
-            print(f"launching thread")
-            thread = threading.Thread(target=self.bob, args=[q, cards])
+            logger.info(f"launching thread")
+            thread = threading.Thread(target=self.__run_thread, args=[q, cards])
             thread.start()
-        for e in words:
-            print(f"putting{e}")
-            q.put(e)
+        for word in words:
+            logger.info(f"putting{word}")
+            q.put(word)
         q.join()
-        print("only once hopefully")
         return cards
     
     
@@ -153,15 +152,14 @@ class Deck:
     
     
     
-    def _create_card_deck(self, source_words: List[str]) -> List[Card]:
+    def __create_card_deck(self, source_words: List[str]) -> List[Card]:
         cards = []
         # cards.append(self.create_card_for_word("tämä"))
         # cards.append(self.create_card_for_word("tyttö"))
         # cards.append(self.create_card_for_word("sinä"))
         # print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
-        cards = self.launch(source_words)
-        print(f"only once: {cards}")
+        cards = self.__spawn_threads(source_words)
         return cards
         
         # for word in source_words:
@@ -169,7 +167,7 @@ class Deck:
         #     cards.append(self.create_card_for_word(word))
         # return cards
     
-    def _get_translations(self, word: str) -> List[str]:
+    def __get_translations(self, word: str) -> List[str]:
         translations: List[str] = []
         # get int representing langauge on webxicon
         l1 = languages[self.source_language]
@@ -184,8 +182,8 @@ class Deck:
                     translations.append(translation.string)    
         return translations     
     
-    def _get_matched_translations(self, translations: List[str]) -> List[Word]:
-        target_language_vocab = self._get_vocab(self.target_language)
+    def __get_matched_translations(self, translations: List[str]) -> List[Word]:
+        target_language_vocab = self.__get_vocab(self.target_language)
         translated_words: List[Word] = []
         for word in target_language_vocab:
             temp = []
@@ -197,14 +195,14 @@ class Deck:
         
         return translated_words
     
-    def _get_vocab(self, language):
-        lingo  = self._duo_login()
+    def __get_vocab(self, language):
+        lingo  = self.__duo_login()
         vocab = lingo.get_vocabulary(language)
         words = [ word["word_string"] for word in vocab["vocab_overview"] ]
         return words
         # for word in words:
         #     card = Card()
-    def _duo_login(self):
+    def __duo_login(self):
         if self.logged_in:
             return self.lingo
         else:
@@ -225,9 +223,8 @@ class Deck:
     # makes more sense because like le and la in spansih  just mean the. So that should just be one card.
     def old_create_card_for_word(self, source_word) -> Card: 
         source = Word(source_word, self.source_language)
-        translations: List[str] = self._get_translations(source_word)
-        matched_translations: List[Word] = self._get_matched_translations(translations)
-        print(matched_translations)
+        translations: List[str] = self.__get_translations(source_word)
+        matched_translations: List[Word] = self.__get_matched_translations(translations)
         card = Card(None, source, [])
         for trans in matched_translations:
             card.translations.append(trans)
@@ -235,9 +232,8 @@ class Deck:
     
     def create_card_for_word(self, source_word, cards) -> Card: 
         source = Word(source_word, self.source_language)
-        translations: List[str] = self._get_translations(source_word)
-        matched_translations: List[Word] = self._get_matched_translations(translations)
-        print(matched_translations)
+        translations: List[str] = self.__get_translations(source_word)
+        matched_translations: List[Word] = self.__get_matched_translations(translations)
         card = Card(None, source, [])
         for trans in matched_translations:
             card.translations.append(trans)
