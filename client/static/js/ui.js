@@ -36,6 +36,7 @@ class UI {
         let target_language = document.querySelector("#target_language");
         localStorage.setItem('source_language', source_language.value);
         localStorage.setItem('target_language', target_language.value);
+        console.log(target_language.value);
         this.reveal();
     }
 

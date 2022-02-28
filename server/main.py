@@ -2,7 +2,7 @@ from fastapi import Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
+import os
 from typing import List
 from app import app
 from deck import Deck, languages
@@ -32,10 +32,15 @@ app.mount("/static/", StaticFiles(directory=f"..\client\static"), name="static")
 templates = Jinja2Templates(directory=f"..\client\\templates")
 
 
+
+
 @app.get("/", response_class=HTMLResponse)
 def read_item(request: Request):
+    
     language_abbreviations = [ k for k, v in languages.items() ]
-    return templates.TemplateResponse("index.html", {"request": request, "lang": language_abbreviations})
+    js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
+    print(js_files)
+    return templates.TemplateResponse("index.html", {"request": request, "lang": language_abbreviations, "js_files": js_files})
 
 
 def validate(content: str) -> bool:
