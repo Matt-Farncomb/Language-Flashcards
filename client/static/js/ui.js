@@ -114,7 +114,8 @@ class UI {
     }
 
     #newDeck() {
-        this.#deck.getDeck(this.#server, 3);
+        const deckSize = document.querySelector("#deck-size").value;
+        this.#deck.getDeck(this.#server, deckSize);
     }
 
     #refreshServer() {

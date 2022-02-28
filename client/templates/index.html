@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', path='js/utils.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/loginUI.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/card.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/word.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/deck.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/ui.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/server.js') }}"  type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', path='js/main.js') }}"  type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <h1>Item ID: {{ id }}</h1>
+
+    <select name="Choose Langauge" id="languages">
+    {% for item in lang %}
+        <option value="{{ item }}">{{ item }}</option>
+    {% endfor %}
+      </select>
+  <form>
+    <div>
+      <label for="source_language">Your language:</label><input id="source_language" type="text" required>
+      <br>
+      <label for="target_language">Target language:</label><input id="target_language" type="text" required>
+      <br>
+      <input id="submitname" type="submit" value="Update User">
+    </div>
+  </form>
+  <button id="logout">Logout</button>
+
+  <div id="deck" class="hidden">
+    <button id="new-card">New Card</button>
+    <button id="new-deck">New Deck</button>
+    <label for="deck-size">Deck Size:</label><input id="deck-size" type="text">
+    <button id="refresh-button">Refresh</button>
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <button id="flipOver">Flip</button>
+        <div class="flip-card-front">
+            <p>source word</p> 
+            <textarea name="" cols="30" rows="10"></textarea>
+            <button id="submit">Submit</button>
+            <button id="submit-result">Submit Result</button>
+        </div>
+        <div class="flip-card-back">
+          <p>translated word</p> 
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

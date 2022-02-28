@@ -1,7 +1,11 @@
-from fastapi import Query
+from fastapi import Query, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from typing import List
 from app import app
-from deck import Deck
+from deck import Deck, languages
 from database import Database
 
 from schemas import Result, Refresh
@@ -21,7 +25,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# db = Database()
+
+
+app.mount("/static/", StaticFiles(directory=f"..\client\static"), name="static")
+
+templates = Jinja2Templates(directory=f"..\client\\templates")
+
+
+@app.get("/", response_class=HTMLResponse)
+def read_item(request: Request):
+    language_abbreviations = [ k for k, v in languages.items() ]
+    return templates.TemplateResponse("index.html", {"request": request, "lang": language_abbreviations})
 
 
 def validate(content: str) -> bool:
@@ -52,6 +66,11 @@ def login(username: str, password: str):
             
 #             #return Deck(source_word, source_language, target_language)
 #     return "No words provided"
+
+@app.get("/languages/")
+def get_langauges():
+    language_abbreviations = [ k for k, v in languages.items() ]
+    return language_abbreviations
 
 @app.get("/cards/") 
 def get_cards(source_language: str, target_language: str, count: int):

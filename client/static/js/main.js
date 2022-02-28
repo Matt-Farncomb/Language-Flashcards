@@ -25,6 +25,8 @@ function loadMain() {
     const DECKSIZE = 3;
     console.log("Fart");
     const SERVER = new Server(SERVER_URL);
+    const bob = SERVER.languages;
+    bob.then(response => console.log(response));
     const DECK = new Deck();
     console.log(SERVER);
     //DECK.getDeck(SERVER, DECKSIZE);
