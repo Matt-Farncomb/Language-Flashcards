@@ -3,6 +3,7 @@ from peewee import *
 from models import WordModel, Audio, WordInfo
 #from deck import Deck
 from app import db
+import datetime
 
 from base_logger import logging
 logger = logging.getLogger(__name__)
@@ -90,11 +91,16 @@ class Database:
         def update_query(card):
             query = WordInfo.select().join(WordModel).where(WordModel.id == card.id).get()
             query.answered_wrong_count = card.wrong_count
+            query.last_tested = datetime.datetime.now()
             return query
         
         data = [ update_query(card) for card in cards ]
   
-        WordInfo.bulk_update(data, fields=[WordInfo.answered_wrong_count])
+        WordInfo.bulk_update(data, fields=[WordInfo.answered_wrong_count, WordInfo.last_tested])
+        
+        test = WordInfo.select().where(WordInfo.last_tested != None)
+        for e in test:
+            print(e)
         
        
             
