@@ -5,6 +5,53 @@ body {
   textarea {
     resize: none;
   }
+
+ 
+
+  ul {
+    margin: auto;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 50% 10% 10% 10% 10% 10%;
+    grid-gap: 2px;
+    background-color: #fff;
+    color: #444;
+  }
+
+  li {
+    background-color: #444;
+    color: #fff;
+    padding: 0.5em;
+   
+  }
+
+  li form {
+    margin-top: 2em;
+  }
+
+  li button {
+    margin-top: 2.35em;
+  }
+
+  header ul {
+    list-style-type: none;
+    /* margin: 0;
+    padding: 0; */
+  } 
+/* 
+  header li, header li > * {
+    display: inline;
+    background-color: red;
+  } */
+
+  #deck {
+    margin:auto;
+    max-width: 400px;
+  }
+
+  #deck-size {
+    width: 25%;
+  }
   
   .flip-card {
     background-color: transparent;

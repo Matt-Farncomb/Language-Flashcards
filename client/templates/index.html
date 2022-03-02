@@ -7,28 +7,43 @@
         {% endfor %}
 </head>
 <body>
-
-    <select name="Source Langauge" id="source_language">
-        {% for item in lang %}
-            <option value="{{ item }}">{{ item }}</option>
-        {% endfor %}
-    </select>
-    <select name="Target Langauge" id="target_language">
-        {% for item in lang %}
-            <option value="{{ item }}">{{ item }}</option>
-        {% endfor %}
-    </select>
-
-    <form>
-        <input id="submitname" type="submit" value="Update User">
-    </form>
-    <button id="logout">Logout</button>
+    <header>
+        <ul>
+            <li>
+                <h1>Flash Cards</h1>
+            </li>
+            <li>
+                <h3>Source
+                <select name="Source Langauge" id="source_language">
+                    {% for item in lang %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li>
+                <h3>Target
+                <select name="Target Langauge" id="target_language">
+                    {% for item in lang %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li>
+                <form>
+                    <input id="submitname" type="submit" value="Update">
+                </form>
+            </li>
+            <li>
+                <button id="refresh-button">Update Server</button>
+                <button id="logout">Logout</button>     
+            </li>
+        <ul>
+    </header>
 
     <div id="deck" class="hidden">
         <button id="new-card">New Card</button>
         <button id="new-deck">New Deck</button>
         <label for="deck-size">Deck Size:</label><input id="deck-size" type="text">
-        <button id="refresh-button">Refresh</button>
         <div class="flip-card">
         <div class="flip-card-inner">
             <button id="flipOver">Flip</button>
