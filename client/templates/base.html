@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script src="https://kit.fontawesome.com/e368562f24.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-primary">
+                                <strong>Sign up</strong>
+                            </a>
+                            <a class="button is-light">
+                                Log in
+                            </a>
+                        </div>
+                    </div>
+                    <div class="navbar-item"></div>
+                </div>
+            </div>
+        </nav>
+        
+        <section class="section has-text-centered">
+            <div class="columns has-background-success-light has-text-primary">
+                <div class="column"></div>
+                <div class="column">
+                    <span id="source_language">Source Language<span>
+                        to
+                    <span id="target_language">Target Language<span>
+                </div>
+                <div class="column"></div>
+            </div>
+            <div class="columns has-background-light">
+            
+                
+                <div class="column">
+                    <button class="button is-primary">New Deck</button>
+                </div>
+                <div class="column has-text-white">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                <span id="difficulty">Difficulty</span>
+                            </p>
+                            <button class="card-header-icon" aria-label="more options">
+                              <span class="icon">
+                                <i class="fas fa-angle-double-up"></i>
+                              </span>
+                            </button>
+                          </header>
+                        <div class="card-content">
+                            <div class="content" style="height: 4em;"></div>
+                            <div class="content" style="height: 8em;">
+                                <span>Word</span>
+                                <br>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item">Next</a>
+                            <a href="#" class="card-footer-item">Edit</a>
+                        </footer>
+                    </div>
+                </div>
+                <div class="column">
+                    <button class="button is-warning">Update Server</button>
+                </div>
+                
+            </div>
+            <div class="columns has-background-light">
+                <div class="column"></div>
+                <div class="column"></div>
+                
+                <div class="column">
+                    <input class="input is-medium" type="text" placeholder="Medium input">
+                </div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+        </section>
+    </div>
+  </body>
+</html>
+
