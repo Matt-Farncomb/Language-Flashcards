@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Bulma!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="flip_test.css">
     <script src="https://kit.fontawesome.com/e368562f24.js" crossorigin="anonymous"></script>
   </head>
   <body>
@@ -37,35 +38,67 @@
                 </div>
                 <div class="column"></div>
             </div>
-            <div class="columns has-background-light">
+            <div class="columns has-background-light" >
             
-                
                 <div class="column">
                     <button class="button is-primary">New Deck</button>
                 </div>
-                <div class="column has-text-white">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                                <span id="difficulty">Difficulty</span>
-                            </p>
-                            <button class="card-header-icon" aria-label="more options">
-                              <span class="icon">
-                                <i class="fas fa-angle-double-up"></i>
-                              </span>
-                            </button>
-                          </header>
-                        <div class="card-content">
-                            <div class="content" style="height: 4em;"></div>
-                            <div class="content" style="height: 8em;">
-                                <span>Word</span>
-                                <br>
+                
+                <div class="column outer-card has-text-white" >
+                    
+                    <div class="outer-card">
+
+                        <div class="flip-card-inner">
+                            <div class="card flip-card-front">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <span id="difficulty">Difficulty</span>
+                                    </p>
+                                    <button class="card-header-icon" aria-label="more options">
+                                    <span class="icon">
+                                        <i class="fas fa-angle-double-up"></i>
+                                    </span>
+                                    </button>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content" style="height: 4em;"></div>
+                                    <div class="content" style="height: 8em;">
+                                        <span>Word</span>
+                                        <br>
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="#" class="card-footer-item has-text-dark">Next</a>
+                                    <a href="#" class="card-footer-item has-text-dark">Edit</a>
+                                </footer>
                             </div>
+
+                            <div class="card flip-card-back">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                        <span id="difficulty">Fart</span>
+                                    </p>
+                                    <button class="card-header-icon" aria-label="more options">
+                                        <span class="icon">
+                                            <i class="fas fa-angle-double-up"></i>
+                                        </span>
+                                    </button>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content" style="height: 4em;"></div>
+                                    <div class="content" style="height: 8em;">
+                                        <span>Fart</span>
+                                        <br>
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="#" class="card-footer-item has-text-dark">Fart</a>
+                                    <a href="#" class="card-footer-item has-text-dark">Fart</a>
+                                </footer>
+                            </div>
+                            
                         </div>
-                        <footer class="card-footer">
-                            <a href="#" class="card-footer-item">Next</a>
-                            <a href="#" class="card-footer-item">Edit</a>
-                        </footer>
+                        
                     </div>
                 </div>
                 <div class="column">
