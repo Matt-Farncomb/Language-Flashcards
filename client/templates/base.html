@@ -118,6 +118,43 @@
             </div>
         </section>
     </div>
+
+    <div class="modal is-active">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Get new deck</p>
+            <button class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+            <!-- Content ... -->
+            <div class="field">
+                <div class="control">
+                    <input class="input is-medium" type="number" placeholder="Total Cards">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-medium" type="text" placeholder="Source Language" list="languages">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-medium" type="text" placeholder="Target Language" list="languages">
+                </div>
+            </div>
+            <datalist id="languages">
+                {% for item in lang %}
+                    <option value="{{ item }}">{{ item }}</option>
+                {% endfor %}
+            </datalist> 
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-success">Draw Deck</button>
+            <button class="button">Cancel</button>
+          </footer>
+        </div>
+    </div>
   </body>
 </html>
 
