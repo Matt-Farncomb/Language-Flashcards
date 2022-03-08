@@ -3,9 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="flip_test.css">
+    <link href="{{ url_for('static', path='css/libraries/bulma.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/flip_test.css') }}" rel="stylesheet">
+    {% for file_name in js_files %}
+        <script src="{{ url_for('static', path=file_name) }}"  type="text/javascript" charset="utf-8"></script>
+    {% endfor %}
+    <title>Flash Cards</title>
     <script src="https://kit.fontawesome.com/e368562f24.js" crossorigin="anonymous"></script>
   </head>
   <body>
@@ -32,16 +35,16 @@
             <div class="columns has-background-success-light has-text-primary">
                 <div class="column"></div>
                 <div class="column">
-                    <span id="source_language">Source Language<span>
+                    <span id="user-sl">Source Language</span>
                         to
-                    <span id="target_language">Target Language<span>
+                    <span id="user-tl">Target Language</span>
                 </div>
                 <div class="column"></div>
             </div>
             <div class="columns has-background-light" >
             
                 <div class="column">
-                    <button class="button is-primary">New Deck</button>
+                    <button class="button is-primary" id="new-deck">New Deck</button>
                 </div>
                 
                 <div class="column outer-card has-text-white" >
@@ -54,7 +57,7 @@
                                     <p class="card-header-title">
                                         <span id="difficulty">Difficulty</span>
                                     </p>
-                                    <button class="card-header-icon" aria-label="more options">
+                                    <button class="card-header-icon" aria-label="more options" id="front-flip">
                                     <span class="icon">
                                         <i class="fas fa-angle-double-up"></i>
                                     </span>
@@ -78,7 +81,7 @@
                                     <p class="card-header-title">
                                         <span id="difficulty">Fart</span>
                                     </p>
-                                    <button class="card-header-icon" aria-label="more options">
+                                    <button class="card-header-icon" aria-label="more options"  id="back-flip">
                                         <span class="icon">
                                             <i class="fas fa-angle-double-up"></i>
                                         </span>
@@ -119,28 +122,28 @@
         </section>
     </div>
 
-    <div class="modal is-active">
+    <div class="modal" id="deck-modal">
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">Get new deck</p>
-            <button class="delete" aria-label="close"></button>
+            <button class="delete close-deck-modal" aria-label="close"></button>
           </header>
           <section class="modal-card-body">
             <!-- Content ... -->
             <div class="field">
                 <div class="control">
-                    <input class="input is-medium" type="number" placeholder="Total Cards">
+                    <input id="deck-size" class="input is-medium" type="number" placeholder="Total Cards">
                 </div>
             </div>
             <div class="field">
                 <div class="control">
-                    <input class="input is-medium" type="text" placeholder="Source Language" list="languages">
+                    <input id="source_language" class="input is-medium" type="text" placeholder="Source Language" list="languages" autocomplete="off">
                 </div>
             </div>
             <div class="field">
                 <div class="control">
-                    <input class="input is-medium" type="text" placeholder="Target Language" list="languages">
+                    <input id="target_language" class="input is-medium" type="text" placeholder="Target Language" list="languages" autocomplete="off">
                 </div>
             </div>
             <datalist id="languages">
@@ -150,8 +153,8 @@
             </datalist> 
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-success">Draw Deck</button>
-            <button class="button">Cancel</button>
+            <button class="button is-success" id="draw-deck">Draw Deck</button>
+            <button class="button close-deck-modal">Cancel</button>
           </footer>
         </div>
     </div>

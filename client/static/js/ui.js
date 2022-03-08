@@ -16,35 +16,51 @@ class UI {
         this.#server = server;
         this.#deckSize = deckSize;
 
-        this.#whenClicked("new-deck", () => this.#newDeck());
-        this.#whenClicked("flipOver", () => this.#flipOverCard());
-        this.#whenClicked("new-card", () => this.#drawCard()); 
-        this.#whenClicked("logout", () => this.logout());    
-        this.#whenClicked("submit-result", () => this.#server.submitResult(this.#deck));  
-        this.#whenClicked("refresh-button", () => this.#server.refresh());
-        this.#whenClicked("submit", () => this.#checkAnswer()); 
+        document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
+        document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
 
-        document.querySelector("form").addEventListener('submit', (e) => {
-            this.login(e);
-        });
+        // this.#whenClicked("#draw-deck", () => this.#newDeck());
+        this.#whenClicked("#draw-deck", () => this.login());
+        this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
+        this.#whenClicked("#new-deck", () => this.#revealDeckForm());
+
+        this.#whenClicked("#front-flip", () => this.#flipOverCard());
+        this.#whenClicked("#back-flip", () => this.#flipOverCard());
+        this.#whenClicked("#new-card", () => this.#drawCard()); 
+        this.#whenClicked("#logout", () => this.logout());    
+        this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
+        this.#whenClicked("#refresh-button", () => this.#server.refresh());
+        this.#whenClicked("#submit", () => this.#checkAnswer()); 
+
+        // document.querySelector("form").addEventListener('submit', (e) => {
+        //     this.login(e);
+        // });
 
     }
 
     login(event) {
-        event.preventDefault();
+        // event.preventDefault();
         let source_language = document.querySelector("#source_language");
         let target_language = document.querySelector("#target_language");
+        let deck_size = document.querySelector("#deck-size");
         localStorage.setItem('source_language', source_language.value);
         localStorage.setItem('target_language', target_language.value);
-        console.log(target_language.value);
-        this.reveal();
+        console.log(deck_size.value);
+        // this.reveal();
+    }
+
+    #revealDeckForm() {
+        document.querySelector("#deck-modal").classList.toggle("is-active");
     }
 
     #whenClicked(id, func) {
-        const button = document.querySelector(`#${id}`);
-        button.addEventListener('click', () => { 
-            func()
-        } );
+        const button = document.querySelectorAll(`${id}`);
+        button.forEach(element => {
+            element.addEventListener('click', () => { 
+                func()
+            } );
+        });
+       
     }
 
     #checkAnswer() {
@@ -58,7 +74,8 @@ class UI {
 
     #flipOverCard() {
         const inner = document.querySelector(".flip-card-inner");
-        inner.classList.toggle("rotate");
+        console.log("flipping");
+        inner.classList.toggle("flip");
     }
 
     #drawCard() {

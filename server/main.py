@@ -40,7 +40,7 @@ def read_item(request: Request):
     language_abbreviations = [ k for k, v in languages.items() ]
     js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     print(js_files)
-    return templates.TemplateResponse("index.html", {"request": request, "lang": language_abbreviations, "js_files": js_files})
+    return templates.TemplateResponse("base.html", {"request": request, "lang": language_abbreviations, "js_files": js_files})
 
 
 def validate(content: str) -> bool:
