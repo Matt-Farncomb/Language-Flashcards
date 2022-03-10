@@ -32,5 +32,5 @@ function loadMain() {
     //DECK.getDeck(SERVER, DECKSIZE);
     // console.log(DECK);
     const UserInterface = new UI(DECK, SERVER, DECKSIZE);
-    UserInterface.reveal();
+    // UserInterface.reveal();
 }

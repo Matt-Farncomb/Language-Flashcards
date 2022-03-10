@@ -42,15 +42,20 @@ class UI {
         // event.preventDefault();
         let source_language = document.querySelector("#source_language");
         let target_language = document.querySelector("#target_language");
-        let deck_size = document.querySelector("#deck-size");
         localStorage.setItem('source_language', source_language.value);
         localStorage.setItem('target_language', target_language.value);
-        console.log(deck_size.value);
+        this.#updateDisplayedLanguages();
+        this.#newDeck();
         // this.reveal();
     }
 
     #revealDeckForm() {
         document.querySelector("#deck-modal").classList.toggle("is-active");
+    }
+
+    #updateDisplayedLanguages() {
+        document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
+        document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
     }
 
     #whenClicked(id, func) {
@@ -87,13 +92,13 @@ class UI {
     }
 
 
-    reveal() {
-        if (this.#loggedInFunc()) {
-            console.log("logged in")
-            const deck = document.querySelector("#deck");
-            deck.classList.remove("hidden");
-        }
-    }
+    // reveal() {
+    //     if (this.#loggedInFunc()) {
+    //         console.log("logged in")
+    //         const deck = document.querySelector("#deck");
+    //         deck.classList.remove("hidden");
+    //     }
+    // }
 
    
     #loggedInFunc() {
