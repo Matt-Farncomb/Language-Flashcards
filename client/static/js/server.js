@@ -78,7 +78,6 @@ class Server {
     }
 
     refresh() {
-        console.log();
         const url = `${this.#serverURL}refresh/`
         
         const data = {

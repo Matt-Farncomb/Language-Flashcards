@@ -29,7 +29,7 @@ class UI {
         this.#whenClicked("#new-card", () => this.#drawCard()); 
         this.#whenClicked("#logout", () => this.logout());    
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
-        this.#whenClicked("#refresh-button", () => this.#server.refresh());
+        this.#whenClicked("#update-server", () => this.#server.refresh());
         this.#whenClicked("#submit", () => this.#checkAnswer()); 
 
         // document.querySelector("form").addEventListener('submit', (e) => {
