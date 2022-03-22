@@ -38,3 +38,9 @@
   .input {
       z-index: 0;
   }
+
+  .disabledPointer {
+    pointer-events: none;
+    background-color: whitesmoke !important;
+    color: lightgrey !important;
+  }

@@ -22,7 +22,7 @@ class Card {
     } 
 
     get translations() {
-        return this.#translations
+        return this.#translations;
     }
 
     get incorrectCount() {

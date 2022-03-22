@@ -14,12 +14,25 @@ class Deck {
         // this.drawPi = this.drawPile();
     }
 
+    
+    // #getLocalDeck() {
+    //     if (localStorage.getItem('deck')) {
+    //         return localStorage.getItem('deck')
+    //     } else {
+    //         return []
+    //     }
+    // }
+
     #addCard(card) {
         this.#cards.push(card);
     }
 
     cardsRemaining() {
         return this.#drawPile.length;
+    }
+
+    cardCount() {
+        return this.#cards.length;
     }
 
     // get source_language() {
@@ -139,7 +152,6 @@ class Deck {
                 const translation_list = card.translations.map((translation) => {
                     return new Word(translation.__data__.id, translation.__data__.word, translation.__data__.language);
                 })
-                console.log(translation_list);
                 return new Card(card.id, card.source_word, translation_list);
             });
             

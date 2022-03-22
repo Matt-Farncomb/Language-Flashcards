@@ -84,9 +84,6 @@ def get_cards(source_language: str, target_language: str, count: int):
     deck = Deck(source_language, target_language)
     
     deck.build_deck_from_db(count)
-    #return "farted in your face"
-    # for e in deck.deck:
-    #     print(e.id)
     return deck.deck
 
 @app.post("/refresh/") 

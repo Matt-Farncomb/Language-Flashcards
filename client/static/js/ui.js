@@ -18,6 +18,9 @@ class UI {
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
+        document.querySelector("#new-card").classList.add("disabledPointer");
+        document.querySelector("#edit").classList.add("disabledPointer");
+
 
         // this.#whenClicked("#draw-deck", () => this.#newDeck());
         this.#whenClicked("#draw-deck", () => this.login());
@@ -37,6 +40,7 @@ class UI {
         // });
 
     }
+
 
     login(event) {
         // event.preventDefault();
@@ -85,8 +89,9 @@ class UI {
 
     #drawCard() {
         this.#card = this.#deck.randomCard();
-        console.log(this.#card)
+        console.log("this!");
         this.#front = this.#card.word;
+        console.log(this.#card.translations);
         this.#back = this.#card.translations;
         this.#updateDisplay();
     }
@@ -122,23 +127,33 @@ class UI {
     }
 
     #updateFace() {
-        const front = document.querySelector(".flip-card-front p");
+        const front = document.querySelector(".flip-card-front .card-content span");
         front.textContent = this.#front.word;
     }
 
     #updateBack() {
-        const back = document.querySelector(".flip-card-back p");
+        const back = document.querySelector(".flip-card-back .card-content span");
         back.innerHTML = "";
-        this.#back.forEach(element => {
+        if (this.#back.length == 0) {
             const li = document.createElement("li");
-            li.innerText = element.word;
+            li.innerText = "No translations available";
             back.appendChild(li);
-        });
+        }
+        else {
+            this.#back.forEach(element => {
+                const li = document.createElement("li");
+                li.innerText = element.word;
+                back.appendChild(li);
+            });
+        }
+        
     }
 
     #newDeck() {
         const deckSize = document.querySelector("#deck-size").value;
         this.#deck.getDeck(this.#server, deckSize);
+        document.querySelector("#new-card").disabled = false;
+        document.querySelector("#new-card").classList.remove("disabledPointer");
     }
 
     #refreshServer() {

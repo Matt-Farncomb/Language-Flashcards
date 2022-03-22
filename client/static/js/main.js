@@ -27,6 +27,7 @@ function loadMain() {
     const SERVER = new Server(SERVER_URL);
     const bob = SERVER.languages;
     bob.then(response => console.log(response));
+
     const DECK = new Deck();
     console.log(SERVER);
     //DECK.getDeck(SERVER, DECKSIZE);
@@ -34,3 +35,14 @@ function loadMain() {
     const UserInterface = new UI(DECK, SERVER, DECKSIZE);
     // UserInterface.reveal();
 }
+
+// function getLocalDeck() {
+//     localStorage.removeItem('deck');
+//     if (localStorage.getItem('deck')) {
+//         const deckJSON = localStorage.getItem('deck');
+//         console.log(JSON.parse(deckJSON));
+//         return JSON.parse(deckJSON);
+//     } else {
+//         return new Deck();
+//     }
+// }
