@@ -33,11 +33,11 @@ class UI {
         this.#whenClicked("#logout", () => this.logout());    
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
         this.#whenClicked("#update-server", () => this.#server.refresh());
-        this.#whenClicked("#submit", () => this.#checkAnswer()); 
+        this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
 
-        // document.querySelector("form").addEventListener('submit', (e) => {
-        //     this.login(e);
-        // });
+        // document.querySelector("#answer").addEventListener('submit', (e) => {
+        //     this.#checkAnswer();
+        //  });
 
     }
 
@@ -72,12 +72,37 @@ class UI {
        
     }
 
+    #toggleWrong() {
+        const answer = document.querySelector("#answer");
+        const answerButton = document.querySelector("#submit-answer");
+        answer.classList.add("has-background-danger-light");
+        answerButton.classList.add("has-background-danger");
+    }
+
+    #toggleCorrect() {
+        const answer = document.querySelector("#answer");
+        const answerButton = document.querySelector("#submit-answer");
+        answer.classList.remove("has-background-danger-light");
+        answerButton.classList.remove("has-background-danger");
+    }
+
     #checkAnswer() {
-        const input = document.querySelector("textarea").value;
+       
+        const answer = document.querySelector("#answer");
+        const input = answer.value;
+        console.log(input)
         if (this.#card.isCorrectTranslation(input)) {
             console.log("Correct");
+            this.#toggleCorrect();
+            // answer.classList.remove("has-background-danger-light");
+            // answerButton.classList.remove("has-background-danger");
         } else {
-             console.log("wrong");
+             console.log("wrong"); 
+             
+             this.#toggleWrong();
+            //  answer.classList.add("has-background-danger-light");
+            //  answerButton.classList.add("has-background-danger");
+
         }
     }
 
@@ -93,6 +118,7 @@ class UI {
         this.#front = this.#card.word;
         console.log(this.#card.translations);
         this.#back = this.#card.translations;
+        this.#toggleCorrect();
         this.#updateDisplay();
     }
 
