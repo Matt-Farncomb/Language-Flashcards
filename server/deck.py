@@ -14,6 +14,26 @@ languages = {
     "es":4,
     "fi":17,
     "en":3,
+    "vi":0
+}
+
+new_languages = {
+    "es": {
+        "code":4,
+        "language":"Spanish"
+    },
+    "fi": {
+        "code":17,
+        "language":"Finnish"
+    },
+    "en": {
+        "code":3,
+        "language":"English"
+    },
+    "vi": {
+        "code":0,
+        "language":"Vietnamese"
+    }
 }
 
 # lingo  = duolingo.Duolingo(config('DUO_USER'), config('DUO_PWORD'))

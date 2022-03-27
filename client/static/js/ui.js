@@ -27,6 +27,9 @@ class UI {
         this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked("#new-deck", () => this.#revealDeckForm());
 
+        this.#whenClicked("#create", () => this.#revealCardForm());
+        this.#whenClicked(".close-create-modal", () => this.#revealCardForm());
+
         this.#whenClicked("#front-flip", () => this.#flipOverCard());
         this.#whenClicked("#back-flip", () => this.#flipOverCard());
         this.#whenClicked("#new-card", () => this.#drawCard()); 
@@ -55,6 +58,10 @@ class UI {
 
     #revealDeckForm() {
         document.querySelector("#deck-modal").classList.toggle("is-active");
+    }
+
+    #revealCardForm() {
+        document.querySelector("#new-card-modal").classList.toggle("is-active");
     }
 
     #updateDisplayedLanguages() {

@@ -18,6 +18,7 @@
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="buttons">
+                            <button id="update-server" class="button is-warning">Update Server</button>
                             <a class="button is-primary">
                                 <strong>Sign up</strong>
                             </a>
@@ -105,7 +106,7 @@
                     </div>
                 </div>
                 <div class="column">
-                    <button id="update-server" class="button is-warning">Update Server</button>
+                    <button id="create" class="button is-info">Create Card</button>
                 </div>
                 
             </div>
@@ -174,6 +175,65 @@
           </footer>
         </div>  
     </div>
+
+    <div class="modal" id="new-card-modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Get new deck</p>
+            <button class="delete close-create-modal" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+            <!-- Content ... -->
+            <div class="field">
+                <div class="control">
+                    <input id="" class="input is-medium" type="text" placeholder="Source Word">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input id="" class="input is-medium" type="text" placeholder="Source Word Language" list="languages" autocomplete="off">
+
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input id="" class="input is-medium" type="text" placeholder="Translation">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input id="" class="input is-medium" type="text" placeholder="Translation Language" list="languages" autocomplete="off">
+                </div>
+            </div>
+            <div class="field">
+                <div class="file is-medium has-name">
+                    <label class="file-label">
+                      <input class="file-input" type="file" name="resume">
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                          Audio
+                        </span>
+                      </span>
+                      <span class="file-name">
+                        Screen Shot 2017-07-29 at 15.54.25.png
+                      </span>
+                    </label>
+                </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-success close-create-modal" id=""><strong>+</strong></button>
+            <button class="button is-danger close-create-modal" id="">Clear</button>
+            <button class="button close-create-modal">Cancel</button>
+            <button class="button close-create-modal">Upload</button>
+          </footer>
+        </div>  
+    </div>
+
   </body>
 </html>
 
