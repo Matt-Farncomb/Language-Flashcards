@@ -5,6 +5,7 @@ class UI {
     #front;
     #back;
     #card;
+    #baseDeck;
 
     #loggedIn;
     #server;
@@ -15,6 +16,7 @@ class UI {
         this.#deck = deck;
         this.#server = server;
         this.#deckSize = deckSize;
+        this.#baseDeck = null;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
@@ -30,6 +32,10 @@ class UI {
         this.#whenClicked("#create", () => this.#revealCardForm());
         this.#whenClicked(".close-create-modal", () => this.#revealCardForm());
 
+        this.#whenClicked("#clear", () => this.#clearForm());
+
+        this.#whenClicked("#add", () => this.#getCardForUpload());
+
         this.#whenClicked("#front-flip", () => this.#flipOverCard());
         this.#whenClicked("#back-flip", () => this.#flipOverCard());
         this.#whenClicked("#new-card", () => this.#drawCard()); 
@@ -42,6 +48,38 @@ class UI {
         //     this.#checkAnswer();
         //  });
 
+    }
+
+    #clearForm() {
+        const inputs = document.querySelectorAll("input");
+        console.log("clearing");
+        inputs.forEach(input => {
+            input.value = "";
+        });
+    }
+
+    #clearWords() {
+        document.querySelector("#add-source").value = "";
+        document.querySelector("#add-tran").value = "";
+    }
+
+    #getCardForUpload() {
+
+        const sourceWord = document.querySelector("#add-source").value;
+        const translation = document.querySelector("#add-tran").value;
+        const sourceLanguage = document.querySelector("#add-lang");
+        const targetLanguage = document.querySelector("#add-tran-lang");
+
+        if (this.#baseDeck == null) {
+            this.#baseDeck = new BaseDeck(sourceLanguage.value, targetLanguage.value);
+            sourceLanguage.disabled = true;
+            targetLanguage.disabled = true;
+
+        }
+
+        const card = new BaseCard(sourceWord, translation);
+        this.#baseDeck.addCard(card);
+        this.#clearWords();
     }
 
 
@@ -61,6 +99,8 @@ class UI {
     }
 
     #revealCardForm() {
+        if (this.#baseDeck != null) console.log(this.#baseDeck);
+        this.#baseDeck == null;
         document.querySelector("#new-card-modal").classList.toggle("is-active");
     }
 

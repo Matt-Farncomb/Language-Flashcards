@@ -78,6 +78,11 @@ def get_langauges():
     language_abbreviations = [ k for k, v in languages.items() ]
     return language_abbreviations
 
+@app.post("/upload/")
+def upload_deck():
+    pass
+    
+
 @app.get("/cards/") 
 def get_cards(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
