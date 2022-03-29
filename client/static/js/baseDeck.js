@@ -13,4 +13,16 @@ class BaseDeck {
     addCard(card){
         this.#cards.push(card);
     }
+
+    get cards() {
+        return this.#cards;
+    }
+
+    get sourceLanguage() {
+        return this.#sourceLanguage;
+    }
+
+    get targetLanguage() {
+        return this.#targetLanguage;
+    }
 }

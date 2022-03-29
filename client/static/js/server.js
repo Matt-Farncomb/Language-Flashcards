@@ -54,6 +54,32 @@ class Server {
         return fetch(url).then((response) => response.json());
     }
 
+    uploadDeck(baseDeck) {
+        const url = `${this.#serverURL}upload/`
+        let cardsArr = [];
+
+        baseDeck.cards.forEach(card => {
+            cardsArr.push({
+                "source_word":card.source_word,
+                "translation":card.translation
+            })
+        });
+
+        const data = {
+            "source_language":baseDeck.sourceLanguage,
+            "target_language":baseDeck.targetLanguage,
+            "cards":cardsArr 
+        }
+        console.log(cardsArr);
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then((response) => response.json())
+        .then((response) => console.log(response));
+    }
+
     submitResult(deck) {
         console.log(deck);
         const url = `${this.#serverURL}results/`

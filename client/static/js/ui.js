@@ -34,6 +34,8 @@ class UI {
 
         this.#whenClicked("#clear", () => this.#clearForm());
 
+        this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
+
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
         this.#whenClicked("#front-flip", () => this.#flipOverCard());

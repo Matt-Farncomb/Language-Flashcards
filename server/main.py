@@ -8,7 +8,7 @@ from app import app
 from deck import Deck, languages, new_languages
 from database import Database
 
-from schemas import Result, Refresh
+from schemas import Result, Refresh, UploadedDeck
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -79,7 +79,10 @@ def get_langauges():
     return language_abbreviations
 
 @app.post("/upload/")
-def upload_deck():
+def upload_deck(deck: UploadedDeck):
+    print("uploaded")
+    for e in deck:
+        print(e)
     pass
     
 
