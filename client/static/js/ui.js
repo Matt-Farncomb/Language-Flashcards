@@ -46,10 +46,39 @@ class UI {
         this.#whenClicked("#update-server", () => this.#server.refresh());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
 
+        const chooseSrcLanguage = document.querySelector('#add-lang');
+        const chooseTranLanguage = document.querySelector('#add-tran-lang');
+
+        this.#validateLanguageInput(chooseSrcLanguage);
+        this.#validateLanguageInput(chooseTranLanguage);
+
+        // chooseLanguage.addEventListener('change', (event) => {
+        //     console.log("fart");
+        // });
+
         // document.querySelector("#answer").addEventListener('submit', (e) => {
         //     this.#checkAnswer();
         //  });
 
+    }
+
+    #validateLanguageInput(type) {
+       
+        const languages = document.querySelector("#languages").querySelectorAll("option");
+
+        type.onchange = (e) => {
+            console.log(languages);
+            const input = e.target.value;
+            if (nodeListContains(languages, input)) {
+                type.classList.add("is-primary");
+                type.classList.remove("is-danger");
+                console.log("valid");
+            } else {
+                console.log("invalid");
+                type.classList.add("is-danger");
+                type.classList.remove("is-primary");
+            }          
+        }
     }
 
     #clearForm() {

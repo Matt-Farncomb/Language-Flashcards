@@ -5,3 +5,21 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
   }
+
+  function nodeListContains(nodeList, element) {
+    console.log("run");
+    for (const node of nodeList) {
+      if (element == node.value) {
+        return true;
+      }
+    }
+    return false;
+    // let val = false;
+    // nodeList.forEach(node => {
+    //   if (element == node.value) {
+    //     val = true;
+    //   }
+    // });
+    // return val;
+    
+  }
