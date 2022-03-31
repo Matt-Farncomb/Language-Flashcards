@@ -17,6 +17,7 @@ class UI {
         this.#server = server;
         this.#deckSize = deckSize;
         this.#baseDeck = null;
+        this
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
@@ -62,6 +63,21 @@ class UI {
 
     }
 
+    #readyToUpload() {
+        if (!document.querySelector("#add-lang").classList.contains("is-primary") || 
+        !document.querySelector("#add-tran-lang").classList.contains("is-primary") ) {
+            document.querySelector("#add").classList.add("disabledPointer");    
+            document.querySelector("#upload").classList.add("disabledPointer");
+            document.querySelector("#add").classList.remove("is-success");
+        } else {
+            document.querySelector("#upload").classList.remove("disabledPointer");
+            document.querySelector("#add").classList.remove("disabledPointer"); 
+            document.querySelector("#add").classList.add("is-success");
+        }
+        
+    }
+
+
     #validateLanguageInput(type) {
        
         const languages = document.querySelector("#languages").querySelectorAll("option");
@@ -72,12 +88,16 @@ class UI {
             if (nodeListContains(languages, input)) {
                 type.classList.add("is-primary");
                 type.classList.remove("is-danger");
-                console.log("valid");
             } else {
                 console.log("invalid");
                 type.classList.add("is-danger");
                 type.classList.remove("is-primary");
-            }          
+                document.querySelector("#add").classList.add("disabledPointer");    
+                document.querySelector("#upload").classList.add("disabledPointer");
+                document.querySelector("#add").classList.remove("is-success");
+
+            }
+            this.#readyToUpload();
         }
     }
 
@@ -87,6 +107,9 @@ class UI {
         inputs.forEach(input => {
             input.value = "";
         });
+        document.querySelector("#add-lang").classList.remove("is-primary");
+        document.querySelector("#add-tran-lang").classList.remove("is-primary");
+        this.#readyToUpload();
     }
 
     #clearWords() {
@@ -132,6 +155,7 @@ class UI {
     #revealCardForm() {
         if (this.#baseDeck != null) console.log(this.#baseDeck);
         this.#baseDeck == null;
+        this.#readyToUpload();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
     }
 
