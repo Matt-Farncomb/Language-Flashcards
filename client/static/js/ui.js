@@ -17,15 +17,10 @@ class UI {
         this.#server = server;
         this.#deckSize = deckSize;
         this.#baseDeck = null;
-        this
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
-        document.querySelector("#new-card").classList.add("disabledPointer");
-        document.querySelector("#edit").classList.add("disabledPointer");
-
-
-        // this.#whenClicked("#draw-deck", () => this.#newDeck());
+     
         this.#whenClicked("#draw-deck", () => this.login());
         this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked("#new-deck", () => this.#revealDeckForm());
@@ -53,13 +48,6 @@ class UI {
         this.#validateLanguageInput(chooseSrcLanguage);
         this.#validateLanguageInput(chooseTranLanguage);
 
-        // chooseLanguage.addEventListener('change', (event) => {
-        //     console.log("fart");
-        // });
-
-        // document.querySelector("#answer").addEventListener('submit', (e) => {
-        //     this.#checkAnswer();
-        //  });
 
     }
 

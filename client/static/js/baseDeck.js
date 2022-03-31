@@ -2,20 +2,20 @@ class BaseDeck {
 
     #sourceLanguage;
     #targetLanguage;
-    #cards;
+    _cards;
 
     constructor(sourceLanguage, targetLanguage) {
         this.#sourceLanguage = sourceLanguage;
         this.#targetLanguage = targetLanguage;
-        this.#cards = [];
+        this._cards = [];
     }
 
     addCard(card){
-        this.#cards.push(card);
+        this._cards.push(card);
     }
 
     get cards() {
-        return this.#cards;
+        return this._cards;
     }
 
     get sourceLanguage() {

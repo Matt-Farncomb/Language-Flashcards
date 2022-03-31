@@ -1,18 +1,18 @@
 class BaseCard {
 
-    #source_word;
-    #translation;
+    #word;
+    #translations;
 
     constructor(word, translations) {
-        this.#source_word = word;
-        this.#translation = translations;
+        this.#word = word;
+        this.#translations = translations;
     }
 
-    get source_word() {
-        return this.#source_word;
+    get word() {
+        return this.#word;
     }
 
-    get translation() {
-        return this.#translation;
+    get translations() {
+        return this.#translations;
     }
 }

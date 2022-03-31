@@ -1,3 +1,0 @@
-class CustomCard extends BaseCard {
-
-}
