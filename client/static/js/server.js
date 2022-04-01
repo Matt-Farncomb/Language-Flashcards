@@ -5,7 +5,7 @@ class Server {
 
     constructor(serverURL) {
         this.#serverURL = serverURL
-        this.languages = this.#getLanguages();
+        this.#languages = this.#getLanguages();
         // this.#user = localStorage.getItem('name');
     }
 
@@ -13,10 +13,16 @@ class Server {
 // let myName = localStorage.getItem('name');
 // myName
 
+    get languages() {
+        return this.#languages;
+    }
+
     #getLanguages() {
         const url = `${SERVER_URL}languages/`;
         return fetch(url).then((response) => response.json());
     }
+
+    
 
     #cardsURL(size) {
         const url = `${SERVER_URL}cards/?`+

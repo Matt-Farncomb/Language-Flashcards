@@ -11,6 +11,8 @@ class UI {
     #server;
     #deckSize;
 
+    #currentCustomCard;
+
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
         this.#deck = deck;
@@ -18,22 +20,15 @@ class UI {
         this.#deckSize = deckSize;
         this.#baseDeck = null;
 
+        this.#currentCustomCard = null;
+
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
      
+        //Server Cards
         this.#whenClicked("#draw-deck", () => this.login());
-        this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked("#new-deck", () => this.#revealDeckForm());
-
-        this.#whenClicked("#create", () => this.#revealCardForm());
-        this.#whenClicked(".close-create-modal", () => this.#revealCardForm());
-
-        this.#whenClicked("#clear", () => this.#clearForm());
-
-        this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
-
-        this.#whenClicked("#add", () => this.#getCardForUpload());
-
+        this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked("#front-flip", () => this.#flipOverCard());
         this.#whenClicked("#back-flip", () => this.#flipOverCard());
         this.#whenClicked("#new-card", () => this.#drawCard()); 
@@ -41,28 +36,41 @@ class UI {
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
         this.#whenClicked("#update-server", () => this.#server.refresh());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
+        //Creating new cards
+        this.#whenClicked("#create", () => this.#revealCardForm());
+        this.#whenClicked(".close-create-modal", () => this.#revealCardForm());
+        this.#whenClicked("#clear", () => this.#clearCardForm());
+        this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
+        this.#whenClicked("#add", () => this.#getCardForUpload());
+
+        
+        
 
         const chooseSrcLanguage = document.querySelector('#add-lang');
         const chooseTranLanguage = document.querySelector('#add-tran-lang');
 
         this.#validateLanguageInput(chooseSrcLanguage);
         this.#validateLanguageInput(chooseTranLanguage);
-
-
     }
 
     #readyToUpload() {
-        if (!document.querySelector("#add-lang").classList.contains("is-primary") || 
-        !document.querySelector("#add-tran-lang").classList.contains("is-primary") ) {
-            document.querySelector("#add").classList.add("disabledPointer");    
-            document.querySelector("#upload").classList.add("disabledPointer");
-            document.querySelector("#add").classList.remove("is-success");
+        if (this.#currentCustomCard.readyToUpload()) {
+            this.#enableAddCard();
         } else {
-            document.querySelector("#upload").classList.remove("disabledPointer");
-            document.querySelector("#add").classList.remove("disabledPointer"); 
-            document.querySelector("#add").classList.add("is-success");
+            this.#disableAddCard();
         }
-        
+    }
+
+    #disableAddCard() {
+        document.querySelector("#add").classList.add("disabledPointer");    
+        document.querySelector("#upload").classList.add("disabledPointer");
+        document.querySelector("#add").classList.remove("is-success");
+    }
+
+    #enableAddCard() {
+        document.querySelector("#upload").classList.remove("disabledPointer");
+        document.querySelector("#add").classList.remove("disabledPointer"); 
+        document.querySelector("#add").classList.add("is-success");
     }
 
 
@@ -89,15 +97,14 @@ class UI {
         }
     }
 
-    #clearForm() {
-        const inputs = document.querySelectorAll("input");
-        console.log("clearing");
+    #clearCardForm() {
+        const inputs = document.querySelectorAll("#new-card-modal input");
         inputs.forEach(input => {
             input.value = "";
         });
-        document.querySelector("#add-lang").classList.remove("is-primary");
-        document.querySelector("#add-tran-lang").classList.remove("is-primary");
-        this.#readyToUpload();
+        document.querySelector("#add-lang").classList.remove("is-primary," , "is-danger");
+        document.querySelector("#add-tran-lang").classList.remove("is-primary", "is-danger");
+        this.#disableAddCard();
     }
 
     #clearWords() {
@@ -107,15 +114,12 @@ class UI {
 
     #getCardForUpload() {
 
-        const sourceWord = document.querySelector("#add-source").value;
-        const translation = document.querySelector("#add-tran").value;
-        const sourceLanguage = document.querySelector("#add-lang");
-        const targetLanguage = document.querySelector("#add-tran-lang");
-
         if (this.#baseDeck == null) {
-            this.#baseDeck = new BaseDeck(sourceLanguage.value, targetLanguage.value);
-            sourceLanguage.disabled = true;
-            targetLanguage.disabled = true;
+            this.#baseDeck = new BaseDeck(
+                this.#currentCustomCard.sourceLanguage.value, this.#currentCustomCard.targetLanguage.value
+            );
+            document.querySelector("#add-lang").disabled = true;
+            document.querySelector("#add-tran-lang").disabled = true;
 
         }
 
@@ -145,6 +149,7 @@ class UI {
         this.#baseDeck == null;
         this.#readyToUpload();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
+        this.#currentCustomCard = new CustomCard();
     }
 
     #updateDisplayedLanguages() {

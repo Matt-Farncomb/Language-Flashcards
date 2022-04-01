@@ -63,11 +63,8 @@ class Deck extends BaseDeck {
                     return new Word(translation.__data__.id, translation.__data__.word, translation.__data__.language);
                 })
                 return new Card(card.id, card.source_word, translation_list);
-            });
-            
+            }); 
         })
-
     }
-
 }
 

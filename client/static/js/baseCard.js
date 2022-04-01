@@ -2,6 +2,7 @@ class BaseCard {
 
     #word;
     #translations;
+    _server;
 
     constructor(word, translations) {
         this.#word = word;
