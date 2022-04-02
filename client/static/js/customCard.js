@@ -1,7 +1,6 @@
 class CustomCard {
 
     constructor() {
-       
     }
 
     get word() {
@@ -20,29 +19,50 @@ class CustomCard {
         return document.querySelector("#add-tran-lang").value;
     }
 
-    sourceLanguageIsValid() {
-        return validLanguage(this.sourceLanguage);
+    #validateWord() {
+        
+        throw new Error('Method not implemented.');
     }
 
-    targetLanguageIsValid() {
-        return validLanguage(this.targetLanguage);
+    #validateLanguage(language) { 
+        return this._server.languages.contains(language);
     }
 
-    validLanguage(input) {
-        return this._server.languages.contains(input);
+    #validInput(input, inputId, inputValidatorFunc) {
+        const isValid = inputValidatorFunc(input);
+        if (isValid) {
+            document.querySelector(`#add-${inputId}`).classList.add("is-primary");
+            document.querySelector(`#add-${inputId}`).classList.remove("is-danger");
+        } else {
+            document.querySelector(`#add-${inputId}`).classList.remove("is-primary");
+            document.querySelector(`#add-${inputId}`).classList.add("is-danger");
+        }
+        return isValid;
     }
 
-    wordIsValid() {
+    #wordIsValid(deck) {
+        if (!deck.hasCard(this.word)) {
+            return this.#validInput(this.word, "word", this.#validateWord());
+        }
+        return false;
         
     }
 
-    translationIsValid() {
-        
+    #translationIsValid() {
+        return this.#validInput(this.translation, "translation", this.#validateWord());
     }
 
-    readyToUpload() {
-        return (sourceLanguageIsValid() && targetLanguageIsValid() &&
-            wordIsValid() && translationIsValid());
+    #sourceLanguageIsValid() {
+        return this.#validInput(this.sourceLanguage, "source-language", this.#validateLanguage());
+    }
+
+    #targetLanguageIsValid() {
+        return this.#validInput(this.targetLanguage, "target-language", this.#validateLanguage());
+    }
+
+    readyToUpload(deck) {
+        return (this.#sourceLanguageIsValid() && this.#targetLanguageIsValid() &&
+            this.#wordIsValid(deck) && this.#translationIsValid());
     }
 
 

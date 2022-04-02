@@ -46,11 +46,11 @@ class UI {
         
         
 
-        const chooseSrcLanguage = document.querySelector('#add-lang');
-        const chooseTranLanguage = document.querySelector('#add-tran-lang');
+        // const chooseSrcLanguage = document.querySelector('#add-lang');
+        // const chooseTranLanguage = document.querySelector('#add-tran-lang');
 
-        this.#validateLanguageInput(chooseSrcLanguage);
-        this.#validateLanguageInput(chooseTranLanguage);
+        // this.#validateLanguageInput(chooseSrcLanguage);
+        // this.#validateLanguageInput(chooseTranLanguage);
     }
 
     #readyToUpload() {
@@ -123,7 +123,7 @@ class UI {
 
         }
 
-        const card = new BaseCard(sourceWord, translation);
+        const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translation);
         this.#baseDeck.addCard(card);
         this.#clearWords();
     }
@@ -145,8 +145,7 @@ class UI {
     }
 
     #revealCardForm() {
-        if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#baseDeck == null;
+        // if (this.#baseDeck != null) console.log(this.#baseDeck);
         this.#readyToUpload();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#currentCustomCard = new CustomCard();
