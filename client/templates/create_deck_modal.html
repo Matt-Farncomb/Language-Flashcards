@@ -1,0 +1,61 @@
+{% extends 'base_modal.html' %}
+
+{% block id %}new-card-modal{% endblock %}
+
+{% block header %}
+    <p class="modal-card-title">Get new deck</p>
+    <button class="delete close-create-modal" aria-label="close"></button>
+{% endblock %}
+
+{% block section %}
+
+    <!-- Content ... -->
+  <div class="field">
+      <div class="control">
+          <input id="add-source" class="input is-medium" type="text" placeholder="Source Word" maxlength="50">
+      </div>
+  </div>
+  <div class="field">
+      <div class="control">
+          <input id="add-source-language" class="input is-medium" type="text" placeholder="Source Word Language" list="languages" autocomplete="off" maxlength="50">
+      </div>
+  </div>
+  <div class="field">
+      <div class="control">
+          <input id="add-translation" class="input is-medium" type="text" placeholder="Translation" maxlength="50">
+      </div>
+  </div>
+  <div class="field">
+      <div class="control">
+          <input id="add-translation-language" class="input is-medium" type="text" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">>
+      </div>
+  </div>
+  <div class="field">
+      <div class="file is-medium has-name">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume">
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">
+                Audio
+              </span>
+            </span>
+            <span class="file-name">
+              Screen Shot 2017-07-29 at 15.54.25.png
+            </span>
+          </label>
+      </div>
+  </div>
+  {% endblock %}
+
+  {% block footer %}
+      <button class="button is-success" id="add">Add to deck</button>
+      <button id="clear" class="button is-danger" id="">Clear</button>
+      <button class="button close-create-modal">Cancel</button>
+      <button id="upload" class="button close-create-modal">Upload Deck</button>
+    {% endblock %}
+
+  </div>  
+</div>

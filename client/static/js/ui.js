@@ -43,8 +43,8 @@ class UI {
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
-        this.#validateInputOnChange('source-language');
-        this.#validateInputOnChange('translation-language');
+        this.#validateLanguageOnChange('source-language');
+        this.#validateLanguageOnChange('translation-language');
         
     }
 
@@ -70,7 +70,7 @@ class UI {
         document.querySelector("#add").classList.add("is-success");
     }
 
-    #validateInputOnChange(id) {
+    #validateLanguageOnChange(id) {
         const input = document.querySelector(`#add-${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.languageIsReady(input);

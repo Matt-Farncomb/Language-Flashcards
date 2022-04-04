@@ -4,7 +4,6 @@ class CustomCard {
 
     constructor(languages) {
         this.#availableLanguages = languages;
-        this.test = "test";
     }
 
     get word() {
@@ -29,14 +28,12 @@ class CustomCard {
         return true;
     }
 
-    async #validateLanguage(...args) { 
-        const userInputLanguage = args[0];
-        const availableLanguages = args[1];
-        const data = await availableLanguages;
+    async #validateLanguage(userInputLanguage) { 
+        const data = await this.#availableLanguages;
         return data.includes(userInputLanguage);        
     }
 
-    async #validInput(input, selector, inputValidatorFunc) {
+    async #validInput(selector, inputValidatorFunc) {
         const isValid = await inputValidatorFunc;
         
         if (isValid) {
@@ -54,34 +51,36 @@ class CustomCard {
         if (deck.hasCard(this.word)) {
             return false;
         }
-        return this.#validInput(this.word, selector, this.#validateWord(this.word));
+        const isValidInput = this.#validateWord(this.word);
+        return this.#validInput(selector, isValidInput);
     }
 
     #translationIsValid() {
         const selector = document.querySelector("#add-translation");
-        this.#validInput(this.translation, selector, this.#validateWord(this.translation))
+        const isValidInput = this.#validateWord(this.translation);
+        return this.#validInput(selector, isValidInput);
     }
 
     #sourceLanguageIsValid() {
         const selector = document.querySelector("#add-source-language");
-        return this.#validInput(this.sourceLanguage, selector, this.#validateLanguage(this.sourceLanguage, this.#availableLanguages));
+        const isValidInput = this.#validateLanguage(this.sourceLanguage);
+        return this.#validInput(selector, isValidInput);
     }
 
     #translationLanguageIsValid() {
         const selector = document.querySelector("#add-translation-language");
-        const test =  this.#validInput(this.targetLanguage, selector, this.#validateLanguage(this.targetLanguage, this.#availableLanguages));
-        console.log(test);
-        return test;
+        const isValidInput = this.#validateLanguage(this.targetLanguage);
+        return this.#validInput(selector, isValidInput);
     }
 
     readyToUpload(deck) {
         return (this.#sourceLanguageIsValid() && this.#translationLanguageIsValid() &&
-             this.#sourceIsValid(deck) && this.#translationIsValid());
+            this.#sourceIsValid(deck) && this.#translationIsValid());
     }
 
     languageIsReady(selector) {
         const lang = selector.value;
-        return this.#validInput(lang, selector, this.#validateLanguage(lang, this.#availableLanguages));
+        return this.#validInput(selector, this.#validateLanguage(lang, this.#availableLanguages));
     }
 
 

@@ -1,0 +1,21 @@
+<div class="modal" id="{% block id %}{% endblock %}">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+
+      <header class="modal-card-head">
+        {% block header %}
+        {% endblock %}
+      </header>
+
+      <section class="modal-card-body">
+        {% block section %}
+        {% endblock %}
+      </section>
+
+      <footer class="modal-card-foot">
+        {% block footer %}
+        {% endblock %}
+      </footer>
+
+    </div>  
+</div>
