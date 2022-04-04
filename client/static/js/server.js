@@ -1,6 +1,7 @@
 class Server {
 
     #serverURL;
+    #languages;
     // #user;
 
     constructor(serverURL) {
@@ -17,7 +18,7 @@ class Server {
         return this.#languages;
     }
 
-    #getLanguages() {
+    async #getLanguages() {
         const url = `${SERVER_URL}languages/`;
         return fetch(url).then((response) => response.json());
     }

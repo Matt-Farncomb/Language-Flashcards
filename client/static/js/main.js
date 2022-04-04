@@ -26,7 +26,7 @@ function loadMain() {
     console.log("Fart");
     const SERVER = new Server(SERVER_URL);
     const bob = SERVER.languages;
-    bob.then(response => console.log(response));
+    // bob.then(response => console.log(response));
 
     const DECK = new Deck();
     console.log(SERVER);

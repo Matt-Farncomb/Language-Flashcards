@@ -1,6 +1,10 @@
 class CustomCard {
 
-    constructor() {
+    #availableLanguages; 
+
+    constructor(languages) {
+        this.#availableLanguages = languages;
+        this.test = "test";
     }
 
     get word() {
@@ -8,61 +12,76 @@ class CustomCard {
     }
 
     get translation() {
-        return document.querySelector("#add-tran").value;
+        return document.querySelector("#add-translation").value;
     }
 
     get sourceLanguage() {
-        return document.querySelector("#add-lang").value;
+        return document.querySelector("#add-source-language").value;
     }
 
     get targetLanguage() {
-        return document.querySelector("#add-tran-lang").value;
+        return document.querySelector("#add-translation-language").value;
     }
 
-    #validateWord() {
+    #validateWord(...args) {
         
-        throw new Error('Method not implemented.');
+        // throw new Error('Method not implemented.');
+        return true;
     }
 
-    #validateLanguage(language) { 
-        return this._server.languages.contains(language);
+    async #validateLanguage(...args) { 
+        const userInputLanguage = args[0];
+        const availableLanguages = args[1];
+        const data = await availableLanguages;
+        return data.includes(userInputLanguage);        
     }
 
-    #validInput(input, inputId, inputValidatorFunc) {
-        const isValid = inputValidatorFunc(input);
+    async #validInput(input, selector, inputValidatorFunc) {
+        const isValid = await inputValidatorFunc;
+        
         if (isValid) {
-            document.querySelector(`#add-${inputId}`).classList.add("is-primary");
-            document.querySelector(`#add-${inputId}`).classList.remove("is-danger");
+            selector.classList.add("is-primary");
+            selector.classList.remove("is-danger");
         } else {
-            document.querySelector(`#add-${inputId}`).classList.remove("is-primary");
-            document.querySelector(`#add-${inputId}`).classList.add("is-danger");
+            selector.classList.remove("is-primary");
+            selector.classList.add("is-danger");
         }
         return isValid;
     }
 
-    #wordIsValid(deck) {
-        if (!deck.hasCard(this.word)) {
-            return this.#validInput(this.word, "word", this.#validateWord());
+    #sourceIsValid(deck) {
+        const selector = document.querySelector("#add-source");
+        if (deck.hasCard(this.word)) {
+            return false;
         }
-        return false;
-        
+        return this.#validInput(this.word, selector, this.#validateWord(this.word));
     }
 
     #translationIsValid() {
-        return this.#validInput(this.translation, "translation", this.#validateWord());
+        const selector = document.querySelector("#add-translation");
+        this.#validInput(this.translation, selector, this.#validateWord(this.translation))
     }
 
     #sourceLanguageIsValid() {
-        return this.#validInput(this.sourceLanguage, "source-language", this.#validateLanguage());
+        const selector = document.querySelector("#add-source-language");
+        return this.#validInput(this.sourceLanguage, selector, this.#validateLanguage(this.sourceLanguage, this.#availableLanguages));
     }
 
-    #targetLanguageIsValid() {
-        return this.#validInput(this.targetLanguage, "target-language", this.#validateLanguage());
+    #translationLanguageIsValid() {
+        const selector = document.querySelector("#add-translation-language");
+        const test =  this.#validInput(this.targetLanguage, selector, this.#validateLanguage(this.targetLanguage, this.#availableLanguages));
+        console.log(test);
+        return test;
     }
 
     readyToUpload(deck) {
-        return (this.#sourceLanguageIsValid() && this.#targetLanguageIsValid() &&
-            this.#wordIsValid(deck) && this.#translationIsValid());
+        return (this.#sourceLanguageIsValid() && this.#translationLanguageIsValid() &&
+             this.#sourceIsValid(deck) && this.#translationIsValid());
+    }
+
+    languageIsReady(selector) {
+        const lang = selector.value;
+        return this.#validInput(lang, selector, this.#validateLanguage(lang, this.#availableLanguages));
     }
 
 

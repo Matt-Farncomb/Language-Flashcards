@@ -14,6 +14,15 @@ class BaseDeck {
         this._cards.push(card);
     }
 
+    hasCard(card) {
+        for (baseCard in this._cards) {
+            if (card == baseCard.word) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     get cards() {
         return this._cards;
     }

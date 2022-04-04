@@ -43,18 +43,15 @@ class UI {
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
+        this.#validateInputOnChange('source-language');
+        this.#validateInputOnChange('translation-language');
         
-        
-
-        // const chooseSrcLanguage = document.querySelector('#add-lang');
-        // const chooseTranLanguage = document.querySelector('#add-tran-lang');
-
-        // this.#validateLanguageInput(chooseSrcLanguage);
-        // this.#validateLanguageInput(chooseTranLanguage);
     }
 
     #readyToUpload() {
-        if (this.#currentCustomCard.readyToUpload()) {
+        console.log(this.#currentCustomCard)
+        console.log(this.#deck)
+        if (this.#currentCustomCard.readyToUpload(this.#deck)) {
             this.#enableAddCard();
         } else {
             this.#disableAddCard();
@@ -73,27 +70,10 @@ class UI {
         document.querySelector("#add").classList.add("is-success");
     }
 
-
-    #validateLanguageInput(type) {
-       
-        const languages = document.querySelector("#languages").querySelectorAll("option");
-
-        type.onchange = (e) => {
-            console.log(languages);
-            const input = e.target.value;
-            if (nodeListContains(languages, input)) {
-                type.classList.add("is-primary");
-                type.classList.remove("is-danger");
-            } else {
-                console.log("invalid");
-                type.classList.add("is-danger");
-                type.classList.remove("is-primary");
-                document.querySelector("#add").classList.add("disabledPointer");    
-                document.querySelector("#upload").classList.add("disabledPointer");
-                document.querySelector("#add").classList.remove("is-success");
-
-            }
-            this.#readyToUpload();
+    #validateInputOnChange(id) {
+        const input = document.querySelector(`#add-${id}`);
+        input.onchange = (e) => {
+            this.#currentCustomCard.languageIsReady(input);
         }
     }
 
@@ -146,9 +126,11 @@ class UI {
 
     #revealCardForm() {
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
+        this.#currentCustomCard = new CustomCard(this.#server.languages);
+        console.log(this.#currentCustomCard.test);
         this.#readyToUpload();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
-        this.#currentCustomCard = new CustomCard();
+        
     }
 
     #updateDisplayedLanguages() {
