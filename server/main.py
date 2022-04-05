@@ -7,12 +7,10 @@ from typing import List
 from app import app
 from deck import Deck, languages, new_languages
 from database import Database
-
 from schemas import Result, Refresh, UploadedDeck
-
 from fastapi.middleware.cors import CORSMiddleware
-
 from base_logger import logging
+
 logger = logging.getLogger(__name__)
 
 origins = ["*"]
@@ -26,23 +24,17 @@ app.add_middleware(
 )
 
 
-
 app.mount("/static/", StaticFiles(directory=f"..\client\static"), name="static")
 
 templates = Jinja2Templates(directory=f"..\client\\templates")
 
 
-
-
 @app.get("/", response_class=HTMLResponse)
-def read_item(request: Request):
-    
-    #language_abbreviations = [ k for k, v in languages.items() ]
+def read_item(request: Request):  
     lang = [ v["language"] for k, v in new_languages.items()  ]
     js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     print(js_files)
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files})
-
 
 def validate(content: str) -> bool:
     for char in content:
@@ -74,7 +66,12 @@ def login(username: str, password: str):
 #     return "No words provided"
 
 @app.get("/languages/")
-def get_langauges():
+def get_languages():
+    languages = [ v["language"] for k, v in new_languages.items()  ]
+    return languages
+
+@app.get("/languages/")
+def get_languages_short():
     language_abbreviations = [ k for k, v in languages.items() ]
     return language_abbreviations
 
