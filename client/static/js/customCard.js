@@ -22,8 +22,13 @@ class CustomCard {
         return document.querySelector("#add-translation-language").value;
     }
 
-    #validateWord(...args) {
-        
+    #validateWord(selector) {
+        console.log(selector)
+        if (selector.validity.patternMismatch) {
+            selector.setCustomValidity("I am expecting text!");
+            selector.reportValidity();
+            return false;
+        }
         // throw new Error('Method not implemented.');
         return true;
     }
@@ -48,16 +53,17 @@ class CustomCard {
 
     #sourceIsValid(deck) {
         const selector = document.querySelector("#add-source");
+        console.log(selector)
         if (deck.hasCard(this.word)) {
             return false;
         }
-        const isValidInput = this.#validateWord(this.word);
+        const isValidInput = this.#validateWord(selector);
         return this.#validInput(selector, isValidInput);
     }
 
     #translationIsValid() {
         const selector = document.querySelector("#add-translation");
-        const isValidInput = this.#validateWord(this.translation);
+        const isValidInput = this.#validateWord(selector);
         return this.#validInput(selector, isValidInput);
     }
 
@@ -81,6 +87,11 @@ class CustomCard {
     languageIsReady(selector) {
         const lang = selector.value;
         return this.#validInput(selector, this.#validateLanguage(lang, this.#availableLanguages));
+    }
+
+    wordIsReady(selector) {
+        const word = selector.value;
+        return this.#validInput(selector, this.#validateWord(selector));
     }
 
 

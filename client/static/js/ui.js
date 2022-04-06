@@ -45,6 +45,8 @@ class UI {
 
         this.#validateLanguageOnChange('source-language');
         this.#validateLanguageOnChange('translation-language');
+        this.#validateWordOnChange('source');
+        this.#validateWordOnChange('translation');
         
     }
 
@@ -74,8 +76,17 @@ class UI {
         const input = document.querySelector(`#add-${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.languageIsReady(input);
-        }
+        } 
     }
+
+    #validateWordOnChange(id) {
+        const input = document.querySelector(`#add-${id}`);
+        input.onchange = (e) => {
+            this.#currentCustomCard.wordIsReady(input);
+        } 
+    }
+
+
 
     #clearCardForm() {
         const inputs = document.querySelectorAll("#new-card-modal input");
