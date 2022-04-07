@@ -19,7 +19,6 @@ class UI {
         this.#server = server;
         this.#deckSize = deckSize;
         this.#baseDeck = null;
-
         this.#currentCustomCard = null;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
@@ -47,12 +46,9 @@ class UI {
         this.#validateLanguageOnChange('translation-language');
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
-        
     }
 
     #readyToUpload() {
-        console.log(this.#currentCustomCard)
-        console.log(this.#deck)
         if (this.#currentCustomCard.readyToUpload(this.#deck)) {
             this.#enableAddCard();
         } else {

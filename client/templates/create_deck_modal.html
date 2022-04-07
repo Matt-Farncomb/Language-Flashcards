@@ -1,5 +1,7 @@
 {% extends 'base_modal.html' %}
 
+{% import 'macros.html' as macros %}
+
 {% block id %}new-card-modal{% endblock %}
 
 {% block header %}
@@ -9,27 +11,12 @@
 
 {% block section %}
 
+  {{ macros.input("add-source", "Add word") }}
+  {{ macros.input("add-source-language", "Choose sourse language", "languages") }}
+  {{ macros.input("add-translation", "Add translation") }}
+  {{ macros.input("add-translation-language", "Choose target language", "languages") }}
     <!-- Content ... -->
-  <div class="field">
-      <div class="control">
-          <input id="add-source" class="input is-medium" type="text" pattern="[A-Za-z]" placeholder="Source Word" maxlength="50">
-      </div>
-  </div>
-  <div class="field">
-      <div class="control">
-          <input id="add-source-language" class="input is-medium" type="text" placeholder="Source Word Language" list="languages" autocomplete="off" maxlength="50">
-      </div>
-  </div>
-  <div class="field">
-      <div class="control">
-          <input id="add-translation" class="input is-medium" type="text" pattern="[A-Za-z]" placeholder="Translation" maxlength="50">
-      </div>
-  </div>
-  <div class="field">
-      <div class="control">
-          <input id="add-translation-language" class="input is-medium" type="text" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">>
-      </div>
-  </div>
+  
   <div class="field">
       <div class="file is-medium has-name">
           <label class="file-label">

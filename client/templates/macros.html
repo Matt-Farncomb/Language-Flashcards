@@ -1,0 +1,16 @@
+{% macro input(id, placeholder, languages) -%}
+    <div class="field">
+        <div class="control">
+            <input id="{{id}}" class="input is-medium" type="text" pattern="\p{L}+" placeholder="{{placeholder}}" list="{{languages}}" autocomplete="off" maxlength="50">
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro numberInput(id, placeholder, max) -%}
+    <div class="field">
+        <div class="control">
+            <input id="{{id}}" class="input is-medium" type="number" placeholder="{{placeholder}}" max="{{max}}" autocomplete="off" >
+        </div>
+    </div>
+{%- endmacro %}
+

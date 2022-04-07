@@ -24,6 +24,7 @@ class CustomCard {
 
     #validateWord(selector) {
         console.log(selector)
+        console.log(selector);
         if (selector.validity.patternMismatch) {
             selector.setCustomValidity("I am expecting text!");
             selector.reportValidity();

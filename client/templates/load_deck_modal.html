@@ -1,5 +1,7 @@
 {% extends 'base_modal.html' %}
 
+{% import 'macros.html' as macros %}
+
 {% block id %}deck-modal{% endblock %}
 
 {% block header %}
@@ -9,27 +11,18 @@
 
 {% block section %}
 
-    <div class="field">
-        <div class="control">
-            <input id="deck-size" class="input is-medium" type="number" placeholder="Total Cards">
-        </div>
-    </div>
-    <div class="field">
-        <div class="control">
-            <input id="source-language" class="input is-medium" type="text" placeholder="Source Language" list="languages" autocomplete="off">
-        </div>
-    </div>
-    <div class="field">
-        <div class="control">
-            <input id="target-language" class="input is-medium" type="text" placeholder="Target Language" list="languages" autocomplete="off">
-        </div>
-    </div>
+    {{ macros.numberInput("deck-size", "Total Cards", 10) }}
+    {{ macros.input("source-language", "Source Language", "languages") }}
+    {{ macros.input("target-language", "Target Language", "languages") }}
+
     <datalist id="languages">
         {% for item in lang %}
             <option value="{{ item }}">{{ item }}</option>
         {% endfor %}
     </datalist> 
+
 {% endblock %}
+
 {% block footer %}
     <button class="button is-success close-deck-modal" id="draw-deck">Draw Deck</button>
     <button class="button close-deck-modal">Cancel</button>
