@@ -1,4 +1,4 @@
-class Card extends BaseCard {
+class FlashCard extends BaseCard {
 
     #id;
     #answeredCorrectly;

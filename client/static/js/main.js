@@ -7,7 +7,7 @@ window.onload = () => {
 function loadMain() {
     const DECKSIZE = 3;
     const SERVER = new Server(SERVER_URL);
-    const DECK = new Deck();
+    const DECK = new FlashCardDeck();
     const INTERFACE = new UI(DECK, SERVER, DECKSIZE);
 }
 

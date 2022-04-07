@@ -1,4 +1,4 @@
-class Deck extends BaseDeck {
+class FlashCardDeck extends BaseDeck {
 
    
     #cards;
@@ -62,7 +62,7 @@ class Deck extends BaseDeck {
                 const translation_list = card.translations.map((translation) => {
                     return new Word(translation.__data__.id, translation.__data__.word, translation.__data__.language);
                 })
-                return new Card(card.id, card.source_word, translation_list);
+                return new FlashCard(card.id, card.source_word, translation_list);
             }); 
         })
     }

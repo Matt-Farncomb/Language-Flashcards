@@ -31,9 +31,15 @@ templates = Jinja2Templates(directory=f"..\client\\templates")
 
 @app.get("/", response_class=HTMLResponse)
 def read_item(request: Request):  
+    # js_files = [ f"js\{files}" for root, dirs, files in os.walk('..\client\static\js') for file in files ]
+    js_files = []
+    for path, dirs, fnames in os.walk("..\client\static\js"):
+        for filename in [f for f in fnames if f.endswith(".js")]:
+            newPath = path.split("static")[1]+"\\\\"
+            js_files.append(f"{newPath}{filename}")
+            
     lang = [ v["language"] for k, v in new_languages.items()  ]
-    js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
-    print(js_files)
+    # js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files})
 
 def validate(content: str) -> bool:

@@ -21,4 +21,8 @@ class Word {
     get audio() {
         return this.#audio;
     }
+
+    playAudio() {
+        throw new error("Not yet implemented");
+    }
 }
