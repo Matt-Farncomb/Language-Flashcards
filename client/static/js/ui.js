@@ -48,8 +48,8 @@ class UI {
         this.#validateWordOnChange('translation');
     }
 
-    #readyToUpload() {
-        if (this.#currentCustomCard.readyToUpload(this.#deck)) {
+    async #readyToUpload() {
+        if (await this.#currentCustomCard.readyToUpload(this.#deck)) {
             this.#enableAddCard();
         } else {
             this.#disableAddCard();
@@ -68,18 +68,22 @@ class UI {
         document.querySelector("#add").classList.add("is-success");
     }
 
-    #validateLanguageOnChange(id) {
+    async #validateLanguageOnChange(id) {
         const input = document.querySelector(`#add-${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.languageIsReady(input);
-        } 
+            this.#readyToUpload();
+        }
+        
     }
 
     #validateWordOnChange(id) {
         const input = document.querySelector(`#add-${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.wordIsReady(input);
+            this.#readyToUpload();
         } 
+        
     }
 
 
@@ -88,9 +92,8 @@ class UI {
         const inputs = document.querySelectorAll("#new-card-modal input");
         inputs.forEach(input => {
             input.value = "";
+            input.classList.remove("is-primary", "is-danger");
         });
-        document.querySelector("#add-lang").classList.remove("is-primary," , "is-danger");
-        document.querySelector("#add-tran-lang").classList.remove("is-primary", "is-danger");
         this.#disableAddCard();
     }
 
@@ -132,11 +135,13 @@ class UI {
     }
 
     #revealCardForm() {
+        
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
         this.#currentCustomCard = new CustomCard(this.#server.languages);
-        console.log(this.#currentCustomCard.test);
-        this.#readyToUpload();
+        //this.#readyToUpload();
+        this.#disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
+        this.#clearCardForm();
         
     }
 
@@ -173,7 +178,6 @@ class UI {
        
         const answer = document.querySelector("#answer");
         const input = answer.value;
-        console.log(input)
         if (this.#card.isCorrectTranslation(input)) {
             console.log("Correct");
             this.#toggleCorrect();
@@ -191,15 +195,12 @@ class UI {
 
     #flipOverCard() {
         const inner = document.querySelector(".flip-card-inner");
-        console.log("flipping");
         inner.classList.toggle("flip");
     }
 
     #drawCard() {
         this.#card = this.#deck.randomCard();
-        console.log("this!");
         this.#front = this.#card.word;
-        console.log(this.#card.translations);
         this.#back = this.#card.translations;
         this.#toggleCorrect();
         this.#updateDisplay();

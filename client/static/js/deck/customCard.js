@@ -23,8 +23,7 @@ class CustomCard {
     }
 
     #validateWord(selector) {
-        console.log(selector)
-        console.log(selector);
+      
         if (selector.validity.patternMismatch) {
             selector.setCustomValidity("I am expecting text!");
             selector.reportValidity();
@@ -41,7 +40,6 @@ class CustomCard {
 
     async #validInput(selector, inputValidatorFunc) {
         const isValid = await inputValidatorFunc;
-        
         if (isValid) {
             selector.classList.add("is-primary");
             selector.classList.remove("is-danger");
@@ -54,7 +52,6 @@ class CustomCard {
 
     #sourceIsValid(deck) {
         const selector = document.querySelector("#add-source");
-        console.log(selector)
         if (deck.hasCard(this.word)) {
             return false;
         }
@@ -71,23 +68,27 @@ class CustomCard {
     #sourceLanguageIsValid() {
         const selector = document.querySelector("#add-source-language");
         const isValidInput = this.#validateLanguage(this.sourceLanguage);
-        return this.#validInput(selector, isValidInput);
+        const noDuplicate = this.sourceLanguage !== this.targetLanguage;
+        return (this.#validInput(selector, noDuplicate && isValidInput));
     }
 
     #translationLanguageIsValid() {
         const selector = document.querySelector("#add-translation-language");
         const isValidInput = this.#validateLanguage(this.targetLanguage);
-        return this.#validInput(selector, isValidInput);
+        const noDuplicate = this.sourceLanguage !== this.targetLanguage;
+        return (this.#validInput(selector, noDuplicate && isValidInput));
     }
 
-    readyToUpload(deck) {
-        return (this.#sourceLanguageIsValid() && this.#translationLanguageIsValid() &&
+    async readyToUpload(deck) {
+        return (this.sourceLanguage !== this.targetLanguage) && (await this.#sourceLanguageIsValid() && await this.#translationLanguageIsValid() &&
             this.#sourceIsValid(deck) && this.#translationIsValid());
     }
 
     languageIsReady(selector) {
         const lang = selector.value;
-        return this.#validInput(selector, this.#validateLanguage(lang, this.#availableLanguages));
+        const noDuplicate = this.sourceLanguage !== this.targetLanguage;
+        const isValidInput = this.#validateLanguage(lang);
+        return (this.#validInput(selector, noDuplicate && isValidInput));
     }
 
     wordIsReady(selector) {
