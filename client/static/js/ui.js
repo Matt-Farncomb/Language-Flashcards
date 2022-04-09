@@ -49,7 +49,9 @@ class UI {
     }
 
     async #readyToUpload() {
-        if (await this.#currentCustomCard.readyToUpload(this.#deck)) {
+        const test = await this.#currentCustomCard.readyToUpload(this.#deck);
+        console.log(test);
+        if (test) {
             this.#enableAddCard();
         } else {
             this.#disableAddCard();
