@@ -42,8 +42,8 @@ class UI {
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
-        this.#validateLanguageOnChange('source-language');
-        this.#validateLanguageOnChange('translation-language');
+        this.#validateLanguageOnChange('source');
+        this.#validateLanguageOnChange('translation');
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
     }
@@ -71,12 +71,11 @@ class UI {
     }
 
     async #validateLanguageOnChange(id) {
-        const input = document.querySelector(`#add-${id}`);
+        const input = document.querySelector(`#add-${id}-language`);
         input.onchange = (e) => {
-            this.#currentCustomCard.languageIsReady(input);
+            this.#currentCustomCard.isThisLanguageValid(id);
             this.#readyToUpload();
         }
-        
     }
 
     #validateWordOnChange(id) {
@@ -139,7 +138,7 @@ class UI {
     #revealCardForm() {
         
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#currentCustomCard = new CustomCard(this.#server.languages);
+        this.#currentCustomCard = new CustomCard(this.#server);
         //this.#readyToUpload();
         this.#disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");

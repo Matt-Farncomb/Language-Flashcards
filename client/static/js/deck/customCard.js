@@ -1,9 +1,10 @@
 class CustomCard {
 
-    #availableLanguages; 
+    #languages; 
+    #server;
 
-    constructor(languages) {
-        this.#availableLanguages = languages;
+    constructor(server) {
+        this.#server = server;
     }
 
     get word() {
@@ -22,6 +23,10 @@ class CustomCard {
         return document.querySelector("#add-translation-language").value;
     }
 
+    get languages() {
+        return this.#server.languages;
+    }
+
     #validateIsWord(selector) {
       
         if (selector.validity.patternMismatch || selector.value == "") {
@@ -33,8 +38,8 @@ class CustomCard {
         return true;
     }
 
-    async #validateLanguage(userInputLanguage) { 
-        const data = await this.#availableLanguages;
+    async isAvailableLanguage(userInputLanguage) { 
+        const data = await this.languages;
         return data.includes(userInputLanguage);        
     }
 
@@ -67,44 +72,28 @@ class CustomCard {
         return isWord;
     }
 
-    // async #sourceLanguageIsValid() {
-    //     const selector = document.querySelector("#add-source-language");
-    //     const isValidLanguage = await this.#validateLanguage(this.sourceLanguage);
-    //     const noDuplicate = this.sourceLanguage !== this.targetLanguage;
-    //     this.#updateDiplsayIfValid(selector, noDuplicate && isValidLanguage)
-    //     return noDuplicate && isValidLanguage;
-    // }
-
-    // async #translationLanguageIsValid() {
-    //     const selector = document.querySelector("#add-translation-language");
-    //     const isValidLanguage = await this.#validateLanguage(this.targetLanguage);
-    //     const noDuplicate = this.sourceLanguage !== this.targetLanguage;
-    //     this.#updateDiplsayIfValid(selector, noDuplicate && isValidLanguage)
-    //     return noDuplicate && isValidLanguage;
-    // }
-
-    async #isThisLanguageValid(selectorString) {
+    async isThisLanguageValid(selectorString) {
         const selector = document.querySelector(`#add-${selectorString}-language`);
-        const isValidLanguage = await this.#validateLanguage(selector.value);
+        const available = await this.isAvailableLanguage(selector.value);
         const noDuplicate = this.sourceLanguage !== this.targetLanguage;
-        this.#updateDiplsayIfValid(selector, noDuplicate && isValidLanguage)
-        return noDuplicate && isValidLanguage;
+        this.#updateDiplsayIfValid(selector, noDuplicate && available)
+        return noDuplicate && available;
     }
 
     async readyToUpload(deck) {
         const noDuplicates = this.sourceLanguage !== this.targetLanguage;
-        const languagesAreValid = await this.#isThisLanguageValid("source") && await this.#isThisLanguageValid("translation");
+        const languagesAreValid = await this.isThisLanguageValid("source") && await this.isThisLanguageValid("translation");
         const wordsAreValid = this.#sourceIsValid(deck) && this.#translationIsValid();
         return noDuplicates && languagesAreValid && wordsAreValid;        
     }
 
-    languageIsReady(selector) {
-        const lang = selector.value;
-        const noDuplicate = this.sourceLanguage !== this.targetLanguage;
-        const isValidInput = this.#validateLanguage(lang);
-        this.#updateDiplsayIfValid(selector, noDuplicate && isValidInput)
-        return noDuplicate && isValidInput;
-    }
+    // languageIsReady(selector) {
+    //     const lang = selector.value;
+    //     const noDuplicate = this.sourceLanguage !== this.targetLanguage;
+    //     const isValidInput = this.#validateLanguage(lang);
+    //     this.#updateDiplsayIfValid(selector, noDuplicate && isValidInput)
+    //     return noDuplicate && isValidInput;
+    // }
 
     wordIsReady(selector) {
         const wordIsValid = this.#validateIsWord(selector);
