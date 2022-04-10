@@ -30,8 +30,8 @@ class CustomCard {
     #validateIsWord(selector) {
       
         if (selector.validity.patternMismatch || selector.value == "") {
-            selector.setCustomValidity("Please enter words only");
-            selector.reportValidity();
+            // selector.setCustomValidity("Please enter words only");
+            // selector.reportValidity();
             return false;
         }
         // throw new Error('Method not implemented.');
@@ -48,7 +48,7 @@ class CustomCard {
         if (waited) {
             selector.classList.add("is-primary");
             selector.classList.remove("is-danger");
-        } else {
+        } else if (!waited && selector.value != "") {
             selector.classList.remove("is-primary");
             selector.classList.add("is-danger");
         }
