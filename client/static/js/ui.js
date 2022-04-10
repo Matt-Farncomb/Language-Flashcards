@@ -60,8 +60,10 @@ class UI {
 
     #disableAddCard() {
         document.querySelector("#add").classList.add("disabledPointer");    
-        document.querySelector("#upload").classList.add("disabledPointer");
         document.querySelector("#add").classList.remove("is-success");
+        if (this.#baseDeck == null) {
+            document.querySelector("#upload").classList.add("disabledPointer");
+        } 
     }
 
     #enableAddCard() {
@@ -100,11 +102,15 @@ class UI {
         });
         this.#disableAddCard();
         this.#toggleLanguageLock(false);
+        this.#baseDeck = null;
     }
 
     #clearWords() {
         document.querySelector("#add-source").value = "";
+        document.querySelector("#add-source").classList.remove("is-primary", "is-danger");
         document.querySelector("#add-translation").value = "";
+        document.querySelector("#add-translation").classList.remove("is-primary", "is-danger");
+        this.#readyToUpload();
     }
 
     #getCardForUpload() {
