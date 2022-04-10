@@ -10,6 +10,18 @@ class BaseDeck {
         this._cards = [];
     }
 
+    get cards() {
+        return this._cards;
+    }
+
+    get sourceLanguage() {
+        return this.#sourceLanguage;
+    }
+
+    get targetLanguage() {
+        return this.#targetLanguage;
+    }
+
     addCard(card){
         this._cards.push(card);
     }
@@ -23,15 +35,5 @@ class BaseDeck {
         return false;
     }
 
-    get cards() {
-        return this._cards;
-    }
 
-    get sourceLanguage() {
-        return this.#sourceLanguage;
-    }
-
-    get targetLanguage() {
-        return this.#targetLanguage;
-    }
 }

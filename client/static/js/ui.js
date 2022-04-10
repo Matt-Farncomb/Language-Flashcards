@@ -87,7 +87,10 @@ class UI {
         
     }
 
-
+    #toggleLanguageLock(status) {
+        document.querySelector("#add-source-language").disabled = status;
+        document.querySelector("#add-translation-language").disabled = status;
+    }
 
     #clearCardForm() {
         const inputs = document.querySelectorAll("#new-card-modal input");
@@ -96,25 +99,25 @@ class UI {
             input.classList.remove("is-primary", "is-danger");
         });
         this.#disableAddCard();
+        this.#toggleLanguageLock(false);
     }
 
     #clearWords() {
         document.querySelector("#add-source").value = "";
-        document.querySelector("#add-tran").value = "";
+        document.querySelector("#add-translation").value = "";
     }
 
     #getCardForUpload() {
 
         if (this.#baseDeck == null) {
             this.#baseDeck = new BaseDeck(
-                this.#currentCustomCard.sourceLanguage.value, this.#currentCustomCard.targetLanguage.value
+                this.#currentCustomCard.sourceLanguage, this.#currentCustomCard.targetLanguage
             );
-            document.querySelector("#add-lang").disabled = true;
-            document.querySelector("#add-tran-lang").disabled = true;
-
+            this.#toggleLanguageLock(true);
         }
 
         const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translation);
+        console.log(card);
         this.#baseDeck.addCard(card);
         this.#clearWords();
     }

@@ -62,7 +62,6 @@ class CustomCard {
         const isWord = this.#validateIsWord(sourceInput);
         this.#updateDiplsayIfValid(sourceInput, isWord);
         return isWord;
-        
     }
 
     #translationIsValid() {

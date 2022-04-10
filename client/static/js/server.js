@@ -66,9 +66,10 @@ class Server {
         let cardsArr = [];
 
         baseDeck.cards.forEach(card => {
+            console.log(card)
             cardsArr.push({
-                "source_word":card.source_word,
-                "translation":card.translation
+                "source_word":card.word,
+                "translation":card.translations
             })
         });
 
@@ -77,7 +78,7 @@ class Server {
             "target_language":baseDeck.targetLanguage,
             "cards":cardsArr 
         }
-        console.log(cardsArr);
+        console.log(data);
         fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
