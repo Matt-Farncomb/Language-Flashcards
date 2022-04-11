@@ -1,12 +1,11 @@
 class FlashCardDeck extends BaseDeck {
 
    
-    #cards;
     #drawPile;
 
     constructor() {
         super();
-        this.#drawPile = this.#cards;
+        this.#drawPile = this.cards;
     }
 
     cardsRemaining() {
@@ -57,6 +56,7 @@ class FlashCardDeck extends BaseDeck {
     }
 
     getDeck(server, count) {
+        
         server.fetchDeck(count).then((data) => {
             this._cards = data.map((card) => {
                 const translation_list = card.translations.map((translation) => {
@@ -65,6 +65,7 @@ class FlashCardDeck extends BaseDeck {
                 return new FlashCard(card.id, card.source_word, translation_list);
             }); 
         })
+        console.log(this._cards);
     }
 }
 

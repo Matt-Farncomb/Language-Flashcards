@@ -11,6 +11,7 @@ class BaseDeck {
     }
 
     get cards() {
+        console.log("called");
         return this._cards;
     }
 

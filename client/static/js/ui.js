@@ -46,6 +46,9 @@ class UI {
         this.#validateLanguageOnChange('translation');
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
+
+        this.#validateDrawCardLanguageOnChange("source");
+        this.#validateDrawCardLanguageOnChange("translation");
     }
 
     async #readyToUpload() {
@@ -56,6 +59,25 @@ class UI {
         } else {
             this.#disableAddCard();
         }
+    }
+
+    #changeInputUIIfInvalid(languageType) {
+        // const selector = document.querySelector(`${languageType}-language`);
+        const validLanguage = data.includes(selector.value)
+        if (validLanguage){
+            selector.classList.add("is-primary");
+            selector.classList.remove("is-danger");
+        } else if (!validLanguage && selector.value != "") {
+            selector.classList.remove("is-primary");
+            selector.classList.add("is-danger");
+        }
+    }
+
+    async #readyToDraw() {
+        const data = await this.#server.languages
+        const scource = document.querySelector("source-language").value;
+        
+        return data.includes(scource) && data.includes(translation)     
     }
 
     #disableAddCard() {
@@ -70,6 +92,54 @@ class UI {
         document.querySelector("#upload").classList.remove("disabledPointer");
         document.querySelector("#add").classList.remove("disabledPointer"); 
         document.querySelector("#add").classList.add("is-success");
+    }
+
+    
+    
+    //Oh god, what an awfull function - MUST REFACTOR ASAP
+    // TODO: When clicking on draw deck, the form is empty but still NOT greyed out
+    async #validateDrawCardLanguageOnChange(languageType) {
+        const inputs = {
+            "source": false,
+            "translation": false
+        }
+        const data = await this.#server.languages;
+        const selector = document.querySelector(`#${languageType}-language`);
+        selector.onchange = (e) => {
+            const source = document.querySelector("#source-language").value;
+            const translation = document.querySelector("#translation-language").value;
+            inputs["source"] = data.includes(source);
+            inputs["translation"] = data.includes(translation);
+            if (inputs["source"] && inputs["translation"] && source != translation) {
+                document.querySelector("#draw-deck").classList.remove("disabledPointer"); 
+                document.querySelector("#draw-deck").classList.add("is-success");
+            } else {
+                document.querySelector("#draw-deck").classList.add("disabledPointer"); 
+                document.querySelector("#draw-deck").classList.remove("is-success");
+            }
+
+            if (inputs[languageType]){
+                selector.classList.add("is-primary");
+                selector.classList.remove("is-danger");
+            } else if (!inputs[languageType] && selector.value != "") {
+                selector.classList.remove("is-primary");
+                selector.classList.add("is-danger");
+            }
+
+            if (inputs[languageType] && source != translation) {
+                document.querySelector("#source-language").classList.add("is-primary");
+                document.querySelector("#translation-language").classList.add("is-primary")
+                document.querySelector("#source-language").classList.remove("is-danger")
+                document.querySelector("#translation-language").classList.remove("is-danger")
+            }
+            else {
+                document.querySelector("#source-language").classList.remove("is-primary");
+                document.querySelector("#translation-language").classList.remove("is-primary");
+                document.querySelector("#source-language").classList.add("is-danger")
+                document.querySelector("#translation-language").classList.add("is-danger");
+            }
+               
+        }
     }
 
     async #validateLanguageOnChange(id) {
@@ -131,8 +201,8 @@ class UI {
 
     login(event) {
         // event.preventDefault();
-        let source_language = document.querySelector("#source_language");
-        let target_language = document.querySelector("#target_language");
+        let source_language = document.querySelector("#source-language");
+        let target_language = document.querySelector("#translation-language");
         localStorage.setItem('source_language', source_language.value);
         localStorage.setItem('target_language', target_language.value);
         this.#updateDisplayedLanguages();

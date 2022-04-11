@@ -94,8 +94,8 @@ def get_cards(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
     logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
-    
     deck.build_deck_from_db(count)
+    print(deck.deck)
     return deck.deck
 
 @app.post("/refresh/") 

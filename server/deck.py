@@ -17,6 +17,11 @@ languages = {
     "vi":0
 }
 
+language_by_string = {
+    "Spanish":"es",
+    "Finnish":"fi"
+}
+
 new_languages = {
     "es": {
         "code":4,
@@ -136,9 +141,10 @@ class Deck:
             thread = threading.Thread(target=self.__run_thread, args=[q, cards])
             thread.start()
         for word in words:
-            logger.info(f"putting{word}")
+            #logger.info(f"putting{word}")
             q.put(word)
         q.join()
+        logger.info("finished putting")
         return cards
     
     
@@ -180,6 +186,7 @@ class Deck:
         # print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
         cards = self.__spawn_threads(source_words)
+        print(f"cards: {cards}")
         return cards
         
         # for word in source_words:
@@ -190,8 +197,8 @@ class Deck:
     def __get_translations(self, word: str) -> List[str]:
         translations: List[str] = []
         # get int representing langauge on webxicon
-        l1 = languages[self.source_language]
-        l2 = languages[self.target_language]
+        l1 = languages[language_by_string[self.source_language]]
+        l2 = languages[language_by_string[self.target_language]]
         # scrape all translations of word from webxicon
         url = f"http://webxicon.org/search.php?q={word}&l={l1}&l2={l2}"
         req = requests.get(url, allow_redirects=True).text
@@ -217,7 +224,8 @@ class Deck:
     
     def __get_vocab(self, language):
         lingo  = self.__duo_login()
-        vocab = lingo.get_vocabulary(language)
+        languageAbreviation = language_by_string[language]
+        vocab = lingo.get_vocabulary(languageAbreviation)
         words = [ word["word_string"] for word in vocab["vocab_overview"] ]
         return words
         # for word in words:
