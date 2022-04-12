@@ -49,9 +49,9 @@ class UI {
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
 
-        this.#validateDrawCardLanguageOnChange("deck-size");
-        this.#validateDrawCardLanguageOnChange("source-language");
-        this.#validateDrawCardLanguageOnChange("translation-language");
+        this.#validateDrawCardOnChange("deck-size");
+        this.#validateDrawCardOnChange("source-language");
+        this.#validateDrawCardOnChange("translation-language");
     }
 
     async #readyToUpload() {
@@ -111,53 +111,12 @@ class UI {
 
     
     
-    //Oh god, what an awfull function - MUST REFACTOR ASAP
-    async #validateDrawCardLanguageOnChange(input) {
+
+    async #validateDrawCardOnChange(input) {
         const selector = document.querySelector(`#${input}`);
         selector.onchange = (e) => {
             this.#readyToDraw();
         }
-        // const inputs = {
-        //     "source": false,
-        //     "translation": false
-        // }
-        // const data = await this.#server.languages;
-        // const selector = document.querySelector(`#${languageType}-language`);
-        // selector.onchange = (e) => {
-        //     const source = document.querySelector("#source-language").value;
-        //     const translation = document.querySelector("#translation-language").value;
-        //     inputs["source"] = data.includes(source);
-        //     inputs["translation"] = data.includes(translation);
-        //     if (inputs["source"] && inputs["translation"] && source != translation) {
-        //         document.querySelector("#draw-deck").classList.remove("disabledPointer"); 
-        //         document.querySelector("#draw-deck").classList.add("is-success");
-        //     } else {
-        //         document.querySelector("#draw-deck").classList.add("disabledPointer"); 
-        //         document.querySelector("#draw-deck").classList.remove("is-success");
-        //     }
-
-        //     if (inputs[languageType]){
-        //         selector.classList.add("is-primary");
-        //         selector.classList.remove("is-danger");
-        //     } else if (!inputs[languageType] && selector.value != "") {
-        //         selector.classList.remove("is-primary");
-        //         selector.classList.add("is-danger");
-        //     }
-
-        //     if (inputs[languageType] && source != translation) {
-        //         document.querySelector("#source-language").classList.add("is-primary");
-        //         document.querySelector("#translation-language").classList.add("is-primary")
-        //         document.querySelector("#source-language").classList.remove("is-danger")
-        //         document.querySelector("#translation-language").classList.remove("is-danger")
-        //     }
-        //     else {
-        //         document.querySelector("#source-language").classList.remove("is-primary");
-        //         document.querySelector("#translation-language").classList.remove("is-primary");
-        //         document.querySelector("#source-language").classList.add("is-danger")
-        //         document.querySelector("#translation-language").classList.add("is-danger");
-        //     }
-               
-        // }
     }
 
     async #validateLanguageOnChange(id) {
