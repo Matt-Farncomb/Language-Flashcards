@@ -12,6 +12,7 @@ class UI {
     #deckSize;
 
     #currentCustomCard;
+    #deckToDraw;
 
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
@@ -20,6 +21,7 @@ class UI {
         this.#deckSize = deckSize;
         this.#baseDeck = null;
         this.#currentCustomCard = null;
+        this.#deckToDraw = null;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
@@ -47,8 +49,9 @@ class UI {
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
 
-        this.#validateDrawCardLanguageOnChange("source");
-        this.#validateDrawCardLanguageOnChange("translation");
+        this.#validateDrawCardLanguageOnChange("deck-size");
+        this.#validateDrawCardLanguageOnChange("source-language");
+        this.#validateDrawCardLanguageOnChange("translation-language");
     }
 
     async #readyToUpload() {
@@ -58,6 +61,18 @@ class UI {
             this.#enableAddCard();
         } else {
             this.#disableAddCard();
+        }
+    }
+
+    async #readyToDraw() {
+        const test = await this.#deckToDraw.readyToDraw();
+        console.log(test);
+        if (test) {
+            document.querySelector("#draw-deck").classList.remove("disabledPointer"); 
+            document.querySelector("#draw-deck").classList.add("is-success");
+        } else {
+            document.querySelector("#draw-deck").classList.add("disabledPointer"); 
+            document.querySelector("#draw-deck").classList.remove("is-success");
         }
     }
 
@@ -73,12 +88,12 @@ class UI {
         }
     }
 
-    async #readyToDraw() {
-        const data = await this.#server.languages
-        const scource = document.querySelector("source-language").value;
+    // async #readyToDraw() {
+    //     const data = await this.#server.languages
+    //     const scource = document.querySelector("source-language").value;
         
-        return data.includes(scource) && data.includes(translation)     
-    }
+    //     return data.includes(scource) && data.includes(translation)     
+    // }
 
     #disableAddCard() {
         document.querySelector("#add").classList.add("disabledPointer");    
@@ -97,49 +112,52 @@ class UI {
     
     
     //Oh god, what an awfull function - MUST REFACTOR ASAP
-    // TODO: When clicking on draw deck, the form is empty but still NOT greyed out
-    async #validateDrawCardLanguageOnChange(languageType) {
-        const inputs = {
-            "source": false,
-            "translation": false
-        }
-        const data = await this.#server.languages;
-        const selector = document.querySelector(`#${languageType}-language`);
+    async #validateDrawCardLanguageOnChange(input) {
+        const selector = document.querySelector(`#${input}`);
         selector.onchange = (e) => {
-            const source = document.querySelector("#source-language").value;
-            const translation = document.querySelector("#translation-language").value;
-            inputs["source"] = data.includes(source);
-            inputs["translation"] = data.includes(translation);
-            if (inputs["source"] && inputs["translation"] && source != translation) {
-                document.querySelector("#draw-deck").classList.remove("disabledPointer"); 
-                document.querySelector("#draw-deck").classList.add("is-success");
-            } else {
-                document.querySelector("#draw-deck").classList.add("disabledPointer"); 
-                document.querySelector("#draw-deck").classList.remove("is-success");
-            }
-
-            if (inputs[languageType]){
-                selector.classList.add("is-primary");
-                selector.classList.remove("is-danger");
-            } else if (!inputs[languageType] && selector.value != "") {
-                selector.classList.remove("is-primary");
-                selector.classList.add("is-danger");
-            }
-
-            if (inputs[languageType] && source != translation) {
-                document.querySelector("#source-language").classList.add("is-primary");
-                document.querySelector("#translation-language").classList.add("is-primary")
-                document.querySelector("#source-language").classList.remove("is-danger")
-                document.querySelector("#translation-language").classList.remove("is-danger")
-            }
-            else {
-                document.querySelector("#source-language").classList.remove("is-primary");
-                document.querySelector("#translation-language").classList.remove("is-primary");
-                document.querySelector("#source-language").classList.add("is-danger")
-                document.querySelector("#translation-language").classList.add("is-danger");
-            }
-               
+            this.#readyToDraw();
         }
+        // const inputs = {
+        //     "source": false,
+        //     "translation": false
+        // }
+        // const data = await this.#server.languages;
+        // const selector = document.querySelector(`#${languageType}-language`);
+        // selector.onchange = (e) => {
+        //     const source = document.querySelector("#source-language").value;
+        //     const translation = document.querySelector("#translation-language").value;
+        //     inputs["source"] = data.includes(source);
+        //     inputs["translation"] = data.includes(translation);
+        //     if (inputs["source"] && inputs["translation"] && source != translation) {
+        //         document.querySelector("#draw-deck").classList.remove("disabledPointer"); 
+        //         document.querySelector("#draw-deck").classList.add("is-success");
+        //     } else {
+        //         document.querySelector("#draw-deck").classList.add("disabledPointer"); 
+        //         document.querySelector("#draw-deck").classList.remove("is-success");
+        //     }
+
+        //     if (inputs[languageType]){
+        //         selector.classList.add("is-primary");
+        //         selector.classList.remove("is-danger");
+        //     } else if (!inputs[languageType] && selector.value != "") {
+        //         selector.classList.remove("is-primary");
+        //         selector.classList.add("is-danger");
+        //     }
+
+        //     if (inputs[languageType] && source != translation) {
+        //         document.querySelector("#source-language").classList.add("is-primary");
+        //         document.querySelector("#translation-language").classList.add("is-primary")
+        //         document.querySelector("#source-language").classList.remove("is-danger")
+        //         document.querySelector("#translation-language").classList.remove("is-danger")
+        //     }
+        //     else {
+        //         document.querySelector("#source-language").classList.remove("is-primary");
+        //         document.querySelector("#translation-language").classList.remove("is-primary");
+        //         document.querySelector("#source-language").classList.add("is-danger")
+        //         document.querySelector("#translation-language").classList.add("is-danger");
+        //     }
+               
+        // }
     }
 
     async #validateLanguageOnChange(id) {
@@ -212,6 +230,7 @@ class UI {
 
     #revealDeckForm() {
         document.querySelector("#deck-modal").classList.toggle("is-active");
+        this.#deckToDraw = new DrawDeck(this.#server);
     }
 
     #revealCardForm() {
