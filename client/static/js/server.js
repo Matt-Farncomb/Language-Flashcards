@@ -64,7 +64,7 @@ class Server {
     uploadDeck(baseDeck) {
         const url = `${this.#serverURL}upload/`
         let cardsArr = [];
-
+        console.log(baseDeck)
         baseDeck.cards.forEach(card => {
             console.log(card)
             cardsArr.push({

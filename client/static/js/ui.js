@@ -39,7 +39,7 @@ class UI {
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
         //Creating new cards
         this.#whenClicked("#create", () => this.#revealCardForm());
-        this.#whenClicked(".close-create-modal", () => this.#revealCardForm());
+        this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
         this.#whenClicked("#clear", () => this.#clearCardForm());
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
@@ -104,9 +104,11 @@ class UI {
     }
 
     #enableAddCard() {
-        document.querySelector("#upload").classList.remove("disabledPointer");
         document.querySelector("#add").classList.remove("disabledPointer"); 
         document.querySelector("#add").classList.add("is-success");
+        if (this.#baseDeck != null) {
+            document.querySelector("#upload").classList.remove("disabledPointer");
+        }
     }
 
     
@@ -149,7 +151,7 @@ class UI {
         });
         this.#disableAddCard();
         this.#toggleLanguageLock(false);
-        this.#baseDeck = null;
+        // this.#baseDeck = null;
     }
 
     #clearWords() {
@@ -161,8 +163,9 @@ class UI {
     }
 
     #getCardForUpload() {
-
+        
         if (this.#baseDeck == null) {
+            
             this.#baseDeck = new BaseDeck(
                 this.#currentCustomCard.sourceLanguage, this.#currentCustomCard.targetLanguage
             );
@@ -173,6 +176,11 @@ class UI {
         console.log(card);
         this.#baseDeck.addCard(card);
         this.#clearWords();
+        if (this.#baseDeck != null)  {
+            document.querySelector("#upload").classList.remove("disabledPointer");
+        }
+
+        
     }
 
 
@@ -193,7 +201,7 @@ class UI {
     }
 
     #revealCardForm() {
-        
+        this.#baseDeck = null;
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
         this.#currentCustomCard = new CustomCard(this.#server);
         //this.#readyToUpload();
@@ -201,6 +209,12 @@ class UI {
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
         
+    }
+
+    #hideHardForm() {
+        this.#disableAddCard();
+        document.querySelector("#new-card-modal").classList.toggle("is-active");
+        this.#clearCardForm();
     }
 
     #updateDisplayedLanguages() {
