@@ -2,9 +2,11 @@ class CustomCard {
 
     #languages; 
     #server;
+    #recorder;
 
     constructor(server) {
         this.#server = server;
+        this.#recorder = new Recorder();
     }
 
     get word() {
