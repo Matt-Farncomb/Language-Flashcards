@@ -83,10 +83,13 @@ def get_languages_short():
 
 @app.post("/upload/")
 def upload_deck(deck: UploadedDeck):
+    new_deck = Deck(deck.source_language, deck.target_language)
+    new_deck.add_custom_deck(deck)
+    new_deck.upload_deck()
     print("uploaded")
-    for e in deck:
-        print(e)
-    pass
+    # for e in deck:
+    #     print(e)
+    # pass
     
 
 @app.get("/cards/") 

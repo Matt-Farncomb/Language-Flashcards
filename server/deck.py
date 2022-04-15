@@ -80,6 +80,15 @@ class Deck:
         
         # self.vocab = self._get_vocab(source_language)
         # self.target_vocab = self._get_vocab(source_language)
+        
+    def add_custom_deck(self, custom_cards):
+        for word in custom_cards.cards:
+            print(word)
+            new_word = Word(word.source_word, custom_cards.source_language)
+            new_translation = Word(word.translation, custom_cards.target_language)
+            new_card = Card(None, new_word, [new_translation])
+            self.deck.append(new_card)
+        print(self.deck)
       
     def upload_deck(self):
         self.db.upload_deck(self.deck)
