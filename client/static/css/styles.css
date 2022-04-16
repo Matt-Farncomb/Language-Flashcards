@@ -1,3 +1,9 @@
+
+/* This is to prevent icons effecting click events */
+button > i {
+  pointer-events: none;
+} 
+
 .outer-card {
 
     perspective: 1000px;
