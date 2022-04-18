@@ -41,6 +41,7 @@ class Database:
             if card.source_word not in card_ids:
                 card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
                 WordInfo.create(word=card_id)
+                Audio.create(word=card_id)
                 card_ids[card.source_word] = card_id.id
             data = []
             for c in card.translations:

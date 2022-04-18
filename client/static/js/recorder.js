@@ -5,10 +5,12 @@ class Recorder {
     #audioPlayer;
     #recording;
     #chunks;
+    #customCard;
 
 
-    constructor() {
+    constructor(customCard) {
         // this.#mediaRecorder = new MediaRecorder();
+        this.#customCard = customCard;
         this.#recordButton = document.querySelector("#record");
 
         this.#recordButton.addEventListener('click', () => { 
@@ -21,7 +23,7 @@ class Recorder {
     }
 
     get audioPlayer() {
-        return document.querySelector("audio");
+        return document.querySelector("#player");
     }
 
 
@@ -61,10 +63,16 @@ class Recorder {
                     self.#mediaRecorder.onstop = function(e) {
                         self.audioPlayer.setAttribute('controls', '');
                         const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
+
+                        var bloby = new Blob([JSON.stringify([0,1,2])], {type : 'application/json'});
+                        // var fileOfBlob = new File([bloby], 'aFileName.json');
+                        
+
                         self.#chunks = [];
                         const audioURL = window.URL.createObjectURL(blob);
                         self.audioPlayer.src = audioURL;
-                        console.log(audioURL)
+                        self.#customCard.audio = blob;
+                        console.log(audioURL);
                     }   
 
                     

@@ -62,30 +62,63 @@ class Server {
     }
 
     uploadDeck(baseDeck) {
-        const url = `${this.#serverURL}upload/`
+        const url = `${this.#serverURL}uploadTest/`
         let cardsArr = [];
+        let blobTest;
         console.log(baseDeck)
         baseDeck.cards.forEach(card => {
-            console.log(card)
+            console.log(card.audio)
+            blobTest = card.audio;
             cardsArr.push({
                 "source_word":card.word,
-                "translation":card.translations
+                "translation":card.translations,
+                "audio":card.audio
             })
         });
-
+        console.log(blobTest);
         const data = {
             "source_language":baseDeck.sourceLanguage,
             "target_language":baseDeck.targetLanguage,
             "cards":cardsArr 
         }
-        console.log(data);
+        const formData = new FormData();
+        formData.append("file", blobTest);
+        console.log(formData);
         fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: formData
         })
-        .then((response) => response.json())
-        .then((response) => console.log(response));
+        .then((response) => response.blob())
+        .then((response) => {
+            // response.file
+            // var object = {};
+            // const blob = new Blob([response], { 'type' : 'audio/ogg; codecs=opus' });
+            // console.log([...formData]);
+
+            // const roughObjSize = JSON.stringify(response).length;
+            // console.log(roughObjSize)
+
+
+            // // response.forEach((value, key) => object[key] = value);
+            // // var json = JSON.stringify(object);
+            // console.log(blob)
+            // var json = JSON.stringify(response)
+            // console.log(response)
+
+            fetch(`${this.#serverURL}getTest/`, {
+                method: 'GET'
+            })
+            .then((response) => response.blob())
+            .then((response) => { 
+              
+                response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
+                console.log(response);
+
+                document.querySelector("#testRecorder").setAttribute('controls', '');
+                const audioURL = window.URL.createObjectURL(response);
+                document.querySelector("#testRecorder").src = audioURL;
+             });
+        });
     }
 
     submitResult(deck) {

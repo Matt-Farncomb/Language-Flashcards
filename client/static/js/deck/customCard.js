@@ -3,10 +3,11 @@ class CustomCard {
     #languages; 
     #server;
     #recorder;
+    #audio;
 
     constructor(server) {
         this.#server = server;
-        this.#recorder = new Recorder();
+        this.#recorder = new Recorder(this);
     }
 
     get word() {
@@ -27,6 +28,14 @@ class CustomCard {
 
     get languages() {
         return this.#server.languages;
+    }
+
+    get audio() {
+        return this.#audio;
+    }
+
+    set audio(audioClip) {
+        this.#audio = audioClip; 
     }
 
     #validateIsWord(selector) {

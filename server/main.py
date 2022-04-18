@@ -1,4 +1,4 @@
-from fastapi import Query, Request
+from fastapi import Query, Request, Response, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -7,9 +7,10 @@ from typing import List
 from app import app
 from deck import Deck, languages, new_languages
 from database import Database
-from schemas import Result, Refresh, UploadedDeck
+from schemas import Result, Refresh, UploadedDeck, BlobTest
 from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
+from fastapi.responses import FileResponse
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ app.mount("/static/", StaticFiles(directory=f"..\client\static"), name="static")
 
 templates = Jinja2Templates(directory=f"..\client\\templates")
 
+data_test = ""
 
 @app.get("/", response_class=HTMLResponse)
 def read_item(request: Request):  
@@ -91,6 +93,16 @@ def upload_deck(deck: UploadedDeck):
     #     print(e)
     # pass
     
+# @app.post("/uploadTest/")
+# def upload_deck_test(deck: BlobTest):
+#     # new_deck = Deck(deck.source_language, deck.target_language)
+#     # new_deck.add_custom_deck(deck)
+#     # new_deck.upload_deck()
+#     print("uploaded")
+#     # for e in deck:
+#     #     print(e)
+#     # pass
+    
 
 @app.get("/cards/") 
 def get_cards(source_language: str, target_language: str, count: int):
@@ -117,6 +129,32 @@ def update_results(cards: List[Result]):
     db.update_words(cards)
     return "all good"
 
+@app.post("/uploadTest")
+async def create_file(file: Request):
+# async def create_file(file: UploadFile = File(...)):
+    form =  await file.form()
+    filename = form["file"].filename
+    contents = await form["file"].read()
+    with open(filename, 'wb') as f:
+        f.write(contents)
+    print(form.keys)
+    print(len(contents))
+    print(form["file"])
+    global data_test
+    data_test = contents
+    return form["file"]
 
+    # form = await request.form()
+    # filename = form["upload_file"].filename
+    # contents = await form["upload_file"].read()
+    # with open(filename, 'wb') as f:
+    #     f.write(contents)
+    # return filename
+
+@app.get("/getTest")
+async def getTest():
+    global data_test
+    print(len(data_test))
     
+    return Response(data_test)
     

@@ -171,8 +171,8 @@ class UI {
             );
             this.#toggleLanguageLock(true);
         }
-
-        const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translation);
+        console.log(this.#currentCustomCard.audio);
+        const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translation, this.#currentCustomCard.audio);
         console.log(card);
         this.#baseDeck.addCard(card);
         this.#clearWords();

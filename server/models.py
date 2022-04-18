@@ -17,7 +17,7 @@ class WordModel(BaseModel):
     parent = ForeignKeyField('self', null=True, backref='translations')
 
 class Audio(BaseModel):
-    filename = CharField()
+    filename = BlobField()
     word = ForeignKeyField(WordModel, null=True, backref='file')
 
 class WordInfo(BaseModel):
