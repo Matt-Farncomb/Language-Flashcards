@@ -130,19 +130,43 @@ def update_results(cards: List[Result]):
     return "all good"
 
 @app.post("/uploadTest")
-async def create_file(file: Request):
+async def create_file(source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
 # async def create_file(file: UploadFile = File(...)):
-    form =  await file.form()
-    filename = form["file"].filename
-    contents = await form["file"].read()
+    audios = []
+    print(source_word)
+    print(translation)
+    print(file)
+    # form =  await file.form()
+    # print(form)
+    # for k,v in form.items():
+    #     print(v)
+    # print(file.query_params["source_word"])
+    # filename = form["audio"].filename
+    # audio_files = form["audio"]
+    # print(audio_files)
+    # source_words = form["source_word"]
+    # translations = form["translation"]
+    # print(source_words)
+    # print(translations)
+    
+    contents = await file[0].read()
+    filename = file[0].filename
     with open(filename, 'wb') as f:
-        f.write(contents)
-    print(form.keys)
-    print(len(contents))
-    print(form["file"])
-    global data_test
-    data_test = contents
-    return form["file"]
+            f.write(contents)
+    audios.append(contents)
+    
+   
+    # print(form.keys)
+    # print(len(contents))
+    # print(form["file"])
+    # global data_test
+    # data_test = contents
+    
+    # new_deck = Deck(deck.source_language, deck.target_language)
+    # new_deck.add_custom_deck(deck)
+    # new_deck.upload_deck()
+   
+    return Response(audios[0])
 
     # form = await request.form()
     # filename = form["upload_file"].filename
@@ -151,10 +175,10 @@ async def create_file(file: Request):
     #     f.write(contents)
     # return filename
 
-@app.get("/getTest")
-async def getTest():
-    global data_test
-    print(len(data_test))
+# @app.get("/getTest")
+# async def getTest():
+#     global data_test
+#     print(len(data_test))
     
-    return Response(data_test)
+#     return Response(data_test)
     
