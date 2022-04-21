@@ -102,15 +102,22 @@ class Server {
             method: 'POST',
             body: formData
         })
-        .then((response) => response.blob())
+        .then((response) => response.json())
         .then((response) => {
+            response = response[1]
+            console.log(response)
+            fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
+            .then((response) => {
+                console.log(response)
+                const audioURL = window.URL.createObjectURL(response);
+                document.querySelector("#testRecorder").src = audioURL;
+            })
+            // response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
+            // console.log(response);
 
-            response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
-            console.log(response);
-
-            document.querySelector("#testRecorder").setAttribute('controls', '');
-            const audioURL = window.URL.createObjectURL(response);
-            document.querySelector("#testRecorder").src = audioURL;
+            // document.querySelector("#testRecorder").setAttribute('controls', '');
+            // const audioURL = window.URL.createObjectURL(response);
+            // document.querySelector("#testRecorder").src = audioURL;
             // response.file
             // var object = {};
             // const blob = new Blob([response], { 'type' : 'audio/ogg; codecs=opus' });

@@ -64,7 +64,7 @@ class Recorder {
                         self.audioPlayer.setAttribute('controls', '');
                         const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
 
-                        var bloby = new Blob([JSON.stringify([0,1,2])], {type : 'application/json'});
+                        // var bloby = new Blob([JSON.stringify([0,1,2])], {type : 'application/json'});
                         // var fileOfBlob = new File([bloby], 'aFileName.json');
                         
 

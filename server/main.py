@@ -11,6 +11,7 @@ from schemas import Result, Refresh, UploadedDeck, BlobTest
 from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
 from fastapi.responses import FileResponse
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,8 @@ def update_results(cards: List[Result]):
     db.update_words(cards)
     return "all good"
 
+from sys import getsizeof
+
 @app.post("/uploadTest")
 async def create_file(source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
 # async def create_file(file: UploadFile = File(...)):
@@ -136,6 +139,7 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     print(source_word)
     print(translation)
     print(file)
+
     # form =  await file.form()
     # print(form)
     # for k,v in form.items():
@@ -149,11 +153,36 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     # print(source_words)
     # print(translations)
     
-    contents = await file[0].read()
-    filename = file[0].filename
-    with open(filename, 'wb') as f:
+    # contents = await file[0].read()
+    # filename = file[0].filename
+    # with open(filename, 'wb') as f:
+    #         f.write(contents)
+    # audios.append(contents)
+    # thingy = {"file": audios[0]}
+    
+    # encoded = ""    
+    # with open(filename, "rb") as f:
+    #     encoded = base64.b64encode(f.read()).decode('utf-8')
+        
+    for fs in file:
+        contents = await fs.read()
+        filename = fs.filename
+        with open(filename, 'wb') as f:
             f.write(contents)
-    audios.append(contents)
+        with open(filename, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode('utf-8')
+            audios.append(encoded)
+        
+        
+        
+    print(getsizeof(encoded))
+        # return base64.b64encode(f.read()).decode('utf-8')
+    # encoded = base64.b64encode(contents)
+    # print(encoded)
+    
+    
+    
+ 
     
    
     # print(form.keys)
@@ -165,8 +194,11 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     # new_deck = Deck(deck.source_language, deck.target_language)
     # new_deck.add_custom_deck(deck)
     # new_deck.upload_deck()
-   
-    return Response(audios[0])
+    {"source_word":source_word[0], "translation": translation[0]}
+    header = {"meta_data":  source_word[0] }
+    return audios
+    # return Response(content=audios[0], headers=header)
+
 
     # form = await request.form()
     # filename = form["upload_file"].filename
