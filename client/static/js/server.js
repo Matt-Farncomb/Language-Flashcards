@@ -91,7 +91,7 @@ class Server {
         // }
 
         
-
+        let testWord = ""
         
         // formData.append("source_word", card.word);
         // formData.append("translation", card.translations);
@@ -103,12 +103,13 @@ class Server {
             body: formData
         })
         .then((response) => response.json())
-        .then((response) => {
-            response = response[1]
+        .then((response) => {   
+            testWord = response[0]["source_word"];
+            response = response[0]["file"]
             console.log(response)
             fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
             .then((response) => {
-                console.log(response)
+                console.log(testWord)
                 const audioURL = window.URL.createObjectURL(response);
                 document.querySelector("#testRecorder").src = audioURL;
             })

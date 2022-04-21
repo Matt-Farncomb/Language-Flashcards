@@ -139,6 +139,9 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     print(source_word)
     print(translation)
     print(file)
+    
+    
+        
 
     # form =  await file.form()
     # print(form)
@@ -159,23 +162,28 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     #         f.write(contents)
     # audios.append(contents)
     # thingy = {"file": audios[0]}
+    cards = []
     
     # encoded = ""    
     # with open(filename, "rb") as f:
     #     encoded = base64.b64encode(f.read()).decode('utf-8')
         
-    for fs in file:
-        contents = await fs.read()
-        filename = fs.filename
+    for e in range(len(file)):
+        card_dict = {}
+        contents = await file[e].read()
+        filename = file[e].filename
         with open(filename, 'wb') as f:
             f.write(contents)
         with open(filename, "rb") as f:
             encoded = base64.b64encode(f.read()).decode('utf-8')
-            audios.append(encoded)
+            card_dict["file"] = encoded
+            card_dict["source_word"] = source_word[e]
+            card_dict["translation"] = translation[e]
+            cards.append(card_dict)
         
         
         
-    print(getsizeof(encoded))
+    # print(getsizeof(encoded))
         # return base64.b64encode(f.read()).decode('utf-8')
     # encoded = base64.b64encode(contents)
     # print(encoded)
@@ -196,7 +204,7 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     # new_deck.upload_deck()
     {"source_word":source_word[0], "translation": translation[0]}
     header = {"meta_data":  source_word[0] }
-    return audios
+    return cards
     # return Response(content=audios[0], headers=header)
 
 
