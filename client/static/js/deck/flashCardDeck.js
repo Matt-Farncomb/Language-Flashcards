@@ -66,6 +66,16 @@ class FlashCardDeck extends BaseDeck {
             }); 
         })
         console.log(this._cards);
+        this._cards.forEach(element => {
+            console.log(element.word.voice)
+            let response = element.word.voice
+            fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
+            .then((response) => {
+                const audioURL = window.URL.createObjectURL(response);
+                document.querySelector("#testRecorder").src = audioURL;
+            })
+        });
+
     }
 }
 

@@ -17,14 +17,15 @@ class WordModel(BaseModel):
     parent = ForeignKeyField('self', null=True, backref='translations')
 
 class Audio(BaseModel):
-    filename = BlobField()
-    word = ForeignKeyField(WordModel, null=True, backref='file')
+    filename = BlobField(null=True)
+    #word = ForeignKeyField(WordModel, null=True, backref='file', primary_key=True)
+    word = ForeignKeyField(WordModel, null=True, primary_key=True)
 
 class WordInfo(BaseModel):
     last_tested = DateTimeField(null=True)
     used_count = IntegerField(null=True, default=0)
     answered_wrong_count = IntegerField(null=True, default=0)
-    word = ForeignKeyField(WordModel, backref='info')
+    word = ForeignKeyField(WordModel, primary_key=True)
     difficulty = IntegerField(null=True, default=0)
     
     # def get_difficulty(self):

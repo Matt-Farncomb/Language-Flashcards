@@ -2,13 +2,14 @@ import duolingo
 from decouple import config # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 import requests 
-from typing import List
+from typing import List, BinaryIO 
 from database import Database
 import threading, queue
 
 from base_logger import logging
 logger = logging.getLogger(__name__)
 
+import base64
 
 languages = {
     "es":4,
@@ -46,9 +47,9 @@ new_languages = {
 
 class Word:
     #def __init__(self, word: str, language: str, voice: Voice):
-    def __init__(self, word: str, language: str):
+    def __init__(self, word: str, language: str, voice: BinaryIO=None ):
         self.word = word
-        # self.voice = voice
+        self.voice = voice
         # self.audio_url = self.voice.speak(word)
         self.language = language
 
@@ -89,6 +90,13 @@ class Deck:
             new_card = Card(None, new_word, [new_translation])
             self.deck.append(new_card)
         print(self.deck)
+    
+    def add_custom_deck_two(self, source_words, translations, audio_files):
+        for i in range(len(source_words)):
+            new_word = Word(source_words[i], self.source_language, audio_files[i])
+            new_translation = Word(translations[i], self.target_language)
+            new_card = Card(None, new_word, [new_translation])
+            self.deck.append(new_card)
       
     def upload_deck(self):
         self.db.upload_deck(self.deck)
@@ -106,7 +114,13 @@ class Deck:
             print(f"words: {words}")
             for word in words:
                 #¤print(f"word: {word}")
-                new_word = Word(word.word, word.language)
+                print("here is working")
+                print(word.audio.filename)
+                # with open(word.audio.filename, "rb") as f:
+                #     encoded = base64.b64encode(f.read()).decode('utf-8')
+                encoded = base64.b64encode(word.audio.filename)
+                new_word = Word(word.word, word.language, encoded)
+                
                 #print(f"id: {word.id}")
                 new_card = Card(word.id, new_word, [])
                 #¤ new_word = Word(word.word, word.language)
@@ -116,6 +130,7 @@ class Deck:
                     # new_card = Card(new_word, new_trans)
                 cards.append(new_card)
             self.deck = cards
+            print("made it past")
     
     def build_deck_from_duo(self):
         if len(self.deck) != 0:

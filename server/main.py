@@ -111,7 +111,10 @@ def get_cards(source_language: str, target_language: str, count: int):
     logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
     deck.build_deck_from_db(count)
+    print("??sdfdfsdfsdsdffsd")
     print(deck.deck)
+    for card in deck.deck:
+        print(card.source_word.word)
     return deck.deck
 
 @app.post("/refresh/") 
@@ -139,6 +142,26 @@ async def create_file(source_word: List[str], translation: List[str], file: List
     print(source_word)
     print(translation)
     print(file)
+    
+    testFiles = []
+    
+    for e in range(len(file)):
+        contents = await file[e].read()
+        filename = file[e].filename
+        with open(filename, 'wb') as f:
+            f.write(contents)
+        print(contents)
+        testFiles.append(contents)
+    
+    new_deck = Deck("fi", "es")
+    print("????????????????????????????????????????????????")
+    new_deck.add_custom_deck_two(source_word, translation, testFiles)
+    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    
+    new_deck.upload_deck()
+    print("uploaded!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    # print(new_deck.deck)
+    return "new_deck.deck"
     
     
         
@@ -176,7 +199,7 @@ async def create_file(source_word: List[str], translation: List[str], file: List
             f.write(contents)
         with open(filename, "rb") as f:
             encoded = base64.b64encode(f.read()).decode('utf-8')
-            card_dict["file"] = encoded
+            card_dict["file"] = encoded 
             card_dict["source_word"] = source_word[e]
             card_dict["translation"] = translation[e]
             cards.append(card_dict)
