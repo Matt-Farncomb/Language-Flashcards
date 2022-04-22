@@ -4,8 +4,14 @@ button > i {
   pointer-events: none;
 } 
 
-.outer-card {
+/* #play-word {
+  border-radius: 33%;
+  border-width: 0.1px;
+  padding: 1em;
+} */
 
+.outer-card {
+  
     perspective: 1000px;
     z-index: 1;
   }

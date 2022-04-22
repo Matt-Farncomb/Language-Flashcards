@@ -13,6 +13,7 @@ class UI {
 
     #currentCustomCard;
     #deckToDraw;
+    #audio;
 
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
@@ -22,6 +23,7 @@ class UI {
         this.#baseDeck = null;
         this.#currentCustomCard = null;
         this.#deckToDraw = null;
+        this.#audio = new Audio();
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
@@ -44,6 +46,8 @@ class UI {
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
+        this.#whenClicked("#play-word", () => this.playAudio());
+
         this.#validateLanguageOnChange('source');
         this.#validateLanguageOnChange('translation');
         this.#validateWordOnChange('source');
@@ -52,6 +56,12 @@ class UI {
         this.#validateDrawCardOnChange("deck-size");
         this.#validateDrawCardOnChange("source-language");
         this.#validateDrawCardOnChange("translation-language");
+    }
+
+    async playAudio() {
+        this.#audio.src = await this.#card.audio;
+        console.log(this.#audio.src)
+        this.#audio.play();
     }
 
     async #readyToUpload() {

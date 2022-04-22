@@ -112,6 +112,8 @@ class Server {
                 console.log(testWord)
                 const audioURL = window.URL.createObjectURL(response);
                 document.querySelector("#testRecorder").src = audioURL;
+
+              
             })
             // response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
             // console.log(response);

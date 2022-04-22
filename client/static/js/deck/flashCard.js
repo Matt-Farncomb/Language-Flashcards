@@ -4,8 +4,8 @@ class FlashCard extends BaseCard {
     #answeredCorrectly;
     #incorrectCount;
 
-    constructor(id, word, translations) {
-        super(word, translations)
+    constructor(id, word, translations, audio) {
+        super(word, translations, audio)
         this.#id = id;
         this.#incorrectCount = 0;
     }
