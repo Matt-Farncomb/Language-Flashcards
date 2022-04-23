@@ -60,7 +60,7 @@ class FlashCardDeck extends BaseDeck {
         server.fetchDeck(count).then((data) => {
             this._cards = data.map((card) => {
                 const translation_list = card.translations.map((translation) => {
-                    return new Word(translation.__data__.id, translation.__data__.word, translation.__data__.language);
+                    return new Word(translation.__data__.word, translation.__data__.language);
                 })
 
                 let response = card.source_word.voice
@@ -71,37 +71,13 @@ class FlashCardDeck extends BaseDeck {
                 .then((response) => {
                     return window.URL.createObjectURL(response);
                 });
-                // voice = fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
-                // .then((response) => {
-                //     return window.URL.createObjectURL(response);
-                // })
-                    // const audioURL = window.URL.createObjectURL(response);
-                    // // document.querySelector("#testRecorder").src = audioURL;
-                    
-            //         const audioFart = new Audio();
-            //         // audioFart.src = audioURL;
-            //         voice = window.URL.createObjectURL(response);
-            //         console.log(voice);
-            //         audioFart.src = voice;
-            //         audioFart.play();
-            //         return voice
-            // })
-            console.log(voice);
-                return new FlashCard(card.id, card.source_word, translation_list, voice);
+                const word =  new Word(card.source_word.word, card.source_word.language)
+                const thing = new FlashCard(card.id, word, translation_list, voice)
+                console.log(word)
+                console.log(thing)
+                return thing;
             }); 
         })
-        // this._cards.forEach(element => {
-        //     console.log(element.word.voice)
-        //     let response = element.word.voice
-        //     fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
-        //     .then((response) => {
-        //         const audioURL = window.URL.createObjectURL(response);
-        //         document.querySelector("#testRecorder").src = audioURL;
-
-        //           const audioFart = new Audio(audioURL);
-        //         audioFart.play();
-        //     })
-        // });
 
     }
 }

@@ -2,12 +2,10 @@ class Word {
 
     #word;
     #language;
-    #audio;
 
-    constructor(id, word, language) {
+    constructor(word, language) {
         this.#word = word;
         this.#language = language;
-        this.#audio = "";
     }
 
     get word() {
@@ -18,11 +16,5 @@ class Word {
         return this.#language;
     }
 
-    get audio() {
-        return this.#audio;
-    }
 
-    playAudio() {
-        throw new error("Not yet implemented");
-    }
 }

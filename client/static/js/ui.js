@@ -59,8 +59,8 @@ class UI {
     }
 
     async playAudio() {
+        // this.#audio.src = await this.#card.audio;
         this.#audio.src = await this.#card.audio;
-        console.log(this.#audio.src)
         this.#audio.play();
     }
 
@@ -195,6 +195,8 @@ class UI {
 
 
     login(event) {
+        console.log("fart");
+        
         // event.preventDefault();
         let source_language = document.querySelector("#source-language");
         let target_language = document.querySelector("#translation-language");
@@ -202,6 +204,7 @@ class UI {
         localStorage.setItem('target_language', target_language.value);
         this.#updateDisplayedLanguages();
         this.#newDeck();
+        // document.querySelector("#new-card").innerText = "Play";
         // this.reveal();
     }
 
@@ -281,6 +284,8 @@ class UI {
     }
 
     #drawCard() {
+        console.log("fart two")
+        document.querySelector("#new-card").innerText = "Next";
         this.#card = this.#deck.randomCard();
         this.#front = this.#card.word;
         this.#back = this.#card.translations;
