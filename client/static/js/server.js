@@ -61,95 +61,20 @@ class Server {
         return fetch(url).then((response) => response.json());
     }
 
-    uploadDeck(baseDeck) {
+    async uploadDeck(baseDeck) {
         const url = `${this.#serverURL}uploadTest/`
-        // let cardsArr = [];
-        // let fileaArr = [];
-        // let blobTest;
-        // console.log(baseDeck)
+
         const formData = new FormData();
 
         baseDeck.cards.forEach(card => {
-            // console.log(card.audio)
-            // blobTest = card.audio;
-            // cardsArr.push({
-            //     "source_word":card.word,
-            //     "translation":card.translations,
-            //     "audio":card.audio
-            // // })
+
             formData.append("source_word", card.word)
             formData.append("translation", card.translations);
             formData.append("file", card.audio);
         });
-        console.log(formData.getAll('source_word'));
-        // console.log(blobTest);
 
-        // const data = {
-        //     "source_language":baseDeck.sourceLanguage,
-        //     "target_language":baseDeck.targetLanguage,
-        //     "cards":cardsArr 
-        // }
+        fetch(url, {method: 'POST', body: formData});
 
-        
-        let testWord = ""
-        
-        // formData.append("source_word", card.word);
-        // formData.append("translation", card.translations);
-        // formData.append("audio", card.audio);
-        // formData.append("test", "blobTest works");
-        console.log(formData);
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then((response) => response.json())
-        .then((response) => {   
-            testWord = response[0]["source_word"];
-            response = response[0]["file"]
-            console.log(response)
-            fetch(`data:audio/ogg;base64,${response}`).then((response) => response.blob())
-            .then((response) => {
-                console.log(testWord)
-                const audioURL = window.URL.createObjectURL(response);
-                document.querySelector("#testRecorder").src = audioURL;
-
-              
-            })
-            // response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
-            // console.log(response);
-
-            // document.querySelector("#testRecorder").setAttribute('controls', '');
-            // const audioURL = window.URL.createObjectURL(response);
-            // document.querySelector("#testRecorder").src = audioURL;
-            // response.file
-            // var object = {};
-            // const blob = new Blob([response], { 'type' : 'audio/ogg; codecs=opus' });
-            // console.log([...formData]);
-
-            // const roughObjSize = JSON.stringify(response).length;
-            // console.log(roughObjSize)
-
-
-            // // response.forEach((value, key) => object[key] = value);
-            // // var json = JSON.stringify(object);
-            // console.log(blob)
-            // var json = JSON.stringify(response)
-            // console.log(response)
-
-            // fetch(`${this.#serverURL}getTest/`, {
-            //     method: 'GET'
-            // })
-            // .then((response) => response.blob())
-            // .then((response) => { 
-              
-            //     response = response.slice(0, response.size, 'audio/ogg; codecs=opus')
-            //     console.log(response);
-
-            //     document.querySelector("#testRecorder").setAttribute('controls', '');
-            //     const audioURL = window.URL.createObjectURL(response);
-            //     document.querySelector("#testRecorder").src = audioURL;
-            //  });
-        });
     }
 
     submitResult(deck) {

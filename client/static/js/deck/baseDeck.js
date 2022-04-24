@@ -28,7 +28,7 @@ class BaseDeck {
     }
 
     hasCard(card) {
-        for (baseCard in this._cards) {
+        for (let baseCard in this._cards) {
             if (card == baseCard.word) {
                 return true;
             }

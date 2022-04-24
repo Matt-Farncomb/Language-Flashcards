@@ -10,6 +10,7 @@ class Recorder {
 
     constructor(customCard) {
         // this.#mediaRecorder = new MediaRecorder();
+        this.#chunks = [];
         this.#customCard = customCard;
         this.#recordButton = document.querySelector("#record");
 
@@ -27,62 +28,37 @@ class Recorder {
     }
 
 
-    record() {
-        // TODO: Delete previous audio
-        // this.#mediaRecorder.start();
+    async record() {
+
         this.#recording = true;
         this.#recordButton.innerHTML = "Stop <i class='fas fa-record-vinyl'></i>"
+
+        var self = this;
         
-        // this.#audioPlayer.classList.remove(); // TODO: reveal hidden audio
-
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            console.log('getUserMedia supported.');
-            var self = this;
-            navigator.mediaDevices.getUserMedia (
-               // constraints - only audio needed for this app
-               {
-                  audio: true
-               })
-               
-         
-               // Success callback
-               .then(function(stream) {
+            
+            const stream = await navigator.mediaDevices.getUserMedia ({audio: true });
+            this.#mediaRecorder = new MediaRecorder(stream);
+            this.#mediaRecorder.start();
+            this.#chunks = [];
 
-                    self.#mediaRecorder = new MediaRecorder(stream);
-                    console.log("Recording");
-                    self.#mediaRecorder.start();
-                    console.log(self.#mediaRecorder.state);
-                    console.log("recorder started");
+            this.#mediaRecorder.ondataavailable = function(e) {
+                self.#chunks.push(e.data);
+            }
 
-                    self.#chunks = [];
+            // this.#mediaRecorder.ondataavailable = (e) => this.#chunks.push(e.data);
+                
+           
 
-                    self.#mediaRecorder.ondataavailable = function(e) {
-                        self.#chunks.push(e.data);
-                    }
+            this.#mediaRecorder.onstop = function() {
+                self.audioPlayer.setAttribute('controls', '');
+                const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
+                self.#chunks = [];
+                const audioURL = window.URL.createObjectURL(blob);
+                self.audioPlayer.src = audioURL;
+                self.#customCard.audio = blob;
+            } 
 
-                    self.#mediaRecorder.onstop = function(e) {
-                        self.audioPlayer.setAttribute('controls', '');
-                        const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
-
-                        // var bloby = new Blob([JSON.stringify([0,1,2])], {type : 'application/json'});
-                        // var fileOfBlob = new File([bloby], 'aFileName.json');
-                        
-
-                        self.#chunks = [];
-                        const audioURL = window.URL.createObjectURL(blob);
-                        self.audioPlayer.src = audioURL;
-                        self.#customCard.audio = blob;
-                        console.log(audioURL);
-                    }   
-
-                    
-               })
-         
-               // Error callback
-            //    .catch(function(err) {
-            //       console.log('The following getUserMedia error occurred: ' + err);
-            //    }
-            // );
          } else {
             console.log('getUserMedia not supported on your browser!');
          }
