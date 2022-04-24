@@ -42,21 +42,17 @@ class Recorder {
             this.#mediaRecorder.start();
             this.#chunks = [];
 
-            this.#mediaRecorder.ondataavailable = function(e) {
-                self.#chunks.push(e.data);
-            }
-
+            this.#mediaRecorder.ondataavailable = (e) =>  this.#chunks.push(e.data);
+   
             // this.#mediaRecorder.ondataavailable = (e) => this.#chunks.push(e.data);
                 
-           
-
-            this.#mediaRecorder.onstop = function() {
-                self.audioPlayer.setAttribute('controls', '');
+            this.#mediaRecorder.onstop = () => {
+                this.audioPlayer.setAttribute('controls', '');
                 const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
-                self.#chunks = [];
+                this.#chunks = [];
                 const audioURL = window.URL.createObjectURL(blob);
-                self.audioPlayer.src = audioURL;
-                self.#customCard.audio = blob;
+                this.audioPlayer.src = audioURL;
+                this.#customCard.audio = blob;
             } 
 
          } else {
