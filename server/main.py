@@ -13,6 +13,9 @@ from base_logger import logging
 from fastapi.responses import FileResponse
 import base64
 
+import librosa  
+import soundfile as sf
+
 logger = logging.getLogger(__name__)
 
 origins = ["*"]
@@ -111,8 +114,8 @@ def get_cards(source_language: str, target_language: str, count: int):
     logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
     deck.build_deck_from_db(count)
-    print("??sdfdfsdfsdsdffsd")
-    print(deck.deck)
+    # print("??sdfdfsdfsdsdffsd")
+    # print(deck.deck)
     for card in deck.deck:
         print(card.source_word.word)
     return deck.deck
@@ -135,13 +138,27 @@ def update_results(cards: List[Result]):
 
 from sys import getsizeof
 
+def blob_to_wav(blob):
+    # do stuff:
+    # c
+   
+    pass
+
+# remove silence
+def trimmed_wav():
+    # https://www.tutorialexample.com/python-remove-silence-in-wav-using-librosa-librosa-tutorial/
+    # something like this: clip = librosa.effects.trim(audio, top_db= 10)
+    pass 
+      
+
+
 @app.post("/uploadTest")
-async def create_file(source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
+async def create_file(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
 # async def create_file(file: UploadFile = File(...)):
     audios = []
-    print(source_word)
-    print(translation)
-    print(file)
+    # print(source_word)
+    # print(translation)
+    # print(file)
     
     testFiles = []
     
@@ -150,18 +167,20 @@ async def create_file(source_word: List[str], translation: List[str], file: List
         filename = file[e].filename
         with open(filename, 'wb') as f:
             f.write(contents)
-        print(contents)
+        # new_filename = f"{source_word}_{translation}"
+        os.rename(filename, f'{filename}.wav') 
+        audio, sr = librosa.load(f'{filename}.wav', sr= 8000, mono=True)
+        clip = librosa.effects.trim(audio, top_db=30)
+        sf.write('poo.wav', clip[0], sr)
+        
         testFiles.append(contents)
     
     new_deck = Deck("fi", "es")
-    print("????????????????????????????????????????????????")
     new_deck.add_custom_deck_two(source_word, translation, testFiles)
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    
     new_deck.upload_deck()
-    print("uploaded!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     # print(new_deck.deck)
     return "new_deck.deck"
+
     
     
         

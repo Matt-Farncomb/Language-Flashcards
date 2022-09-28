@@ -62,17 +62,25 @@ class Server {
     }
 
     async uploadDeck(baseDeck) {
+        console.log("uploading");
         const url = `${this.#serverURL}uploadTest/`
 
         const formData = new FormData();
 
         baseDeck.cards.forEach(card => {
 
+            // formData.append("source_language", baseDeck.sourceLanguage)
+            // formData.append("target_language", baseDeck.targetLanguage)
             formData.append("source_word", card.word)
             formData.append("translation", card.translations);
-            formData.append("file", card.audio);
+            formData.append("file", card.audio, card.word + card.translations);
         });
+        console.log(baseDeck.sourceLanguage);
+        console.log(baseDeck.targetLanguage);
 
+        formData.append("source_language", [baseDeck.sourceLanguage])
+        formData.append("target_language", [baseDeck.targetLanguage])
+       
         fetch(url, {method: 'POST', body: formData});
 
     }

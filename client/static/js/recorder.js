@@ -36,8 +36,8 @@ class Recorder {
         var self = this;
         
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            
-            const stream = await navigator.mediaDevices.getUserMedia ({audio: true });
+             
+            const stream = await navigator.mediaDevices.getUserMedia ({audio: true});
             this.#mediaRecorder = new MediaRecorder(stream);
             this.#mediaRecorder.start();
             this.#chunks = [];
@@ -48,7 +48,8 @@ class Recorder {
                 
             this.#mediaRecorder.onstop = () => {
                 this.audioPlayer.setAttribute('controls', '');
-                const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' });
+                const blob = new Blob(self.#chunks, { 'type' : 'audio/ogg; codecs=opus' }); // Both can caoncert into wav with simply rename. What is the difference?
+                const recordBlob = new Blob(self.#chunks, {type:'audio/wav; codecs=MS_PCM'});
                 this.#chunks = [];
                 const audioURL = window.URL.createObjectURL(blob);
                 this.audioPlayer.src = audioURL;

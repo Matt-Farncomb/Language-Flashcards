@@ -84,12 +84,12 @@ class Deck:
         
     def add_custom_deck(self, custom_cards):
         for word in custom_cards.cards:
-            print(word)
+            # print(word)
             new_word = Word(word.source_word, custom_cards.source_language)
             new_translation = Word(word.translation, custom_cards.target_language)
             new_card = Card(None, new_word, [new_translation])
             self.deck.append(new_card)
-        print(self.deck)
+        # print(self.deck)
     
     def add_custom_deck_two(self, source_words, translations, audio_files):
         for i in range(len(source_words)):
@@ -111,11 +111,11 @@ class Deck:
             cards = []
             #print("word")
             words = self.__get_words_from_db(count)
-            print(f"words: {words}")
+            # print(f"words: {words}")
             for word in words:
                 #¤print(f"word: {word}")
-                print("here is working")
-                print(word.audio.filename)
+                # print("here is working")
+                # print(word.audio.filename)
                 # with open(word.audio.filename, "rb") as f:
                 #     encoded = base64.b64encode(f.read()).decode('utf-8')
                 encoded = base64.b64encode(word.audio.filename)
@@ -130,7 +130,7 @@ class Deck:
                     # new_card = Card(new_word, new_trans)
                 cards.append(new_card)
             self.deck = cards
-            print("made it past")
+            # print("made it past")
     
     def build_deck_from_duo(self):
         if len(self.deck) != 0:
@@ -210,7 +210,7 @@ class Deck:
         # print(f"cards: {cards}")
         #print(f"one word is: {source_words[1]}")
         cards = self.__spawn_threads(source_words)
-        print(f"cards: {cards}")
+        # print(f"cards: {cards}")
         return cards
         
         # for word in source_words:
