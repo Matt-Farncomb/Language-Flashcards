@@ -159,7 +159,7 @@ async def create_file(source_language: List[str], target_language: List[str], so
     # print(source_word)
     # print(translation)
     # print(file)
-    
+    print("test")
     testFiles = []
     
     for e in range(len(file)):
