@@ -175,7 +175,7 @@ async def create_file(source_language: List[str], target_language: List[str], so
         
         testFiles.append(contents)
     
-    new_deck = Deck("fi", "es")
+    new_deck = Deck(source_language[0], target_language[0])
     new_deck.add_custom_deck_two(source_word, translation, testFiles)
     new_deck.upload_deck()
     # print(new_deck.deck)

@@ -20,7 +20,10 @@ languages = {
 
 language_by_string = {
     "Spanish":"es",
-    "Finnish":"fi"
+    "Finnish":"fi",
+    "English":"en",
+    "Vietnamese":"vi"
+    
 }
 
 new_languages = {
@@ -65,8 +68,8 @@ class Card:
 
 class Deck:
     def __init__(self, source_language, target_language):
-        self.source_language = source_language
-        self.target_language = target_language
+        self.source_language = source_language if source_language in new_languages else language_by_string[source_language]
+        self.target_language = target_language if target_language in new_languages else language_by_string[target_language]
         # self.vocab = [] # thisbegins empty because user can build deck from requested vocab
         # self.target_vocab = []
         self.deck = []
@@ -81,6 +84,7 @@ class Deck:
         
         # self.vocab = self._get_vocab(source_language)
         # self.target_vocab = self._get_vocab(source_language)
+   
         
     def add_custom_deck(self, custom_cards):
         for word in custom_cards.cards:
