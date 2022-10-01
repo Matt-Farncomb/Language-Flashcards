@@ -48,6 +48,33 @@ def read_item(request: Request):
     # js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files})
 
+@app.get("/table", response_class=HTMLResponse)
+def table(request: Request):  
+    
+    def flattened_column_names(words):
+        word_columns = words[0]._meta.sorted_field_names
+        wordinfo_columns = words[0].wordinfo._meta.sorted_field_names
+        unwanted_columns = ["id", "parent"]
+        return filter(lambda x: x not in unwanted_columns, word_columns + wordinfo_columns)
+        
+    js_files = []
+    for path, dirs, fnames in os.walk("..\client\static\js"):
+        for filename in [f for f in fnames if f.endswith(".js")]:
+            newPath = path.split("static")[1]+"\\\\"
+            js_files.append(f"{newPath}{filename}")
+            
+    lang = [ v["language"] for k, v in new_languages.items()  ]
+    
+    source_language = "fi"
+    target_language = "en"
+    
+    # cards = get_cards(source_language, target_language, 0)
+    db = Database()
+    words = db.get_words(1, source_language)
+    
+    
+    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files, "columns": flattened_column_names(words)} )
+
 def validate(content: str) -> bool:
     for char in content:
         if char is None or not char.isalpha() or char == '':
@@ -167,17 +194,21 @@ async def create_file(source_language: List[str], target_language: List[str], so
         filename = file[e].filename
         with open(filename, 'wb') as f:
             f.write(contents)
-        # new_filename = f"{source_word}_{translation}"
-        os.rename(filename, f'{filename}.wav') 
-        audio, sr = librosa.load(f'{filename}.wav', sr= 8000, mono=True)
-        clip = librosa.effects.trim(audio, top_db=30)
-        sf.write('poo.wav', clip[0], sr)
+        # new_filename = f"{os.getcwd()}\\audio\{filename}"
+        # os.renames(filename, f'{new_filename}.wav') 
+        # audio, sr = librosa.load(f'{new_filename}.wav', sr= 8000, mono=True)
+        # clip = librosa.effects.trim(audio, top_db=30)
+        # sf.write('poo.wav', clip[0], sr)
         
         testFiles.append(contents)
     
     new_deck = Deck(source_language[0], target_language[0])
     new_deck.add_custom_deck_two(source_word, translation, testFiles)
     new_deck.upload_deck()
+    if os.path.exists(filename):
+        os.remove(filename)
+    else:
+        print(f"{filename}does not exist")
     # print(new_deck.deck)
     return "new_deck.deck"
 

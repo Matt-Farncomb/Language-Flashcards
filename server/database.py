@@ -117,6 +117,9 @@ class Database:
         #print(models)
         self.db.drop_tables(models)
         self.db.create_tables(models)
+    
+    def get_all_cards():
+        return WordInfo.select()
 
     def update_word(self, card):
         self.word_answered_wrong(card.id, card.wrong_count)
