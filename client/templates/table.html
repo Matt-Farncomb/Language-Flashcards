@@ -1,5 +1,5 @@
 {% set column_names %}
-<tr>
+<tr class="has-background-success-light has-text-primary">
   <th>Source Word</th>
   <th>Source Language</th>
   <th>Translation</th>
@@ -10,28 +10,29 @@
   <th>Last Tested</th>
 </tr>
 {% endset %}
-
-<table class="table">
-    <thead>
-      {{ column_names }}
-    </thead>
-    <tfoot>
-      {{ column_names }}
-    </tfoot>
-    <tbody>
-      <tr class="">
-      {% for word in words %}
-          <th>{{ word.word }}</th>
-          <th>{{ word.language }}</th>
-          <th>{{ word.translations[0].word }}</th>
-          <th>{{ word.translations[0].language }}</th>
-          <th>{{ word.wordinfo.used_count }}</th>
-          <th>{{ word.wordinfo.answered_wrong_count }}</th>
-          <th>{{ word.wordinfo.difficulty }}</th>
-          <th>{{ word.wordinfo.last_tested }}</th>
-          <th></th>
-        {% endfor %}
-      </tr>
-    </tbody>
-</table>
+<section class="section has-text-centered">
+  <table class="table">
+      <thead>
+        {{ column_names }}
+      </thead>
+      <tfoot>
+        {{ column_names }}
+      </tfoot>
+      <tbody>
+        <tr class="">
+        {% for word in words %}
+            <th>{{ word.word }}</th>
+            <th>{{ word.language }}</th>
+            <th>{{ word.translations[0].word }}</th>
+            <th>{{ word.translations[0].language }}</th>
+            <th>{{ word.wordinfo.used_count }}</th>
+            <th>{{ word.wordinfo.answered_wrong_count }}</th>
+            <th>{{ word.wordinfo.difficulty }}</th>
+            <th>{{ word.wordinfo.last_tested }}</th>
+            <th></th>
+          {% endfor %}
+        </tr>
+      </tbody>
+  </table>
+</section>
 

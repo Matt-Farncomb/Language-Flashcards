@@ -46,7 +46,13 @@ def read_item(request: Request):
             
     lang = [ v["language"] for k, v in new_languages.items()  ]
     # js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
-    return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files})
+    
+    nav_left_button = {
+        "link": "/table",
+        "button":"Table"
+    }
+    
+    return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
 @app.get("/table", response_class=HTMLResponse)
 def table(request: Request):  
@@ -72,8 +78,12 @@ def table(request: Request):
     db = Database()
     words = db.get_words(1, source_language)
     
+    nav_left_button = {
+        "link": "../",
+        "button":"Home"
+    }
     
-    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files, "columns": flattened_column_names(words)} )
+    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files, "columns": flattened_column_names(words), "nav_left_button": nav_left_button} )
 
 def validate(content: str) -> bool:
     for char in content:
