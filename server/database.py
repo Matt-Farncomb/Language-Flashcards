@@ -39,14 +39,14 @@ class Database:
         for card in deck:
             logger.info(f"Uploading {card.source_word.word,}")
             if card.source_word not in card_ids:
-                card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language)
+                card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language, is_custom_word=True)
                 WordInfo.create(word=card_id)
 
                 Audio.create(word=card_id, filename=card.source_word.voice)
                 card_ids[card.source_word] = card_id.id
             data = []
             for c in card.translations:
-                data.append( (c.word, c.language, card_ids[card.source_word]) )
+                data.append( (c.word, c.language, True, card_ids[card.source_word]) )
             with self.db.atomic():
                 WordModel.insert_many(data, fields=fields).execute()
                 #WordInfo.insert_many(info_data, fields=info_fields).execute()
@@ -57,7 +57,17 @@ class Database:
     def close(self):
         self.db.close()
 
-    def get_words(self, word_count, language):
+    def get_words(self, word_limit, language):
+        if (word_limit):
+            return (WordModel
+         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
+         .join_from(WordModel, WordInfo)
+         .join_from(WordModel, Audio)).limit(word_limit)
+         
+        return (WordModel
+         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
+         .join_from(WordModel, WordInfo)
+         .join_from(WordModel, Audio))
         #query = WordModel.select().where(WordModel.language == language).order_by(WordModel.info.difficulty).limit(word_count)
         #query = WordModel.select().where(WordModel.language == language).order_by(WordInfo.difficulty).limit(word_count)
 
@@ -66,10 +76,7 @@ class Database:
         # query = WordInfo.select().join(WordModel).where(WordModel.id == WordInfo.id).get()
         # query = Audio.select().join(WordModel).where(WordModel.id == Audio.id).get()
         
-        query = (WordModel
-         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
-         .join_from(WordModel, WordInfo)
-         .join_from(WordModel, Audio))
+      
 
         # print(query)
         # for e in query:
@@ -86,15 +93,15 @@ class Database:
         #  .join(WordInfo, JOIN.LEFT_OUTER)  # Joins tweet -> favorite.
         # )
         # print(f"This is a test!!!: {query[0].word}")
-        flattened = {
-            "   "
-        }
+        # flattened = {
+        #     "   "
+        # }
 
         # for el in query:
         #     print(f"first!!!: {el.file[0].filename}")
         #     # for e in el.file[0]:
         #     #     print(f"firsecondst!!!: {e.some}")
-        return query
+        # return query
 
     def word_answered_wrong(word_id, count):
         update = WordModel.get(WordModel.id == word_id)

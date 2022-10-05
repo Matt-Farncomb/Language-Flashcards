@@ -50,6 +50,8 @@ class UI {
 
         this.#whenClicked("#play-word", () => this.playAudio());
 
+        this.#toggleWhenClicked(".toggle-is-light");
+
         this.#validateLanguageOnChange('source');
         this.#validateLanguageOnChange('translation');
         this.#validateWordOnChange('source');
@@ -86,6 +88,12 @@ class UI {
             document.querySelector("#draw-deck").classList.add("disabledPointer"); 
             document.querySelector("#draw-deck").classList.remove("is-success");
         }
+    }
+
+    #toggleIsLight(buttons){
+        buttons.forEach(element => {
+            element.classList.toggle("is-light");
+        });
     }
 
     #changeInputUIIfInvalid(languageType) {
@@ -245,7 +253,16 @@ class UI {
                 func()
             } );
         });
-       
+    }
+
+    #toggleWhenClicked(id) {
+        const button = document.querySelectorAll(`${id}`);
+        button.forEach(element => {
+            element.addEventListener('click', () => { 
+                this.#toggleIsLight(button);
+            } );
+
+        });
     }
 
     #toggleWrong() {

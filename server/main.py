@@ -76,7 +76,7 @@ def table(request: Request, source_language: str):
     
     # cards = get_cards(source_language, target_language, 0)
     db = Database()
-    words = db.get_words(1, language_by_string[source_language])
+    words = db.get_words(0, language_by_string[source_language])
     
     nav_left_button = {
         "link": "../",
