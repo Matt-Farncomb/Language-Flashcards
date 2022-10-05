@@ -29,7 +29,7 @@ class Database:
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
-        self.create_tables()
+        # self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
         fields = [ WordModel.word, WordModel.language, WordModel.parent ]
         info_fields = [ WordInfo.word ]
         info_data = []
@@ -67,7 +67,7 @@ class Database:
         # query = Audio.select().join(WordModel).where(WordModel.id == Audio.id).get()
         
         query = (WordModel
-         .select(WordModel, WordInfo, Audio)
+         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
          .join_from(WordModel, WordInfo)
          .join_from(WordModel, Audio))
 

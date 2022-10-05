@@ -26,7 +26,9 @@ class UI {
         this.#audio = new Audio();
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
-        document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
+        document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
+        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}`
+        console.log(document.querySelector("nav div a").href);
      
         //Server Cards
         this.#whenClicked("#draw-deck", () => this.login());
@@ -233,6 +235,7 @@ class UI {
     #updateDisplayedLanguages() {
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
+        // document.querySelector("nav div a").href = `/table/sl=${localStorage.getItem("source_language", "lang")}?tl=${localStorage.getItem("source_language", "lang")}`
     }
 
     #whenClicked(id, func) {

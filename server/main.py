@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 import os
 from typing import List
 from app import app
-from deck import Deck, languages, new_languages
+from deck import Deck, languages, new_languages, language_by_string
 from database import Database
 from schemas import Result, Refresh, UploadedDeck, BlobTest
 from fastapi.middleware.cors import CORSMiddleware
@@ -54,9 +54,9 @@ def read_item(request: Request):
     
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
-@app.get("/table", response_class=HTMLResponse)
-def table(request: Request):  
-    
+@app.get("/table/", response_class=HTMLResponse)
+def table(request: Request, source_language: str):  
+    # 
     def flattened_column_names(words):
         word_columns = words[0]._meta.sorted_field_names
         wordinfo_columns = words[0].wordinfo._meta.sorted_field_names
@@ -71,12 +71,12 @@ def table(request: Request):
             
     lang = [ v["language"] for k, v in new_languages.items()  ]
     
-    source_language = "fi"
-    target_language = "en"
+    # source_language = "fi"
+    # target_language = "en"    
     
     # cards = get_cards(source_language, target_language, 0)
     db = Database()
-    words = db.get_words(1, source_language)
+    words = db.get_words(1, language_by_string[source_language])
     
     nav_left_button = {
         "link": "../",
