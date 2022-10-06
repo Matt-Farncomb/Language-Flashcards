@@ -146,11 +146,14 @@ def upload_deck(deck: UploadedDeck):
     
 
 @app.get("/cards/") 
-def get_cards(source_language: str, target_language: str, count: int):
+def get_cards(source_language: str, target_language: str, count: int, isDuo: bool):
     # logging.info(f"get_cards called to get {count} in total")
     logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
-    deck.build_deck_from_db(count)
+    if isDuo:   
+        pass
+    else:
+        deck.build_deck_from_db(count)
     # print("??sdfdfsdfsdsdffsd")
     # print(deck.deck)
     for card in deck.deck:
@@ -220,6 +223,7 @@ async def create_file(source_language: List[str], target_language: List[str], so
     else:
         print(f"{filename}does not exist")
     # print(new_deck.deck)
+   
     return "new_deck.deck"
 
     

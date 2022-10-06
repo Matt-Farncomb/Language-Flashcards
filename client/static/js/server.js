@@ -25,10 +25,10 @@ class Server {
 
     
 
-    #cardsURL(size) {
+    #cardsURL(size, isDuo) {
         const url = `${SERVER_URL}cards/?`+
             `&source_language=${localStorage.getItem('source_language')}`+
-            `&target_language=${localStorage.getItem('target_language')}&count=${size}`;
+            `&target_language=${localStorage.getItem('target_language')}&count=${size}&isDuo=${isDuo}`;
         return url;
     }
 
@@ -55,8 +55,8 @@ class Server {
     // }
 // return fetch(url).then((response) => response.json());
 
-    fetchDeck(count) {
-        const url = this.#cardsURL(count);
+    fetchDeck(count, isDuoDeck) {
+        const url = this.#cardsURL(count, isDuoDeck);
         console.log(url);
         return fetch(url).then((response) => response.json());
     }

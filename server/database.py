@@ -29,7 +29,7 @@ class Database:
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
-        # self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
+        self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
         fields = [ WordModel.word, WordModel.language, WordModel.parent ]
         info_fields = [ WordInfo.word ]
         info_data = []

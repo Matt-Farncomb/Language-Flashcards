@@ -15,6 +15,8 @@ class UI {
     #deckToDraw;
     #audio;
 
+    #isDuoDeck;
+
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
         this.#deck = deck;
@@ -24,6 +26,7 @@ class UI {
         this.#currentCustomCard = null;
         this.#deckToDraw = null;
         this.#audio = new Audio();
+        this.#isDuoDeck = true;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
@@ -91,6 +94,8 @@ class UI {
     }
 
     #toggleIsLight(buttons){
+        this.#isDuoDeck = !this.#isDuoDeck;
+        console.log(this.#isDuoDeck);
         buttons.forEach(element => {
             element.classList.toggle("is-light");
         });
@@ -206,7 +211,7 @@ class UI {
 
     login(event) {
         console.log("fart");
-        
+   
         // event.preventDefault();
         let source_language = document.querySelector("#source-language");
         let target_language = document.querySelector("#translation-language");
@@ -368,7 +373,8 @@ class UI {
 
     #newDeck() {
         const deckSize = document.querySelector("#deck-size").value;
-        this.#deck.getDeck(this.#server, deckSize);
+        this.#deck.getDeck(this.#server, deckSize, this.#isDuoDeck);
+    
         document.querySelector("#new-card").disabled = false;
         document.querySelector("#new-card").classList.remove("disabledPointer");
     }

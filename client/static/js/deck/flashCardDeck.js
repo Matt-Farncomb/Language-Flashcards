@@ -33,6 +33,7 @@ class FlashCardDeck extends BaseDeck {
             return this.randomCard();
         }
         else {
+            if (length == 1) document.querySelector("#new-card").innerText = "Shuffle";
             const index = getRandomInt(0, length);
             return this.drawCard(index);
         }
@@ -55,9 +56,9 @@ class FlashCardDeck extends BaseDeck {
             0)
     }
 
-    async getDeck(server, count) {
+    async getDeck(server, count, isDuoDeck) {
         
-        server.fetchDeck(count).then((data) => {
+        server.fetchDeck(count, isDuoDeck).then((data) => {
             this._cards = data.map((card) => {
                 const translation_list = card.translations.map((translation) => {
                     return new Word(translation.__data__.word, translation.__data__.language);

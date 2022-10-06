@@ -14,7 +14,7 @@ class BaseModel(Model): # type: ignore
 class WordModel(BaseModel):
     word = CharField()
     language = CharField()
-    is_custom_word = BooleanField()
+    is_custom_word = BooleanField(null=True)
     parent = ForeignKeyField('self', null=True, backref='translations')
 
 class Audio(BaseModel):
