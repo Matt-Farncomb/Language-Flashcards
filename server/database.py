@@ -29,8 +29,8 @@ class Database:
     # will result in the same word in db multiple times
     # we want each word to be unique
     def upload_deck(self, deck):
-        self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
-        fields = [ WordModel.word, WordModel.language, WordModel.parent ]
+        # self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
+        fields = [ WordModel.word, WordModel.language, WordModel.is_custom_word, WordModel.parent ]
         info_fields = [ WordInfo.word ]
         info_data = []
         card_ids = {}
@@ -103,12 +103,18 @@ class Database:
         #     #     print(f"firsecondst!!!: {e.some}")
         # return query
 
-    def word_answered_wrong(word_id, count):
-        update = WordModel.get(WordModel.id == word_id)
-        update.answered_wrong_count += count
-        update.used_count += 1
-        update.save()
+    # def word_answered_wrong(word_id,):
+    #     update = WordModel.get(WordModel.id == word_id)
+    #     if ()
+    #     update.answered_wrong_count += 1
+    #     update.used_count += 1
+    #     update.save()
 
+    # def word_answered_correctly(word_id):
+    #     update = WordModel.get(WordModel.id == word_id)
+    #     update.answered_wrong_count -= 1
+    #     update.used_count += 1
+    #     update.save()
     # def word_used(word_id):
     #     update = WordModel.get(WordModel.id == word_id)
     #     update.used_count += 1
@@ -128,8 +134,19 @@ class Database:
     def get_all_cards():
         return WordInfo.select()
 
-    def update_word(self, card):
-        self.word_answered_wrong(card.id, card.wrong_count)
+    def update_word(self, result):
+        update = WordInfo.select().join(WordModel).where(WordModel.id == result.id).get()
+        # update = WordModel.get(WordModel.id == result.id)
+        if result.is_correct:
+            update.answered_wrong_count -= 1
+        else:
+            update.answered_wrong_count += 1
+        update.used_count += 1
+        update.save()
+        
+            
+            
+        # self.word_answered_wrong(result.id, result.is_correct)
 
     def update_words(self, cards):
 

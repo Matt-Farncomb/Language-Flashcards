@@ -24,11 +24,13 @@
         <tr class="">
             <th>{{ word.word }}</th>
             <th>{{ word.language }}</th>
-            <th>{{ word.translations[0].word }}</th>
-            <th>{{ word.translations[0].language }}</th>
+            {% for translation in word.translations %}
+            <th>  {{ translation.word }}  </th>
+            <th>  {{ translation.language }}  </th>
+            {% endfor %}
             <th>{{ word.wordinfo.used_count }}</th>
             <th>{{ word.wordinfo.answered_wrong_count }}</th>
-            <th>{{ word.wordinfo.difficulty }}</th>
+            <th>{{ word.wordinfo.difficulty() }}</th>
             <th>{{ word.wordinfo.last_tested }}</th>
             <th></th>
         </tr>

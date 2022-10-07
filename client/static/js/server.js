@@ -66,9 +66,9 @@ class Server {
         const url = `${this.#serverURL}uploadTest/`
 
         const formData = new FormData();
-
+        
         baseDeck.cards.forEach(card => {
-
+           
             // formData.append("source_language", baseDeck.sourceLanguage)
             // formData.append("target_language", baseDeck.targetLanguage)
             formData.append("source_word", card.word)
@@ -85,7 +85,29 @@ class Server {
 
     }
 
-    submitResult(deck) {
+    submitResult(card, is_correct) {
+        console.log(card);
+        const url = `${this.#serverURL}results/`
+        
+        const data =
+            {
+                "id": parseInt(card.id),
+                "is_correct": is_correct
+            };
+
+
+        console.log(data);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then((response) => response.json())
+        .then((response) => console.log(response));
+    }
+
+    old_submitResult(deck) {
         console.log(deck);
         const url = `${this.#serverURL}results/`
         

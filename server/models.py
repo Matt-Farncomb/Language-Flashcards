@@ -4,6 +4,8 @@ from peewee import *
 
 from app import db 
 
+
+
 class BaseModel(Model): # type: ignore
     class Meta:
         database = db
@@ -27,7 +29,11 @@ class WordInfo(BaseModel):
     used_count = IntegerField(null=True, default=0)
     answered_wrong_count = IntegerField(null=True, default=0)
     word = ForeignKeyField(WordModel, primary_key=True)
-    difficulty = IntegerField(null=True, default=0)
+    # difficulty = IntegerField(null=True, default=0)
     
-    # def get_difficulty(self):
-    #      return self.answered_correctly_count - self.answered_wrong_count
+    def difficulty(self):
+        if self.answered_wrong_count == 0:
+            return "Medium"
+        elif self.answered_wrong_count > 0:
+            return "Hard"
+        return "Easy"

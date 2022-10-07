@@ -3,7 +3,7 @@ from typing import List
 
 class Result(BaseModel):
     id: int
-    wrong_count: int
+    is_correct: bool
 
 class Refresh(BaseModel):
     source_language: str

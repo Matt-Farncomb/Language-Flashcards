@@ -291,12 +291,14 @@ class UI {
         if (this.#card.isCorrectTranslation(input)) {
             console.log("Correct");
             this.#toggleCorrect();
+            this.#server.submitResult(this.#card, true);
             // answer.classList.remove("has-background-danger-light");
             // answerButton.classList.remove("has-background-danger");
         } else {
              console.log("wrong"); 
              
              this.#toggleWrong();
+             this.#server.submitResult(this.#card, false);
             //  answer.classList.add("has-background-danger-light");
             //  answerButton.classList.add("has-background-danger");
 

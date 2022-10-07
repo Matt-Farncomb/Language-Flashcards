@@ -169,11 +169,17 @@ def update_db(refresh: Refresh):
     logger.info("Deck uploaded")
     return "fart"
     
+# @app.post("/results/")
+# def update_results(cards: List[Result]):
+#     logger.info(f"data: {cards[0]}")
+#     db = Database()
+#     db.update_words(cards)
+#     return "all good"
+
 @app.post("/results/")
-def update_results(cards: List[Result]):
-    logger.info(f"data: {cards[0]}")
+def update_results(result:Result):
     db = Database()
-    db.update_words(cards)
+    db.update_word(result)
     return "all good"
 
 from sys import getsizeof
