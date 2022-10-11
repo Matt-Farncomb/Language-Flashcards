@@ -28,8 +28,8 @@ class Database:
 
     # will result in the same word in db multiple times
     # we want each word to be unique
-    def upload_deck(self, deck):
-        # self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
+    def upload_deck(self, deck, is_custom):
+        self.create_tables() # TODO: re implement later where it is only done under very specific circumstances
         fields = [ WordModel.word, WordModel.language, WordModel.is_custom_word, WordModel.parent ]
         info_fields = [ WordInfo.word ]
         info_data = []
@@ -39,7 +39,7 @@ class Database:
         for card in deck:
             logger.info(f"Uploading {card.source_word.word,}")
             if card.source_word not in card_ids:
-                card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language, is_custom_word=True)
+                card_id = WordModel.create(word=card.source_word.word, language=card.source_word.language, is_custom_word=is_custom)
                 WordInfo.create(word=card_id)
 
                 Audio.create(word=card_id, filename=card.source_word.voice)

@@ -1,0 +1,64 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+        {% for file_name in js_files %}
+            <script src="{{ url_for('static', path=file_name) }}"  type="text/javascript" charset="utf-8"></script>
+        {% endfor %}
+</head>
+<body>
+    <header>
+        <ul>
+            <li>
+                <h1>Flash Cards</h1>
+            </li>
+            <li>
+                <h3>Source
+                <select name="Source Langauge" id="source_language">
+                    {% for item in lang %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li>
+                <h3>Target
+                <select name="Target Langauge" id="target_language">
+                    {% for item in lang %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </li>
+            <li>
+                <form>
+                    <input id="submitname" type="submit" value="Update">
+                </form>
+            </li>
+            <li>
+                <button id="refresh-button">Update Server</button>
+                <button id="logout">Logout</button>     
+            </li>
+        <ul>
+    </header>
+
+    <div id="deck" class="hidden">
+        <button id="new-card">New Card</button>
+        <button id="new-deck">New Deck</button>
+        <label for="deck-size">Deck Size:</label><input id="deck-size" type="text">
+        <div class="flip-card">
+        <div class="flip-card-inner">
+            <button id="flipOver">Flip</button>
+            <div class="flip-card-front">
+                <p>source word</p> 
+                <textarea name="" cols="30" rows="10"></textarea>
+                <button id="submit">Submit</button>
+                <button id="submit-result">Submit Result</button>
+            </div>
+            <div class="flip-card-back">
+            <p>translated word</p> 
+            </div>
+        </div>
+        </div>
+    </div>
+
+</body>
+</html>

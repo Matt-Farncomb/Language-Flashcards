@@ -57,11 +57,11 @@ def read_item(request: Request):
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str):  
     # 
-    def flattened_column_names(words):
-        word_columns = words[0]._meta.sorted_field_names
-        wordinfo_columns = words[0].wordinfo._meta.sorted_field_names
-        unwanted_columns = ["id", "parent"]
-        return filter(lambda x: x not in unwanted_columns, word_columns + wordinfo_columns)
+    # def flattened_column_names(words):
+    #     word_columns = words[0]._meta.sorted_field_names
+    #     wordinfo_columns = words[0].wordinfo._meta.sorted_field_names
+    #     unwanted_columns = ["id", "parent"]
+    #     return filter(lambda x: x not in unwanted_columns, word_columns + wordinfo_columns)
         
     js_files = []
     for path, dirs, fnames in os.walk("..\client\static\js"):
@@ -83,7 +83,9 @@ def table(request: Request, source_language: str):
         "button":"Home"
     }
     
-    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files, "columns": flattened_column_names(words), "nav_left_button": nav_left_button} )
+    print(words)
+    
+    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button} )
 
 def validate(content: str) -> bool:
     for char in content:
@@ -128,7 +130,7 @@ def get_languages_short():
 def upload_deck(deck: UploadedDeck):
     new_deck = Deck(deck.source_language, deck.target_language)
     new_deck.add_custom_deck(deck)
-    new_deck.upload_deck()
+    new_deck.upload_deck(is_custom=True)
     print("uploaded")
     # for e in deck:
     #     print(e)
@@ -164,8 +166,13 @@ def get_cards(source_language: str, target_language: str, count: int, isDuo: boo
 def update_db(refresh: Refresh):
     logger.info(f"update_db has been called for sl {refresh.source_language} and tl {refresh.target_language}")
     deck = Deck(refresh.source_language, refresh.target_language)
+    print("made deck")
     deck.build_deck_from_duo()
-    deck.upload_deck()
+    print("built deck")
+    # for card in deck.deck:
+    #     print(f"source: {card.source_word.word}, trans: {[x.word for x in card.translations]}")
+    deck.upload_deck(is_custom=False)
+    print("uploaded")
     logger.info("Deck uploaded")
     return "fart"
     
@@ -223,7 +230,7 @@ async def create_file(source_language: List[str], target_language: List[str], so
     
     new_deck = Deck(source_language[0], target_language[0])
     new_deck.add_custom_deck_two(source_word, translation, testFiles)
-    new_deck.upload_deck()
+    new_deck.upload_deck(is_custom=True)
     if os.path.exists(filename):
         os.remove(filename)
     else:
