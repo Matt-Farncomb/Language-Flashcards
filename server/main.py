@@ -55,7 +55,7 @@ def read_item(request: Request):
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
 @app.get("/table/", response_class=HTMLResponse)
-def table(request: Request, source_language: str):  
+def table(request: Request, source_language: str, is_custom: bool):  
     # 
     # def flattened_column_names(words):
     #     word_columns = words[0]._meta.sorted_field_names
@@ -76,16 +76,22 @@ def table(request: Request, source_language: str):
     
     # cards = get_cards(source_language, target_language, 0)
     db = Database()
-    words = db.get_words(0, language_by_string[source_language])
+    words = db.get_words(0, language_by_string[source_language], is_custom)
     
     nav_left_button = {
         "link": "../",
         "button":"Home"
     }
     
+    languages = {
+        "type": "custom" if is_custom else "Duo Lingo",
+        "source":source_language,
+        "target":""
+    }
+    
     print(words)
     
-    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button} )
+    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button, "languages": languages} )
 
 def validate(content: str) -> bool:
     for char in content:
@@ -148,14 +154,12 @@ def upload_deck(deck: UploadedDeck):
     
 
 @app.get("/cards/") 
-def get_cards(source_language: str, target_language: str, count: int, isDuo: bool):
+def get_cards(source_language: str, target_language: str, count: int, is_custom: bool):
     # logging.info(f"get_cards called to get {count} in total")
     logger.info(f"getting cards")
     deck = Deck(source_language, target_language)
-    if isDuo:   
-        pass
-    else:
-        deck.build_deck_from_db(count)
+    print(f"Getting custom: {is_custom}")
+    deck.build_deck_from_db(count, is_custom)
     # print("??sdfdfsdfsdsdffsd")
     # print(deck.deck)
     for card in deck.deck:

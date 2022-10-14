@@ -15,7 +15,7 @@ class UI {
     #deckToDraw;
     #audio;
 
-    #isDuoDeck;
+    #isCustomDeck;
 
     constructor(deck, server, deckSize) {
         this.#loggedIn = this.#loggedInFunc();
@@ -26,11 +26,11 @@ class UI {
         this.#currentCustomCard = null;
         this.#deckToDraw = null;
         this.#audio = new Audio();
-        this.#isDuoDeck = true;
+        this.#isCustomDeck = false;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
-        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}`
+        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&is_custom=${this.#isCustomDeck}`
         console.log(document.querySelector("nav div a").href);
      
         //Server Cards
@@ -94,8 +94,8 @@ class UI {
     }
 
     #toggleIsLight(buttons){
-        this.#isDuoDeck = !this.#isDuoDeck;
-        console.log(this.#isDuoDeck);
+        this.#isCustomDeck = !this.#isCustomDeck;
+        console.log(this.#isCustomDeck);
         buttons.forEach(element => {
             element.classList.toggle("is-light");
         });
@@ -375,7 +375,7 @@ class UI {
 
     #newDeck() {
         const deckSize = document.querySelector("#deck-size").value;
-        this.#deck.getDeck(this.#server, deckSize, this.#isDuoDeck);
+        this.#deck.getDeck(this.#server, deckSize, this.#isCustomDeck);
     
         document.querySelector("#new-card").disabled = false;
         document.querySelector("#new-card").classList.remove("disabledPointer");

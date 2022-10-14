@@ -3,7 +3,6 @@
   <th>Source Word</th>
   <th>Source Language</th>
   <th>Translation</th>
-  <th>Translation Language</th>
   <th>Times used</th>
   <th>Mistakes</th>
   <th>Difficulty</th>
@@ -11,6 +10,8 @@
 </tr>
 {% endset %}
 <section class="section has-text-centered">
+  <h1 class="title">{{ languages.type }} Vocabulary</h1>
+  <h2 class="subtitle">{{ languages.source }} to {{ languages.target }}</h2>
   <table class="table">
       <thead>
         {{ column_names }}
@@ -24,14 +25,23 @@
         <tr class="">
             <th>{{ word.word }}</th>
             <th>{{ word.language }}</th>
-            {% for translation in word.translations %}
-            <th>  {{ translation.word }}  </th>
-            <th>  {{ translation.language }}  </th>
-            {% endfor %}
+            <th>
+                {% if word.translations|count > 0 %}
+                <div class="select">
+                  <select>
+                    {% for translation in word.translations %}
+                    <option>{{ translation.word }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                {% endif %}
+              
+            </th>
             <th>{{ word.wordinfo.used_count }}</th>
             <th>{{ word.wordinfo.answered_wrong_count }}</th>
             <th>{{ word.wordinfo.difficulty() }}</th>
             <th>{{ word.wordinfo.last_tested }}</th>
+            
             <th></th>
         </tr>
         {% endfor %}

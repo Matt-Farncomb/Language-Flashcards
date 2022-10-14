@@ -107,24 +107,27 @@ class Deck:
     def upload_deck(self, is_custom):
         self.db.upload_deck(self.deck, is_custom)
         
-    def __get_words_from_db(self, count: int,):
-        return self.db.get_words(count, self.source_language) # type: ignore
+    def __get_words_from_db(self, count: int, is_custom):
+        return self.db.get_words(count, self.source_language, is_custom) # type: ignore
     
-    def build_deck_from_db(self, count):
+    def build_deck_from_db(self, count, is_custom):
         if len(self.deck) != 0:
             raise Exception(f"Deck already created from {self.deck_type}")
         else:
             cards = []
-            #print("word")
-            words = self.__get_words_from_db(count)
+      
+            words = self.__get_words_from_db(count, is_custom)
             # print(f"words: {words}")
+            
             for word in words:
                 #¤print(f"word: {word}")
                 # print("here is working")
                 # print(word.audio.filename)
                 # with open(word.audio.filename, "rb") as f:
                 #     encoded = base64.b64encode(f.read()).decode('utf-8')
-                encoded = base64.b64encode(word.audio.filename)
+                encoded = ""
+                if is_custom:
+                    encoded = base64.b64encode(word.audio.filename)
                 new_word = Word(word.word, word.language, encoded)
                 
                 #print(f"id: {word.id}")

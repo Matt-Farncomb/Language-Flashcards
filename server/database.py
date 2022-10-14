@@ -46,7 +46,7 @@ class Database:
                 card_ids[card.source_word] = card_id.id
             data = []
             for c in card.translations:
-                data.append( (c.word, c.language, True, card_ids[card.source_word]) )
+                data.append( (c.word, c.language, is_custom, card_ids[card.source_word]) )
             with self.db.atomic():
                 WordModel.insert_many(data, fields=fields).execute()
                 #WordInfo.insert_many(info_data, fields=info_fields).execute()
@@ -57,15 +57,15 @@ class Database:
     def close(self):
         self.db.close()
 
-    def get_words(self, word_limit, language):
+    def get_words(self, word_limit, language, is_custom):
         if (word_limit):
             return (WordModel
-         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
+         .select(WordModel, WordInfo, Audio).where(WordModel.language==language, WordModel.is_custom_word==is_custom)
          .join_from(WordModel, WordInfo)
          .join_from(WordModel, Audio)).limit(word_limit)
          
         return (WordModel
-         .select(WordModel, WordInfo, Audio).where(WordModel.language==language)
+         .select(WordModel, WordInfo, Audio).where(WordModel.language==language, WordModel.is_custom_word==is_custom)
          .join_from(WordModel, WordInfo)
          .join_from(WordModel, Audio))
         #query = WordModel.select().where(WordModel.language == language).order_by(WordModel.info.difficulty).limit(word_count)
