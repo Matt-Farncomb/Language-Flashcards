@@ -1,26 +1,11 @@
-{% extends 'modals/base_modal.html' %}
-
-{% import 'macros.html' as macros %}
+{% extends 'modals/choose_language_base_modal.html' %}
 
 {% block id %}choose-language-modal{% endblock %}
 
-{% block header %}
-    <p class="modal-card-title">Choose Language</p>
-    <button class="delete close-choose-language-modal" aria-label="close"></button>
-{% endblock %}
+{% block titlestring %}Choose Language{% endblock %}
 
-{% block section %}
-    {{ macros.input("source-language", "source-language-input", "Source Language", "languages") }}
-    {{ macros.input("translation-language", "target-language-input","Translation Language", "languages") }}
-    <button class="button is-success is-light toggle-is-light">Custom</button>
-    <button class="button is-success toggle-is-light">DuoLingo</button>
+{% block submitid %}choose-language{% endblock %}
+{% block submitstring %}Choose{% endblock %}
 
-    
+{% block closemodalclass %}close-choose-language-modal{% endblock %}
 
-
-{% endblock %}
-
-{% block footer %}
-    <button class="button is-success close-choose-language-modal disabledPointer" id="draw-deck">Choose</button>
-    <button class="button close-choose-language-modal">Cancel</button>
-{% endblock %}
