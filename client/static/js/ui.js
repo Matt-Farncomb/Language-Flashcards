@@ -30,12 +30,30 @@ class UI {
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
-        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&is_custom=${this.#isCustomDeck}`
+
+        document.querySelectorAll(".source-language-input").forEach((e) => {
+            e.addEventListener('click', () => { 
+                if (e.value == localStorage.getItem('source_language', 'lang')) e.value = "";
+            } );
+
+        })
+
+        document.querySelectorAll(".target-language-input").forEach((e) => {
+            e.addEventListener('click', () => { 
+                if (e.value == localStorage.getItem('target_language', 'lang')) e.value = "";
+            } );
+        })
+
+       
+
+        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&target_language=${localStorage.getItem("target_language", "lang")}&is_custom=${this.#isCustomDeck}`
         console.log(document.querySelector("nav div a").href);
      
         //Server Cards
         this.#whenClicked("#draw-deck", () => this.login());
         this.#whenClicked("#new-deck", () => this.#revealDeckForm());
+        this.#whenClicked("#test2", () => this.#revealChooseLanguage());
+        this.#whenClicked(".close-choose-language-modal", () => this.#hideChooseLanguage());
         this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked("#front-flip", () => this.#flipOverCard());
         this.#whenClicked("#back-flip", () => this.#flipOverCard());
@@ -63,6 +81,17 @@ class UI {
         this.#validateDrawCardOnChange("deck-size");
         this.#validateDrawCardOnChange("source-language");
         this.#validateDrawCardOnChange("translation-language");
+    }
+
+    #AutoFillLanguages() {
+        document.querySelectorAll(".source-language-input").forEach((e) => {
+            e.value = localStorage.getItem('source_language', 'lang');
+
+        })
+
+        document.querySelectorAll(".target-language-input").forEach((e) => {
+            e.value = localStorage.getItem('target_language', 'lang');
+        })
     }
 
     async playAudio() {
@@ -226,6 +255,7 @@ class UI {
     #revealDeckForm() {
         document.querySelector("#deck-modal").classList.toggle("is-active");
         this.#deckToDraw = new DrawDeck(this.#server);
+        this.#AutoFillLanguages();
     }
 
     #revealCardForm() {
@@ -236,7 +266,26 @@ class UI {
         this.#disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
-        
+        this.#AutoFillLanguages();
+    }
+
+    #hideChooseLanguage() {
+        console.log("Hiding Choose language");
+        document.querySelector("#choose-language-modal").classList.toggle("is-active");
+    }
+
+    #revealChooseLanguage() {
+        console.log("Revealing Choose language");
+        document.querySelector("#choose-language-modal").classList.toggle("is-active");
+        this.#AutoFillLanguages();
+
+    //     document.querySelector("#source-language").value = localStorage.getItem('source_language', 'lang');
+    //    console.log(document.querySelector("#source-language").value)
+        // datalists.forEach((datalist) => {
+        //     console.log(datalist)
+        //     datalist.value = localStorage.getItem('source_language', 'lang');
+        //     console.log(datalist.value)
+        // })
     }
 
     #hideHardForm() {
@@ -246,7 +295,7 @@ class UI {
     }
 
     #updateDisplayedLanguages() {
-        document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
+        document.querySelectorAll("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang');
         // document.querySelector("nav div a").href = `/table/sl=${localStorage.getItem("source_language", "lang")}?tl=${localStorage.getItem("source_language", "lang")}`
     }

@@ -55,7 +55,7 @@ def read_item(request: Request):
     return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
 @app.get("/table/", response_class=HTMLResponse)
-def table(request: Request, source_language: str, is_custom: bool):  
+def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
     # 
     # def flattened_column_names(words):
     #     word_columns = words[0]._meta.sorted_field_names
@@ -86,7 +86,7 @@ def table(request: Request, source_language: str, is_custom: bool):
     languages = {
         "type": "custom" if is_custom else "Duo Lingo",
         "source":source_language,
-        "target":""
+        "target":target_language
     }
     
     print(words)

@@ -11,10 +11,10 @@
 
 {% block section %}
 
-  {{ macros.input("add-source", "Add word") }}
-  {{ macros.input("add-source-language", "Choose sourse language", "languages") }}
-  {{ macros.input("add-translation", "Add translation") }}
-  {{ macros.input("add-translation-language", "Choose target language", "languages") }}
+  {{ macros.input("add-source", "", "Add word") }}
+  {{ macros.input("add-source-language", "source-language-input", "Choose sourse language", "languages") }}
+  {{ macros.input("add-translation", "", "Add translation") }}
+  {{ macros.input("add-translation-language", "target-language-input","Choose target language", "languages") }}
     <!-- Content ... -->
   
   <div class="field">

@@ -74,6 +74,7 @@ class FlashCardDeck extends BaseDeck {
                 });
                 const word =  new Word(card.source_word.word, card.source_word.language)
                 const thing = new FlashCard(card.id, word, translation_list, voice)
+                document.querySelector("#play-word").classList.remove("is-hidden");
                 console.log(word)
                 console.log(thing)
                 return thing;

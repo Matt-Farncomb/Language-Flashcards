@@ -12,16 +12,18 @@
 {% block section %}
 
     {{ macros.numberInput("deck-size", "Total Cards", 10) }}
-    {{ macros.input("source-language", "Source Language", "languages") }}
-    {{ macros.input("translation-language", "Translation Language", "languages") }}
+    {{ macros.input("source-language", "source-language-input", "Source Language", "languages") }}
+    {{ macros.input("translation-language", "target-language-input", "Translation Language", "languages") }}
     <button class="button is-success is-light toggle-is-light">Custom</button>
     <button class="button is-success toggle-is-light">DuoLingo</button>
 
+    
     <datalist id="languages">
         {% for item in lang %}
             <option value="{{ item }}">{{ item }}</option>
         {% endfor %}
     </datalist> 
+    
 
 {% endblock %}
 
