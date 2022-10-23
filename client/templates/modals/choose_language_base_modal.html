@@ -6,27 +6,42 @@
     {% block closemodalclass %}{% endblock %}
 {% endset %}
 
+
+
 {% block header %}
     <p class="modal-card-title">{% block titlestring %}{% endblock %}</p>
     <button class="delete {{ close }}" aria-label="close"></button>
 {% endblock %}
 
 {% block section %}
+
+    <datalist id="languages">
+        {% for item in lang %}
+            <option value="{{ item }}">{{ item }}</option>
+        {% endfor %}
+    </datalist>
+
     {% block sectiontop %}
     {% endblock %}
-    {{ macros.input("source-language", "source-language-input", "Source Language", "languages") }}
-    {{ macros.input("translation-language", "target-language-input","Translation Language", "languages") }} 
+
+    <div class="field">
+        <div class="control">
+            <input id="{% block source_language_id %}{% endblock %}" class="input is-medium source-language-input" type="text" pattern="\p{L}+" placeholder="Source Language" list="languages" autocomplete="off" maxlength="50">
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            <input id="{% block translation_language_id %}{% endblock %}" class="input is-medium target-language-input" type="text" pattern="\p{L}+" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">
+        </div>
+    </div>
+    
     <button class="button is-success is-light toggle-is-light">Custom</button>
     <button class="button is-success toggle-is-light">DuoLingo</button>
+
 {% endblock %}
 
 {% block footer %}
-    <button class="button is-success {{ close }} disabledPointer" id="{% block submitid %}{% endblock %}">{% block submitstring %}{% endblock %}</button>
+    <a href=""><button class="button is-success {{ close }} disabledPointer" id="{% block submitid %}{% endblock %}">{% block submitstring %}{% endblock %}</button></a>
     <button class="button {{ close }}">Cancel</button>
 {% endblock %}
 
-<datalist id="languages">
-    {% for item in lang %}
-        <option value="{{ item }}">{{ item }}</option>
-    {% endfor %}
-</datalist>

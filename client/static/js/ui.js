@@ -45,11 +45,9 @@ class UI {
         })
 
        
-
-        document.querySelector("nav div a").href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&target_language=${localStorage.getItem("target_language", "lang")}&is_custom=${this.#isCustomDeck}`
-        console.log(document.querySelector("nav div a").href);
      
         //Server Cards
+        this.#whenClicked("#choose-language", () => this.chooseLanguages());
         this.#whenClicked("#draw-deck", () => this.login());
         this.#whenClicked("#new-deck", () => this.#revealDeckForm());
         this.#whenClicked("#test2", () => this.#revealChooseLanguage());
@@ -81,6 +79,10 @@ class UI {
         this.#validateDrawCardOnChange("deck-size");
         this.#validateDrawCardOnChange("source-language");
         this.#validateDrawCardOnChange("translation-language");
+
+        this.#validateChooseLanguageOnChange("#choose-source-language");
+        this.#validateChooseLanguageOnChange("#choose-translation-language");
+        
     }
 
     #AutoFillLanguages() {
@@ -119,6 +121,17 @@ class UI {
         } else {
             document.querySelector("#draw-deck").classList.add("disabledPointer"); 
             document.querySelector("#draw-deck").classList.remove("is-success");
+        }
+    }
+    async #validChooseLanguage() {
+        const valid = await this.#deckToDraw.validChooseLanguage();
+        console.log(valid);
+        if (valid) {
+            document.querySelector("#choose-language").classList.remove("disabledPointer"); 
+            document.querySelector("#choose-language").classList.add("is-success");
+        } else {
+            document.querySelector("#choose-language").classList.add("disabledPointer"); 
+            document.querySelector("#choose-language").classList.remove("is-success");
         }
     }
 
@@ -165,8 +178,44 @@ class UI {
         }
     }
 
+ 
+
+    isValidLanguage(language) {
+        const languageList = document.querySelector("#languages").options;
+        for (var e of languageList) {
+            if (e.value === language) {
+                console.log(e);
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     
-    
+    async #validateChooseLanguageOnChange(id) {
+
+       
+
+
+        const selector = document.querySelector(`${id}`);
+       
+
+        selector.onchange = (e) => {
+            this.#updateChooseLanguageModal();
+     
+            // if (noDuplicates) {
+            //     selector.classList.add("is-primary");
+            //     selector.classList.remove("is-danger");
+            // } else if (!noDuplicates && selector.value != "") {
+            //     selector.classList.remove("is-primary");
+            //     selector.classList.add("is-danger");
+            // } else if (selector.value == "") {
+            //     selector.classList.remove("is-primary");
+            //     selector.classList.add("is-danger");
+            // }
+        }
+    }
 
     async #validateDrawCardOnChange(input) {
         const selector = document.querySelector(`#${input}`);
@@ -237,6 +286,19 @@ class UI {
         
     }
 
+    chooseLanguages(event) {
+        console.log("choosing languages");
+   
+        // event.preventDefault();
+        let source_language = document.querySelector("#source-language");
+        let target_language = document.querySelector("#translation-language");
+        localStorage.setItem('source_language', source_language.value);
+        localStorage.setItem('target_language', target_language.value);
+        this.#updateDisplayedLanguages();
+        // document.querySelector("#new-card").innerText = "Play";
+        // this.reveal();
+    }
+
 
     login(event) {
         console.log("fart");
@@ -278,6 +340,9 @@ class UI {
         console.log("Revealing Choose language");
         document.querySelector("#choose-language-modal").classList.toggle("is-active");
         this.#AutoFillLanguages();
+        this.#updateChooseLanguageModal();
+
+        
 
     //     document.querySelector("#source-language").value = localStorage.getItem('source_language', 'lang');
     //    console.log(document.querySelector("#source-language").value)
@@ -286,6 +351,48 @@ class UI {
         //     datalist.value = localStorage.getItem('source_language', 'lang');
         //     console.log(datalist.value)
         // })
+    }
+
+    #updateChooseLanguageModal() {
+
+        function updateInputs(selector, noDuplicates, validLanguage) {
+            if (noDuplicates && validLanguage) {
+                selector.classList.add("is-primary");
+                selector.classList.remove("is-danger");
+            } else if (!noDuplicates && selector.value != "") {
+                selector.classList.remove("is-primary");
+                selector.classList.add("is-danger");
+            } else if (selector.value == "") {
+                selector.classList.remove("is-primary");
+                selector.classList.add("is-danger");
+            }
+            else {
+                selector.classList.add("is-danger");
+            }
+        }
+
+        const source = document.querySelector(`#choose-source-language`);
+        const translation = document.querySelector(`#choose-translation-language`);
+
+        const noDuplicates = document.querySelector(`#choose-source-language`).value !== document.querySelector(`#choose-translation-language`).value;
+        const validSourceLanguage = this.isValidLanguage(source.value);
+        const validTranslationLanguage = this.isValidLanguage(translation.value);
+
+        updateInputs(source, noDuplicates, this.isValidLanguage(source.value));
+        updateInputs(translation, noDuplicates, this.isValidLanguage(translation.value));
+
+        if (noDuplicates && validSourceLanguage && validTranslationLanguage) {
+            document.querySelector("#choose-language").classList.remove("disabledPointer");
+
+            localStorage.setItem('source_language', source.value);
+            localStorage.setItem('target_language', translation.value);
+            this.#updateDisplayedLanguages();
+
+            document.querySelector("#choose-language").parentElement.href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&target_language=${localStorage.getItem("target_language", "lang")}&is_custom=${this.#isCustomDeck}`
+
+        }
+        else document.querySelector("#choose-language").classList.add("disabledPointer");
+
     }
 
     #hideHardForm() {

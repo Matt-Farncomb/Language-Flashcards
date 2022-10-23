@@ -48,7 +48,7 @@ def read_item(request: Request):
     # js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     
     nav_left_button = {
-        "link": "/table",
+        "link": "#",
         "button":"Table"
     }
     
