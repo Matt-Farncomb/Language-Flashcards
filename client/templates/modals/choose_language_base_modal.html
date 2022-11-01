@@ -34,14 +34,13 @@
             <input id="{% block translation_language_id %}{% endblock %}" class="input is-medium target-language-input" type="text" pattern="\p{L}+" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">
         </div>
     </div>
-    
-    <button class="button is-success is-light toggle-is-light">Custom</button>
-    <button class="button is-success toggle-is-light">DuoLingo</button>
+
+    {% block duoblock %}{% endblock %}
 
 {% endblock %}
 
 {% block footer %}
-    <a href=""><button class="button is-success {{ close }} disabledPointer" id="{% block submitid %}{% endblock %}">{% block submitstring %}{% endblock %}</button></a>
+    <button type="button" class="button is-success {{ close }} disabledPointer" id="{% block submitid %}{% endblock %}">{% block submitstring %}{% endblock %}</button>
     <button class="button {{ close }}">Cancel</button>
 {% endblock %}
 

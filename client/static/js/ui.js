@@ -53,12 +53,15 @@ class UI {
         this.#whenClicked("#test2", () => this.#revealChooseLanguage());
         this.#whenClicked(".close-choose-language-modal", () => this.#hideChooseLanguage());
         this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
+        this.#whenClicked(".close-update-server-modal", () => this.#hideUpdateServer());
         this.#whenClicked("#front-flip", () => this.#flipOverCard());
         this.#whenClicked("#back-flip", () => this.#flipOverCard());
         this.#whenClicked("#new-card", () => this.#drawCard()); 
         this.#whenClicked("#logout", () => this.logout());    
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
-        this.#whenClicked("#update-server", () => this.#server.refresh());
+        // this.#whenClicked("#update-server", () => this.#server.refresh());
+        this.#whenClicked("#update-server", () => this.#revealUpdateServer());
+        this.#whenClicked("#run-update-server", () => this.#server.refreshServer());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
         //Creating new cards
         this.#whenClicked("#create", () => this.#revealCardForm());
@@ -82,6 +85,9 @@ class UI {
 
         this.#validateChooseLanguageOnChange("#choose-source-language");
         this.#validateChooseLanguageOnChange("#choose-translation-language");
+
+        this.#validateUpdateServerOnChange("#update-source-language");
+        this.#validateUpdateServerOnChange("#update-translation-language");
         
     }
 
@@ -195,25 +201,19 @@ class UI {
     
     async #validateChooseLanguageOnChange(id) {
 
-       
-
-
         const selector = document.querySelector(`${id}`);
-       
-
+    
         selector.onchange = (e) => {
             this.#updateChooseLanguageModal();
-     
-            // if (noDuplicates) {
-            //     selector.classList.add("is-primary");
-            //     selector.classList.remove("is-danger");
-            // } else if (!noDuplicates && selector.value != "") {
-            //     selector.classList.remove("is-primary");
-            //     selector.classList.add("is-danger");
-            // } else if (selector.value == "") {
-            //     selector.classList.remove("is-primary");
-            //     selector.classList.add("is-danger");
-            // }
+        }
+    }
+
+    async #validateUpdateServerOnChange(id) {
+
+        const selector = document.querySelector(`${id}`);
+    
+        selector.onchange = (e) => {
+            this.#updateUpdateServerModal();
         }
     }
 
@@ -290,8 +290,8 @@ class UI {
         console.log("choosing languages");
    
         // event.preventDefault();
-        let source_language = document.querySelector("#source-language");
-        let target_language = document.querySelector("#translation-language");
+        let source_language = document.querySelector("#choose-source-language");
+        let target_language = document.querySelector("#choose-translation-language");
         localStorage.setItem('source_language', source_language.value);
         localStorage.setItem('target_language', target_language.value);
         this.#updateDisplayedLanguages();
@@ -336,21 +336,62 @@ class UI {
         document.querySelector("#choose-language-modal").classList.toggle("is-active");
     }
 
+    #hideUpdateServer() {
+        console.log("Hiding Update Server");
+        document.querySelector("#update-server-modal").classList.toggle("is-active");
+    }
+
     #revealChooseLanguage() {
         console.log("Revealing Choose language");
         document.querySelector("#choose-language-modal").classList.toggle("is-active");
         this.#AutoFillLanguages();
         this.#updateChooseLanguageModal();
+    }
 
-        
+    #revealUpdateServer() {
+        console.log("Revealing Update Server");
+        document.querySelector("#update-server-modal").classList.toggle("is-active");
+        this.#AutoFillLanguages();
+        this.#updateUpdateServerModal();
+    }
 
-    //     document.querySelector("#source-language").value = localStorage.getItem('source_language', 'lang');
-    //    console.log(document.querySelector("#source-language").value)
-        // datalists.forEach((datalist) => {
-        //     console.log(datalist)
-        //     datalist.value = localStorage.getItem('source_language', 'lang');
-        //     console.log(datalist.value)
-        // })
+    #updateUpdateServerModal() {
+
+        function updateInputs(selector, noDuplicates, validLanguage) {
+            if (noDuplicates && validLanguage) {
+                selector.classList.add("is-primary");
+                selector.classList.remove("is-danger");
+            } else if (!noDuplicates && selector.value != "") {
+                selector.classList.remove("is-primary");
+                selector.classList.add("is-danger");
+            } else if (selector.value == "") {
+                selector.classList.remove("is-primary");
+                selector.classList.add("is-danger");
+            }
+            else {
+                selector.classList.add("is-danger");
+            }
+        }
+
+        const source = document.querySelector(`#update-source-language`);
+        const translation = document.querySelector(`#update-translation-language`);
+
+        const noDuplicates = document.querySelector(`#update-source-language`).value !== document.querySelector(`#update-translation-language`).value;
+        const validSourceLanguage = this.isValidLanguage(source.value);
+        const validTranslationLanguage = this.isValidLanguage(translation.value);
+
+        updateInputs(source, noDuplicates, this.isValidLanguage(source.value));
+        updateInputs(translation, noDuplicates, this.isValidLanguage(translation.value));
+
+        if (noDuplicates && validSourceLanguage && validTranslationLanguage) {
+            document.querySelector("#run-update-server").classList.remove("disabledPointer");
+
+            localStorage.setItem('source_language', source.value);
+            localStorage.setItem('target_language', translation.value);
+            this.#updateDisplayedLanguages();
+        }
+        else document.querySelector("#run-update-server").classList.add("disabledPointer");
+
     }
 
     #updateChooseLanguageModal() {
@@ -388,7 +429,7 @@ class UI {
             localStorage.setItem('target_language', translation.value);
             this.#updateDisplayedLanguages();
 
-            document.querySelector("#choose-language").parentElement.href = `/table?source_language=${localStorage.getItem("source_language", "lang")}&target_language=${localStorage.getItem("target_language", "lang")}&is_custom=${this.#isCustomDeck}`
+            document.querySelector("#choose-language").onclick = () => location.href=`/table?source_language=${localStorage.getItem("source_language", "lang")}&target_language=${localStorage.getItem("target_language", "lang")}&is_custom=${this.#isCustomDeck}` 
 
         }
         else document.querySelector("#choose-language").classList.add("disabledPointer");
