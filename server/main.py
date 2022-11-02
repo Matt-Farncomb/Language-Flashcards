@@ -52,7 +52,7 @@ def read_item(request: Request):
         "button":"Table"
     }
     
-    return templates.TemplateResponse("base.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
+    return templates.TemplateResponse("home.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
@@ -84,14 +84,14 @@ def table(request: Request, source_language: str, target_language: str, is_custo
     }
     
     languages = {
-        "type": "custom" if is_custom else "Duo Lingo",
+        "type": "Custom" if is_custom else "Duo Lingo",
         "source":source_language,
         "target":target_language
     }
     
     print(words)
     
-    return templates.TemplateResponse("base_table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button, "languages": languages} )
+    return templates.TemplateResponse("table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button, "languages": languages} )
 
 def validate(content: str) -> bool:
     for char in content:

@@ -61,7 +61,7 @@ class UI {
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
         // this.#whenClicked("#update-server", () => this.#server.refresh());
         this.#whenClicked("#update-server", () => this.#revealUpdateServer());
-        this.#whenClicked("#run-update-server", () => this.#server.refreshServer());
+        this.#whenClicked("#run-update-server", () => this.#refreshServer());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
         //Creating new cards
         this.#whenClicked("#create", () => this.#revealCardForm());
@@ -108,13 +108,13 @@ class UI {
         this.#audio.play();
     }
 
-    async #readyToUpload() {
+    async readyToUpload() {
         const test = await this.#currentCustomCard.readyToUpload(this.#deck);
         console.log(test);
         if (test) {
-            this.#enableAddCard();
+            this.enableAddCard();
         } else {
-            this.#disableAddCard();
+            this.disableAddCard();
         }
     }
 
@@ -168,7 +168,7 @@ class UI {
     //     return data.includes(scource) && data.includes(translation)     
     // }
 
-    #disableAddCard() {
+    disableAddCard() {
         document.querySelector("#add").classList.add("disabledPointer");    
         document.querySelector("#add").classList.remove("is-success");
         if (this.#baseDeck == null) {
@@ -176,7 +176,7 @@ class UI {
         } 
     }
 
-    #enableAddCard() {
+    enableAddCard() {
         document.querySelector("#add").classList.remove("disabledPointer"); 
         document.querySelector("#add").classList.add("is-success");
         if (this.#baseDeck != null) {
@@ -228,7 +228,7 @@ class UI {
         const input = document.querySelector(`#add-${id}-language`);
         input.onchange = (e) => {
             this.#currentCustomCard.isThisLanguageValid(id);
-            this.#readyToUpload();
+            this.readyToUpload();
         }
     }
 
@@ -236,7 +236,7 @@ class UI {
         const input = document.querySelector(`#add-${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.wordIsReady(input);
-            this.#readyToUpload();
+            this.readyToUpload();
         } 
         
     }
@@ -252,7 +252,7 @@ class UI {
             input.value = "";
             input.classList.remove("is-primary", "is-danger");
         });
-        this.#disableAddCard();
+        this.disableAddCard();
         this.#toggleLanguageLock(false);
         // this.#baseDeck = null;
     }
@@ -262,7 +262,7 @@ class UI {
         document.querySelector("#add-source").classList.remove("is-primary", "is-danger");
         document.querySelector("#add-translation").value = "";
         document.querySelector("#add-translation").classList.remove("is-primary", "is-danger");
-        this.#readyToUpload();
+        this.readyToUpload();
     }
 
     #getCardForUpload() {
@@ -323,9 +323,9 @@ class UI {
     #revealCardForm() {
         this.#baseDeck = null;
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#currentCustomCard = new CustomCard(this.#server);
-        //this.#readyToUpload();
-        this.#disableAddCard();
+        this.#currentCustomCard = new CustomCard(this.#server, this);
+        //this.readyToUpload();
+        this.disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
         this.#AutoFillLanguages();
@@ -437,7 +437,7 @@ class UI {
     }
 
     #hideHardForm() {
-        this.#disableAddCard();
+        this.disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
     }
@@ -579,7 +579,7 @@ class UI {
     }
 
     #refreshServer() {
-        this.#server.refreshServer();
+        this.#server.refresh();
     }
 
 }

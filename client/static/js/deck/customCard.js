@@ -5,9 +5,9 @@ class CustomCard {
     #recorder;
     #audio;
 
-    constructor(server) {
+    constructor(server, ui) {
         this.#server = server;
-        this.#recorder = new Recorder(this);
+        this.#recorder = new Recorder(this, ui);
     }
 
     get word() {

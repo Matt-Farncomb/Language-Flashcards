@@ -8,17 +8,20 @@ class Recorder {
     #customCard;
 
 
-    constructor(customCard) {
+    constructor(customCard, ui) {
         // this.#mediaRecorder = new MediaRecorder();
         this.#chunks = [];
         this.#customCard = customCard;
         this.#recordButton = document.querySelector("#record");
+        this.ui = ui;
 
         this.#recordButton.addEventListener('click', () => { 
             if (this.#recording) {
                 this.stop();
+                this.ui.readyToUpload();
             } else {
                 this.record();
+                this.ui.disableAddCard();
             }
         });
     }

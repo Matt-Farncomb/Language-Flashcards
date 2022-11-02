@@ -4,6 +4,23 @@ button > i {
   pointer-events: none;
 } 
 
+.table-rows:nth-child(2n) {
+  background-color: #fcfaf9;
+}
+
+.table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.table .input, .select select, .textarea {
+  border:none !important;
+}
+
+.table .select:after {
+  border-color: #c6edc6 !important;
+}
+
 /* #play-word {
   border-radius: 33%;
   border-width: 0.1px;

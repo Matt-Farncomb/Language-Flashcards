@@ -1,52 +1,63 @@
+{% extends 'base.html' %}
+
 {% set column_names %}
 <tr class="has-background-success-light has-text-primary">
-  <th>Source Word</th>
-  <th>Source Language</th>
-  <th>Translation</th>
-  <th>Times used</th>
-  <th>Mistakes</th>
-  <th>Difficulty</th>
-  <th>Last Tested</th>
+  <td>Source Word</td>
+  <td>Source Language</td>
+  <td>Translation</td>
+  <td>Times used</td>
+  <td>Mistakes</td>
+  <td>Difficulty</td>
+  <td>Last Tested</td>
 </tr>
 {% endset %}
-<section class="section has-text-centered">
-  <h1 class="title">{{ languages.type }} Vocabulary</h1>
-  <h2 class="subtitle">{{ languages.source }} to {{ languages.target }}</h2>
-  <table class="table">
-      <thead>
-        {{ column_names }}
-      </thead>
-      <tfoot>
-        {{ column_names }}
-      </tfoot>
-      <tbody>
-        
-        {% for word in words %}
-        <tr class="">
-            <th>{{ word.word }}</th>
-            <th>{{ word.language }}</th>
-            <th>
-                {% if word.translations|count > 0 %}
-                <div class="select">
-                  <select>
-                    {% for translation in word.translations %}
-                    <option>{{ translation.word }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                {% endif %}
+
+{% include 'navbar.html' %}
+
+{% block tableblock %}
+
+  <section class="section has-text-centered">
+    <h1 class="title">{{ languages.type }} Vocabulary</h1>
+    <h2 class="subtitle">{{ languages.source }} to {{ languages.target }}</h2>
+    <table class="table">
+        <thead>
+          {{ column_names }}
+        </thead>
+        <tfoot>
+          {% if words|length > 10 %}
+            {{ column_names }}
+          {% endif %}
+        </tfoot>
+        <tbody>
+          
+          {% for word in words %}
+          <tr class="table-rows">
+              <td>{{ word.word }}</td>
+              <td>{{ word.language }}</td>
+              <td>
+                  {% if word.translations|count > 0 %}
+                  <div class="select">
+                    <select>
+                      {% for translation in word.translations %}
+                      <option>{{ translation.word }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  {% endif %}
+              </td>
+
+              <td>{{ word.wordinfo.used_count }}</td>
+              <td>{{ word.wordinfo.answered_wrong_count }}</td>
+              <td>{{ word.wordinfo.difficulty() }}</td>
+              <td>{{ word.wordinfo.last_tested }}</td>
               
-            </th>
-            <th>{{ word.wordinfo.used_count }}</th>
-            <th>{{ word.wordinfo.answered_wrong_count }}</th>
-            <th>{{ word.wordinfo.difficulty() }}</th>
-            <th>{{ word.wordinfo.last_tested }}</th>
-            
-            <th></th>
-        </tr>
-        {% endfor %}
-        
-      </tbody>
-  </table>
-</section>
+              <td></td>
+          </tr>
+          {% endfor %}
+          
+        </tbody>
+    </table>
+  </section>
+
+{% endblock %}
 
