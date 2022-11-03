@@ -4,8 +4,8 @@ class FlashCard extends BaseCard {
     #answeredCorrectly;
     #incorrectCount;
 
-    constructor(id, word, translations, audio) {
-        super(word, translations, audio)
+    constructor(id, word, translations, audio, difficulty) {
+        super(word, translations, audio, difficulty)
         this.#id = id;
         this.#incorrectCount = 0;
     }
@@ -21,6 +21,7 @@ class FlashCard extends BaseCard {
     get answeredCorrectly() {
         return this.#answeredCorrectly;
     }
+
 
     isCorrectTranslation(userInput) {
         this.#answeredCorrectly =  !(this.translations.every(translation => translation.word !== userInput)); 

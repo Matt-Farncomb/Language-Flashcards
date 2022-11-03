@@ -12,52 +12,58 @@
 </tr>
 {% endset %}
 
-{% include 'navbar.html' %}
-
 {% block tableblock %}
 
-  <section class="section has-text-centered">
-    <h1 class="title">{{ languages.type }} Vocabulary</h1>
-    <h2 class="subtitle">{{ languages.source }} to {{ languages.target }}</h2>
-    <table class="table">
-        <thead>
-          {{ column_names }}
-        </thead>
-        <tfoot>
-          {% if words|length > 10 %}
+  <div class="container">
+
+  {% include 'navbar.html' %}
+
+    <section class="section has-text-centered">
+      <h1 class="title">{{ languages.type }} Vocabulary</h1>
+      <h2 class="subtitle">{{ languages.source }} to {{ languages.target }}</h2>
+      <table class="table">
+          <thead>
             {{ column_names }}
-          {% endif %}
-        </tfoot>
-        <tbody>
-          
-          {% for word in words %}
-          <tr class="table-rows">
-              <td>{{ word.word }}</td>
-              <td>{{ word.language }}</td>
-              <td>
-                  {% if word.translations|count > 0 %}
-                  <div class="select">
-                    <select>
-                      {% for translation in word.translations %}
-                      <option>{{ translation.word }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  {% endif %}
-              </td>
+          </thead>
+          <tfoot>
+            {% if words|length > 10 %}
+              {{ column_names }}
+            {% endif %}
+          </tfoot>
+          <tbody>
+            
+            {% for word in words %}
+            <tr class="table-rows">
+                <td>{{ word.word }}</td>
+                <td>{{ word.language }}</td>
+                <td>
+                    {% if word.translations|count > 0 %}
+                    <div class="select">
+                      <select>
+                        {% for translation in word.translations %}
+                        <option>{{ translation.word }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    {% endif %}
+                </td>
 
-              <td>{{ word.wordinfo.used_count }}</td>
-              <td>{{ word.wordinfo.answered_wrong_count }}</td>
-              <td>{{ word.wordinfo.difficulty() }}</td>
-              <td>{{ word.wordinfo.last_tested }}</td>
-              
-              <td></td>
-          </tr>
-          {% endfor %}
-          
-        </tbody>
-    </table>
-  </section>
+                <td>{{ word.wordinfo.used_count }}</td>
+                <td>{{ word.wordinfo.answered_wrong_count }}</td>
+                <td>{{ word.wordinfo.difficulty() }}</td>
+                <td>{{ word.wordinfo.last_tested }}</td>
+                
+                <td></td>
+            </tr>
+            {% endfor %}
+            
+          </tbody>
+      </table>
+    </section>
 
+  </div>
+  
 {% endblock %}
+
+
 

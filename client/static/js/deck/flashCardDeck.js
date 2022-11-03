@@ -72,8 +72,9 @@ class FlashCardDeck extends BaseDeck {
                 .then((response) => {
                     return window.URL.createObjectURL(response);
                 });
+                console.log(card.difficulty)
                 const word =  new Word(card.source_word.word, card.source_word.language)
-                const thing = new FlashCard(card.id, word, translation_list, voice)
+                const thing = new FlashCard(card.id, word, translation_list, voice, card.difficulty)
                 document.querySelector("#play-word").classList.remove("is-hidden");
                 console.log(word)
                 console.log(thing)

@@ -2,10 +2,24 @@
 /* This is to prevent icons effecting click events */
 button > i {
   pointer-events: none;
-} 
+}
+
+nav .buttons .button:last-child {
+  margin-right: .75em;
+}
 
 .table-rows:nth-child(2n) {
   background-color: #fcfaf9;
+}
+
+.container {
+  max-width: 1000px !important;
+  margin:auto;
+}
+
+.section {
+  padding-left: 1.5em !important;
+  padding-right: 1.5em !important;
 }
 
 .table {

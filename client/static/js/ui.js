@@ -512,7 +512,10 @@ class UI {
         document.querySelector("#new-card").innerText = "Next";
         this.#card = this.#deck.randomCard();
         this.#front = this.#card.word;
-        this.#back = this.#card.translations;
+        this.#back = this.#card.translations; 
+        console.log(this.#card)
+        console.log(this.#card.difficulty)
+        document.querySelector("#difficulty").innerText = this.#card.difficulty;
         this.#toggleCorrect();
         this.#updateDisplay();
     }
