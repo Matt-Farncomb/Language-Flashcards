@@ -54,9 +54,11 @@ class UI {
         this.#whenClicked(".close-choose-language-modal", () => this.#hideChooseLanguage());
         this.#whenClicked(".close-deck-modal", () => this.#revealDeckForm());
         this.#whenClicked(".close-update-server-modal", () => this.#hideUpdateServer());
-        this.#whenClicked("#front-flip", () => this.#flipOverCard());
-        this.#whenClicked("#back-flip", () => this.#flipOverCard());
-        this.#whenClicked("#new-card", () => this.#drawCard()); 
+        this.#whenClicked("#front-flip", () => this.#slowFlip());
+        this.#whenClicked("#back-flip", () => this.#slowFlip());
+        this.#whenClicked(".back-flip", () => this.#quickFlip());
+        // this.#whenClicked("#new-card", () => this.#drawCard()); 
+        this.#whenClicked(".new-card", () => this.#drawCard()); 
         this.#whenClicked("#logout", () => this.logout());    
         this.#whenClicked("#submit-result", () => this.#server.submitResult(this.#deck));  
         // this.#whenClicked("#update-server", () => this.#server.refresh());
@@ -64,6 +66,8 @@ class UI {
         this.#whenClicked("#run-update-server", () => this.#refreshServer());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
         //Creating new cards
+        this.#whenClicked(".edit", () => this.#revealCardForm());
+
         this.#whenClicked("#create", () => this.#revealCardForm());
         this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
         this.#whenClicked("#clear", () => this.#clearCardForm());
@@ -502,14 +506,25 @@ class UI {
         }
     }
 
-    #flipOverCard() {
+    #flipOverCard(time) {
+        document.querySelector(".flip-card-inner").style.transition = `${time}s`;
         const inner = document.querySelector(".flip-card-inner");
         inner.classList.toggle("flip");
     }
 
+    #slowFlip() {
+        this.#flipOverCard(2);
+    }
+
+    #quickFlip() {
+        this.#flipOverCard(0.25);
+    }
+
     #drawCard() {
         console.log("fart two")
-        document.querySelector("#new-card").innerText = "Next";
+        document.querySelectorAll(".new-card").forEach(element => {
+           element.innerText = "Next"; 
+        });
         this.#card = this.#deck.randomCard();
         this.#front = this.#card.word;
         this.#back = this.#card.translations; 
@@ -556,6 +571,8 @@ class UI {
     }
 
     #updateBack() {
+        const backWord = document.querySelector("#content-source-word");
+        backWord.textContent = this.#front.word;
         const back = document.querySelector(".flip-card-back .card-content span");
         back.innerHTML = "";
         if (this.#back.length == 0) {
@@ -565,7 +582,7 @@ class UI {
         }
         else {
             this.#back.forEach(element => {
-                const li = document.createElement("li");
+                const li = document.createElement("div");
                 li.innerText = element.word;
                 back.appendChild(li);
             });
@@ -578,7 +595,11 @@ class UI {
         this.#deck.getDeck(this.#server, deckSize, this.#isCustomDeck);
     
         document.querySelector("#new-card").disabled = false;
-        document.querySelector("#new-card").classList.remove("disabledPointer");
+        // document.querySelector("#new-card").classList.remove("disabledPointer");
+
+        document.querySelectorAll(".new-card").forEach((e) => {
+                e.classList.remove("disabledPointer");
+            })  
     }
 
     #refreshServer() {

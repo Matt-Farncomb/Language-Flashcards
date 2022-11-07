@@ -33,7 +33,10 @@ class FlashCardDeck extends BaseDeck {
             return this.randomCard();
         }
         else {
-            if (length == 1) document.querySelector("#new-card").innerText = "Shuffle";
+            //  document.querySelectorAll("#new-card").innerText = "Shuffle";
+            if (length == 1) document.querySelectorAll(".new-card").forEach(element => {
+                element.innerText = "Shuffle";
+            });
             const index = getRandomInt(0, length);
             return this.drawCard(index);
         }

@@ -17,6 +17,10 @@ nav .buttons .button:last-child {
   margin:auto;
 }
 
+#difficulty {
+  padding-left: .25em;
+}
+
 .section {
   padding-left: 1.5em !important;
   padding-right: 1.5em !important;

@@ -60,10 +60,11 @@ class Word:
 
 
 class Card:
-    def __init__(self, id, source_word: Word, translations :List[Word]):
+    def __init__(self, id, source_word: Word, translations :List[Word], difficulty):
         self.id = id
         self.source_word = source_word
-        self.translations = translations  
+        self.translations = translations
+        self.difficulty =  difficulty
     
     def addTranslation(self, newTranslation):
         self.translations.append(newTranslation)
@@ -131,7 +132,8 @@ class Deck:
                 new_word = Word(word.word, word.language, encoded)
                 
                 #print(f"id: {word.id}")
-                new_card = Card(word.id, new_word, [])
+                print(word.wordinfo.difficulty())
+                new_card = Card(word.id, new_word, [], word.wordinfo.difficulty())
                 #¤ new_word = Word(word.word, word.language)
                 for trans in word.translations:
                     new_card.addTranslation(trans)
