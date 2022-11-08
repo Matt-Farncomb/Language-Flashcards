@@ -74,6 +74,12 @@ class UI {
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
+        this.#whenClicked(".add-translation-fart", () => this.#addTranslation());
+
+        
+
+ 
+
         this.#whenClicked("#play-word", () => this.playAudio());
 
         this.#toggleWhenClicked(".toggle-is-light");
@@ -119,6 +125,42 @@ class UI {
             this.enableAddCard();
         } else {
             this.disableAddCard();
+        }
+    }
+
+    #removeTranslation(element) {
+        element.remove();
+    }
+    
+    #addTranslation() {
+        console.log("Will try to add");
+
+        // Test to see if the browser supports the HTML template element by checking
+        // for the presence of the template element's content attribute.
+        if ('content' in document.createElement('template')) {
+            // Instantiate the table with the existing HTML tbody
+            // and the row with the template
+            console.log("Adding");
+            const previousRow = document.querySelector("#add-translations-block");
+            const template = document.querySelector('#add-translation-template');
+
+            // Clone the new row and insert it into the table   
+            const clone = template.content.cloneNode(true);
+            clone.querySelector(".remove-translation").addEventListener(
+                'click' , (e) => e.target.parentElement.parentElement.parentElement.remove() );
+
+            // let td = clone.querySelectorAll("td");
+            // td[0].textContent = "1235646565";
+            // td[1].textContent = "Stuff";
+
+            previousRow.appendChild(clone);    
+
+            
+
+        } else {
+            console.log("Cant't add");
+        // Find another way to add the rows to the table because
+        // the HTML template element is not supported.
         }
     }
 
@@ -444,6 +486,12 @@ class UI {
         this.disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
+
+        const newElements = document.querySelectorAll(".remove-translation");
+        for (let i = 0; i < newElements.length; i++) {
+            newElements[i].parentElement.parentElement.remove();
+        }
+          
     }
 
     #updateDisplayedLanguages() {
@@ -460,6 +508,7 @@ class UI {
             } );
         });
     }
+
 
     #toggleWhenClicked(id) {
         const button = document.querySelectorAll(`${id}`);

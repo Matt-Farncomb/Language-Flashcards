@@ -17,6 +17,10 @@ nav .buttons .button:last-child {
   margin:auto;
 }
 
+.add-translation-fart, .remove-translation {
+  pointer-events: all !important;
+}
+
 #difficulty {
   padding-left: .25em;
 }
