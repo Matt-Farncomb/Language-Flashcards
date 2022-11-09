@@ -66,7 +66,7 @@ class UI {
         this.#whenClicked("#run-update-server", () => this.#refreshServer());
         this.#whenClicked("#submit-answer", () => this.#checkAnswer()); 
         //Creating new cards
-        this.#whenClicked(".edit", () => this.#revealCardForm());
+        this.#whenClicked(".edit", () => this.#revealEditForm());
 
         this.#whenClicked("#create", () => this.#revealCardForm());
         this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
@@ -128,13 +128,18 @@ class UI {
         }
     }
 
-    #removeTranslation(element) {
-        element.remove();
+    #revealEditForm() {
+        this.#revealCardForm();
+        const translations_needed = this.#back.length;
+        const translation = document.querySelector("#add-translation");
+        if (this.#back) translation.value = this.#back[0].word;
+        for (let i = 1; i < translations_needed; i++) {
+            this.#addTranslationWithContent(this.#back[i].word);
+        }   
     }
     
     #addTranslation() {
         console.log("Will try to add");
-
         // Test to see if the browser supports the HTML template element by checking
         // for the presence of the template element's content attribute.
         if ('content' in document.createElement('template')) {
@@ -147,20 +152,35 @@ class UI {
             // Clone the new row and insert it into the table   
             const clone = template.content.cloneNode(true);
             clone.querySelector(".remove-translation").addEventListener(
-                'click' , (e) => e.target.parentElement.parentElement.parentElement.remove() );
-
-            // let td = clone.querySelectorAll("td");
-            // td[0].textContent = "1235646565";
-            // td[1].textContent = "Stuff";
+                'click' , (e) => e.target.parentElement.parentElement.remove() );
 
             previousRow.appendChild(clone);    
-
-            
-
         } else {
             console.log("Cant't add");
-        // Find another way to add the rows to the table because
-        // the HTML template element is not supported.
+        }
+    }
+
+    #addTranslationWithContent(content) {
+        console.log("Will try to add");
+        // Test to see if the browser supports the HTML template element by checking
+        // for the presence of the template element's content attribute.
+        if ('content' in document.createElement('template')) {
+            // Instantiate the table with the existing HTML tbody
+            // and the row with the template
+            console.log("Adding");
+            const previousRow = document.querySelector("#add-translations-block");
+            const template = document.querySelector('#add-translation-template');
+
+            // Clone the new row and insert it into the table   
+            const clone = template.content.cloneNode(true);
+            clone.value = content;
+            clone.querySelector(".remove-translation").addEventListener(
+                'click' , (e) => e.target.parentElement.parentElement.remove() );
+            
+            
+            previousRow.appendChild(clone);    
+        } else {
+            console.log("Cant't add");
         }
     }
 
