@@ -131,7 +131,9 @@ class UI {
     #revealEditForm() {
         this.#revealCardForm();
         const translations_needed = this.#back.length;
+        const source = document.querySelector("#add-source");
         const translation = document.querySelector("#add-translation");
+        if (this.#front)  source.value = this.#front.word;
         if (this.#back) translation.value = this.#back[0].word;
         for (let i = 1; i < translations_needed; i++) {
             this.#addTranslationWithContent(this.#back[i].word);
