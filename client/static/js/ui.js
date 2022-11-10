@@ -44,6 +44,26 @@ class UI {
             } );
         })
 
+        const translationinputs = document.querySelectorAll(".add-translation-fart");
+        translationinputs.forEach(element => {
+            element.addEventListener('click', (e) => {
+                console.log("Will try to add");
+                if ('content' in document.createElement('template')) {
+                    const translationsBlock = e.target.parentElement.parentElement.parentElement.parentElement;
+                    console.log(translationsBlock);
+                    const template = document.querySelector('.translation-template');
+                    const clone = template.content.cloneNode(true);
+
+                    clone.querySelector(".remove-translation").addEventListener(
+                        'click' , (e) => e.target.parentElement.parentElement.remove() );
+
+                        translationsBlock.appendChild(clone); 
+                } else {
+                    console.log("Cant't add");
+                }
+            })
+        })
+
        
      
         //Server Cards
@@ -70,11 +90,12 @@ class UI {
 
         this.#whenClicked("#create", () => this.#revealCardForm());
         this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
+        this.#whenClicked(".close-edit-modal", () => this.#hideEditForm() );
         this.#whenClicked("#clear", () => this.#clearCardForm());
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
-        this.#whenClicked(".add-translation-fart", () => this.#addTranslation());
+        // this.#whenClicked(".add-translation-fart", () => this.#addTranslation());
 
         
 
@@ -129,38 +150,59 @@ class UI {
     }
 
     #revealEditForm() {
-        this.#revealCardForm();
+        this.#revealEditModal();
         const translations_needed = this.#back.length;
-        const source = document.querySelector("#add-source");
-        const translation = document.querySelector("#add-translation");
+        const source = document.querySelector("#edit-source");
+        const translation = document.querySelector("#edit-translation");
         if (this.#front)  source.value = this.#front.word;
         if (this.#back) translation.value = this.#back[0].word;
         for (let i = 1; i < translations_needed; i++) {
             this.#addTranslationWithContent(this.#back[i].word);
         }   
     }
+
     
-    #addTranslation() {
-        console.log("Will try to add");
-        // Test to see if the browser supports the HTML template element by checking
-        // for the presence of the template element's content attribute.
-        if ('content' in document.createElement('template')) {
-            // Instantiate the table with the existing HTML tbody
-            // and the row with the template
-            console.log("Adding");
-            const previousRow = document.querySelector("#add-translations-block");
-            const template = document.querySelector('#add-translation-template');
+    
+    // #addTranslation() {
+    //     // const translationinputs = document.querySelectorAll(".add-translation-fart");
+    //     // translationinputs.forEach(element => {
+    //     //     element.addEventListener('click', (e) => {
+    //     //         console.log("Will try to add");
+    //     //         if ('content' in document.createElement('template')) {
+    //     //             const parent = e.target.parentElement.parentElement.parentElement;
+    //     //             const template = document.querySelector('.translation-template');
+    //     //             const clone = template.content.cloneNode(true);
 
-            // Clone the new row and insert it into the table   
-            const clone = template.content.cloneNode(true);
-            clone.querySelector(".remove-translation").addEventListener(
-                'click' , (e) => e.target.parentElement.parentElement.remove() );
+    //     //             clone.querySelector(".remove-translation").addEventListener(
+    //     //                 'click' , (e) => e.target.parentElement.parentElement.remove() );
 
-            previousRow.appendChild(clone);    
-        } else {
-            console.log("Cant't add");
-        }
-    }
+    //     //             previousRow.appendChild(clone); 
+    //     //         } else {
+    //     //             console.log("Cant't add");
+    //     //         }
+    //     //     })
+    //     // })
+
+    //     console.log("Will try to add");
+    //     // Test to see if the browser supports the HTML template element by checking
+    //     // for the presence of the template element's content attribute.
+    //     if ('content' in document.createElement('template')) {
+    //         // Instantiate the table with the existing HTML tbody
+    //         // and the row with the template
+    //         console.log("Adding");
+    //         const previousRow = document.querySelector("#add-translations-block");
+    //         const template = document.querySelector('.translation-template');
+
+    //         // Clone the new row and insert it into the table   
+    //         const clone = template.content.cloneNode(true);
+    //         clone.querySelector(".remove-translation").addEventListener(
+    //             'click' , (e) => e.target.parentElement.parentElement.remove() );
+
+    //         previousRow.appendChild(clone);    
+    //     } else {
+    //         console.log("Cant't add");
+    //     }
+    // }
 
     #addTranslationWithContent(content) {
         console.log("Will try to add");
@@ -244,12 +286,22 @@ class UI {
         } 
     }
 
+    disableUpdateCard() {
+        document.querySelector("#update").classList.add("disabledPointer");    
+        document.querySelector("#update").classList.remove("is-success");
+    }
+
     enableAddCard() {
         document.querySelector("#add").classList.remove("disabledPointer"); 
         document.querySelector("#add").classList.add("is-success");
         if (this.#baseDeck != null) {
             document.querySelector("#upload").classList.remove("disabledPointer");
         }
+    }
+
+    enableUpdateCard() {
+        document.querySelector("#update").classList.remove("disabledPointer"); 
+        document.querySelector("#update").classList.add("is-success");
     }
 
  
@@ -325,6 +377,15 @@ class UI {
         // this.#baseDeck = null;
     }
 
+    #clearEditCardForm() {
+        const inputs = document.querySelectorAll("#edit-card-modal input");
+        inputs.forEach(input => {
+            input.value = "";
+            input.classList.remove("is-primary", "is-danger");
+        });
+        this.disableUpdateCard();
+    }
+
     #clearWords() {
         document.querySelector("#add-source").value = "";
         document.querySelector("#add-source").classList.remove("is-primary", "is-danger");
@@ -396,6 +457,17 @@ class UI {
         this.disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
+        this.#AutoFillLanguages();
+    }
+
+    #revealEditModal() {
+        this.#baseDeck = null;
+        // if (this.#baseDeck != null) console.log(this.#baseDeck);
+        this.#currentCustomCard = new CustomCard(this.#server, this);
+        //this.readyToUpload();
+        this.disableUpdateCard();
+        document.querySelector("#edit-card-modal").classList.toggle("is-active");
+        this.#clearEditCardForm();
         this.#AutoFillLanguages();
     }
 
@@ -508,6 +580,18 @@ class UI {
         this.disableAddCard();
         document.querySelector("#new-card-modal").classList.toggle("is-active");
         this.#clearCardForm();
+
+        const newElements = document.querySelectorAll(".remove-translation");
+        for (let i = 0; i < newElements.length; i++) {
+            newElements[i].parentElement.parentElement.remove();
+        }
+          
+    }
+
+    #hideEditForm() {
+        this.disableUpdateCard();
+        document.querySelector("#edit-card-modal").classList.toggle("is-active");
+        this.#clearEditCardForm();
 
         const newElements = document.querySelectorAll(".remove-translation");
         for (let i = 0; i < newElements.length; i++) {
