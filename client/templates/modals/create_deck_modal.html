@@ -37,43 +37,16 @@
     </div>
   </template>
 
-  <div class="field">
-      <div class="file is-medium has-name">
-          <label class="file-label">
-            <!-- 
-            <input class="file-input" type="file" name="resume">
-            
-            <span class="file-cta">
-              
-              <span class="file-icon">
-                <i class="fas fa-upload"></i>
-              </span>
-              <span class="file-label">
-                Audio
-              </span>
-              
-            </span>
-            -->
-            <button id="record" style='font-size:22px; height:2.25em'>Record <i class='fas fa-record-vinyl'></i></button>
-            <!-- 
-            <span class="file-name">
-              Screen Shot 2017-07-29 at 15.54.25.png
-            </span>
-            -->
-          </label>
-          <audio id="player" controls style="margin-left: 2em; width:15em"> </audio>
-          
-          
-      </div>
-  </div>
+  {% include 'record.html' %}
+
   {% endblock %}
 
   {% block footer %}
-      <button class="button is-success" id="add">Add to deck</button>
-      <button id="clear" class="button is-danger" id="">Clear</button>
-      <button class="button close-create-modal">Cancel</button>
-      <button id="upload" class="button close-create-modal">Upload Deck</button>
-    {% endblock %}
+    <button class="button is-success" id="add">Add to deck</button>
+    <button id="clear" class="button is-danger" id="">Clear</button>
+    <button class="button close-create-modal">Cancel</button>
+    <button id="upload" class="button close-create-modal">Upload Deck</button>
+  {% endblock %}
 
   </div>  
 </div>

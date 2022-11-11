@@ -36,23 +36,13 @@
     </div>
   </template>
 
-  <div class="field">
-      <div class="file is-medium has-name">
-          <label class="file-label">
+  {% include 'record.html' %}
 
-            <button id="record" style='font-size:22px; height:2.25em'>Record <i class='fas fa-record-vinyl'></i></button>
-
-          </label>
-          <audio id="player" controls style="margin-left: 2em; width:15em"> </audio>
-          
-          
-      </div>
-  </div>
   {% endblock %}
 
   {% block footer %}
       <button class="button is-success" id="update">Update Card</button>
-      <button id="clear" class="button is-danger" id="">Clear</button>
+      <button id="clear-edit" class="button is-danger">Clear</button>
       <button class="button close-edit-modal">Cancel</button>
     {% endblock %}
 

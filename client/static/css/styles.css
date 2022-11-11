@@ -95,3 +95,7 @@ nav .buttons .button:last-child {
     background-color: whitesmoke !important;
     color: lightgrey !important;
   }
+
+  .disabledText {
+    color: lightgrey !important;
+  }

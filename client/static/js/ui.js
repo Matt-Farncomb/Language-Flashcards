@@ -26,7 +26,7 @@ class UI {
         this.#currentCustomCard = null;
         this.#deckToDraw = null;
         this.#audio = new Audio();
-        this.#isCustomDeck = false;
+        this.#isCustomDeck = true;
 
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
@@ -92,6 +92,7 @@ class UI {
         this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
         this.#whenClicked(".close-edit-modal", () => this.#hideEditForm() );
         this.#whenClicked("#clear", () => this.#clearCardForm());
+        this.#whenClicked("#clear-edit", () => this.#clearEditCardForm());
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
         this.#whenClicked("#add", () => this.#getCardForUpload());
 
@@ -451,23 +452,25 @@ class UI {
 
     #revealCardForm() {
         this.#baseDeck = null;
+        const createCardModal = "#new-card-modal"
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#currentCustomCard = new CustomCard(this.#server, this);
+        this.#currentCustomCard = new CustomCard(this.#server, this, createCardModal);
         //this.readyToUpload();
         this.disableAddCard();
-        document.querySelector("#new-card-modal").classList.toggle("is-active");
+        document.querySelector(createCardModal).classList.toggle("is-active");
         this.#clearCardForm();
         this.#AutoFillLanguages();
     }
 
     #revealEditModal() {
         this.#baseDeck = null;
+        const editCardModal = "#edit-card-modal"
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#currentCustomCard = new CustomCard(this.#server, this);
+        this.#currentCustomCard = new CustomCard(this.#server, this, editCardModal);
         //this.readyToUpload();
         this.disableUpdateCard();
-        document.querySelector("#edit-card-modal").classList.toggle("is-active");
-        this.#clearEditCardForm();
+        document.querySelector(editCardModal).classList.toggle("is-active");
+        // this.#clearEditCardForm();
         this.#AutoFillLanguages();
     }
 
@@ -688,6 +691,7 @@ class UI {
         document.querySelector("#difficulty").innerText = this.#card.difficulty;
         this.#toggleCorrect();
         this.#updateDisplay();
+        document.querySelectorAll(".edit").forEach(element => element.classList.remove("disabledPointer"));
     }
 
 
