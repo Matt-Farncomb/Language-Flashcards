@@ -8,7 +8,7 @@ class Recorder {
     #customCard;
 
 
-    constructor(customCard, ui, modal) {
+    constructor(customCard, ui, modal, audioURL=null) {
         // this.#mediaRecorder = new MediaRecorder();
         this.#chunks = [];
         this.#customCard = customCard;
@@ -16,6 +16,7 @@ class Recorder {
         this.#recordButton = document.querySelector(`${modal} .record`);
         this.#audioPlayer = document.querySelector(`${modal} .player`);
         this.ui = ui;
+        if (audioURL) this.#audioPlayer.src = audioURL;
 
         this.#recordButton.addEventListener('click', () => { 
             if (this.#recording) {

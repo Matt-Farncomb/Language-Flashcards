@@ -60,7 +60,7 @@ class Word:
 
 
 class Card:
-    def __init__(self, id, source_word: Word, translations :List[Word], difficulty):
+    def __init__(self, id, source_word: Word, translations :List[Word], difficulty=0):
         self.id = id
         self.source_word = source_word
         self.translations = translations

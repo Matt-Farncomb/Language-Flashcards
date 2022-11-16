@@ -155,6 +155,7 @@ class UI {
         const translations_needed = this.#back.length;
         const source = document.querySelector("#edit-source");
         const translation = document.querySelector("#edit-translation");
+
         if (this.#front)  source.value = this.#front.word;
         if (this.#back) translation.value = this.#back[0].word;
         for (let i = 1; i < translations_needed; i++) {
@@ -462,11 +463,11 @@ class UI {
         this.#AutoFillLanguages();
     }
 
-    #revealEditModal() {
+    async #revealEditModal() {
         this.#baseDeck = null;
         const editCardModal = "#edit-card-modal"
         // if (this.#baseDeck != null) console.log(this.#baseDeck);
-        this.#currentCustomCard = new CustomCard(this.#server, this, editCardModal);
+        this.#currentCustomCard = new CustomCard(this.#server, this, editCardModal, await this.#card.audio);
         //this.readyToUpload();
         this.disableUpdateCard();
         document.querySelector(editCardModal).classList.toggle("is-active");
@@ -679,7 +680,8 @@ class UI {
     }
 
     #drawCard() {
-        console.log("fart two")
+        console.log("fart two");
+        document.querySelector("#difficulty").parentElement.classList.remove("disabledText");
         document.querySelectorAll(".new-card").forEach(element => {
            element.innerText = "Next"; 
         });
