@@ -56,6 +56,10 @@ class Database:
 
     def close(self):
         self.db.close()
+    
+    def get_audio(self, id):
+        return Audio.select().join(WordModel).where(WordModel.id == id).get().filename
+        # return Audio.get(Audio.id == id)
 
     def get_words(self, word_limit, language, is_custom):
         if (word_limit):

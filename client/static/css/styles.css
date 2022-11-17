@@ -8,6 +8,10 @@ nav .buttons .button:last-child {
   margin-right: .75em;
 }
 
+.table .button i {
+  padding-left: .75em;
+}
+
 .table-rows:nth-child(2n) {
   background-color: #fcfaf9;
 }

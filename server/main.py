@@ -54,6 +54,16 @@ def read_item(request: Request):
     
     return templates.TemplateResponse("home.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
 
+@app.get("/audio/{id}")
+def upload_deck(id: int): 
+    db = Database()
+    audio = db.get_audio(id)
+    print("hatr")
+    encoded = base64.b64encode(audio)
+    return encoded
+    # return audio
+    # return db.get_audio(id)
+
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
     # 
