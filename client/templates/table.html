@@ -3,7 +3,6 @@
 {% set column_names %}
 <tr class="has-background-success-light has-text-primary">
   <td>Source Word</td>
-  <td>Source Language</td>
   <td>Translation</td>
   <td>Times used</td>
   <td>Mistakes</td>
@@ -35,8 +34,7 @@
             
             {% for word in words %}
             <tr class="table-rows" data-id={{ word.id }}> 
-                <td><button class="button"><i class="fas fa-play"></i></button></td>
-                <td>{{ word.language }}</td>
+                <td><button class="button">{{ word.word }}<i class="fas fa-play"></i></button></td>
                 <td>
                     {% if word.translations|count > 0 %}
                     <div class="select">

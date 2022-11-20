@@ -35,24 +35,26 @@ templates = Jinja2Templates(directory=f"..\client\\templates")
 
 data_test = ""
 
-@app.get("/", response_class=HTMLResponse)
-def read_item(request: Request):  
-    # js_files = [ f"js\{files}" for root, dirs, files in os.walk('..\client\static\js') for file in files ]
+def get_js_files(dir: str):
     js_files = []
-    for path, dirs, fnames in os.walk("..\client\static\js"):
+    for path, dirs, fnames in os.walk(f"..\client\static\js\\{dir}"):
         for filename in [f for f in fnames if f.endswith(".js")]:
             newPath = path.split("static")[1]+"\\\\"
             js_files.append(f"{newPath}{filename}")
-            
+    return js_files
+    
+
+@app.get("/", response_class=HTMLResponse)
+def read_item(request: Request):  
+
     lang = [ v["language"] for k, v in new_languages.items()  ]
-    # js_files = [f"js\{entry.name}" for entry in os.scandir('..\client\static\js') if entry.is_file()]
     
     nav_left_button = {
         "link": "#",
         "button":"Table"
     }
     
-    return templates.TemplateResponse("home.html", {"request": request, "lang": lang, "js_files": js_files, "nav_left_button": nav_left_button})
+    return templates.TemplateResponse("home.html", {"request": request, "lang": lang, "js_files": get_js_files("flashCards"), "nav_left_button": nav_left_button})
 
 @app.get("/audio/{id}")
 def upload_deck(id: int): 
@@ -66,25 +68,9 @@ def upload_deck(id: int):
 
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
-    # 
-    # def flattened_column_names(words):
-    #     word_columns = words[0]._meta.sorted_field_names
-    #     wordinfo_columns = words[0].wordinfo._meta.sorted_field_names
-    #     unwanted_columns = ["id", "parent"]
-    #     return filter(lambda x: x not in unwanted_columns, word_columns + wordinfo_columns)
-        
-    js_files = []
-    for path, dirs, fnames in os.walk("..\client\static\js"):
-        for filename in [f for f in fnames if f.endswith(".js")]:
-            newPath = path.split("static")[1]+"\\\\"
-            js_files.append(f"{newPath}{filename}")
-            
+       
     lang = [ v["language"] for k, v in new_languages.items()  ]
-    
-    # source_language = "fi"
-    # target_language = "en"    
-    
-    # cards = get_cards(source_language, target_language, 0)
+
     db = Database()
     words = db.get_words(0, language_by_string[source_language], is_custom)
     
@@ -99,9 +85,7 @@ def table(request: Request, source_language: str, target_language: str, is_custo
         "target":target_language
     }
     
-    print(words)
-    
-    return templates.TemplateResponse("table.html", {"request": request, "words": words, "js_files": js_files,  "nav_left_button": nav_left_button, "languages": languages} )
+    return templates.TemplateResponse("table.html", {"request": request, "words": words, "js_files": get_js_files("table"),  "nav_left_button": nav_left_button, "languages": languages} )
 
 def validate(content: str) -> bool:
     for char in content:
