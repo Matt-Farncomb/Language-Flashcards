@@ -11,7 +11,7 @@ class Refresh(BaseModel):
 
 class UploadedCard(BaseModel):
     source_word: str
-    translation: str
+    translation: List[str]
     audio: bytes
 
 class UploadedDeck(BaseModel):
@@ -21,6 +21,6 @@ class UploadedDeck(BaseModel):
     
 class BlobTest(BaseModel):
     blob: bytes
-  
+
 
     

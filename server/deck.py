@@ -94,15 +94,17 @@ class Deck:
             # print(word)
             new_word = Word(word.source_word, custom_cards.source_language)
             new_translation = Word(word.translation, custom_cards.target_language)
-            new_card = Card(None, new_word, [new_translation])
+            new_card = Card(None, new_word, new_translation)
             self.deck.append(new_card)
         # print(self.deck)
     
     def add_custom_deck_two(self, source_words, translations, audio_files):
         for i in range(len(source_words)):
             new_word = Word(source_words[i], self.source_language, audio_files[i])
-            new_translation = Word(translations[i], self.target_language)
-            new_card = Card(None, new_word, [new_translation])
+            new_translations = []
+            for e in translations[i]:
+                new_translations.append(Word(e, self.target_language))
+            new_card = Card(None, new_word, new_translations)
             self.deck.append(new_card)
       
     def upload_deck(self, is_custom):

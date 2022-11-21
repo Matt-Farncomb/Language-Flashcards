@@ -18,6 +18,10 @@ class CustomCard {
         return document.querySelector("#add-translation").value;
     }
 
+    get translations() {
+        return [...document.querySelectorAll("#new-card-modal .translation")].map(e => e.value);
+    }
+
     get sourceLanguage() {
         return document.querySelector("#add-source-language").value;
     }

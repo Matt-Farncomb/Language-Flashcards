@@ -36,14 +36,20 @@
             <tr class="table-rows" data-id={{ word.id }}> 
                 <td><button class="button">{{ word.word }}<i class="fas fa-play"></i></button></td>
                 <td>
-                    {% if word.translations|count > 0 %}
-                    <div class="select">
-                      <select>
-                        {% for translation in word.translations %}
-                        <option>{{ translation.word }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
+                    {% if word.translations|count > 1 %}
+                      <div class="select">
+                        <select>
+                          {% for translation in word.translations %}
+                          <option>{{ translation.word }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>  
+                    {% else %}
+                      <div class="select no-click">
+                        <select class="">
+                          <option>{{ word.translations[0].word }}</option>
+                        </select>
+                      </div>
                     {% endif %}
                 </td>
                 

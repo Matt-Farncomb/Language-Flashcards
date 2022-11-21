@@ -406,7 +406,7 @@ class UI {
             this.#toggleLanguageLock(true);
         }
         console.log(this.#currentCustomCard.audio);
-        const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translation, this.#currentCustomCard.audio);
+        const card = new BaseCard(this.#currentCustomCard.word, this.#currentCustomCard.translations, this.#currentCustomCard.audio);
         console.log(card);
         this.#baseDeck.addCard(card);
         this.#clearWords();

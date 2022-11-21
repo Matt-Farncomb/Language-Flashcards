@@ -68,12 +68,16 @@ class Server {
         const formData = new FormData();
         
         baseDeck.cards.forEach(card => {
-           
+            let testList = [];
+            // card.translations.forEach(e => testList.push(e) )
+            
             // formData.append("source_language", baseDeck.sourceLanguage)
             // formData.append("target_language", baseDeck.targetLanguage)
+            console.log(card.translations);
             formData.append("source_word", card.word)
             formData.append("translation", card.translations);
-            formData.append("file", card.audio, card.word + card.translations);
+            // file and filename
+            formData.append("file", card.audio, card.word);
         });
         console.log(baseDeck.sourceLanguage);
         console.log(baseDeck.targetLanguage);

@@ -52,6 +52,14 @@ nav .buttons .button:last-child {
   border-width: 0.1px;
   padding: 1em;
 } */
+.no-click {
+  pointer-events: none;
+}
+
+.table .no-click:after {
+  border-color: white !important;
+}
+
 
 .outer-card {
   

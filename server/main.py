@@ -206,11 +206,14 @@ def trimmed_wav():
 @app.post("/uploadTest")
 async def create_file(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
 # async def create_file(file: UploadFile = File(...)):
-    audios = []
-    # print(source_word)
+    translations = []
+    for e in range(len(source_word)):
+        translations.append(translation[e].split(","))
+    print(translations)
     # print(translation)
     # print(file)
-    print("test")
+    
+    print("upload test")
     testFiles = []
     
     for e in range(len(file)):
@@ -227,7 +230,7 @@ async def create_file(source_language: List[str], target_language: List[str], so
         testFiles.append(contents)
     
     new_deck = Deck(source_language[0], target_language[0])
-    new_deck.add_custom_deck_two(source_word, translation, testFiles)
+    new_deck.add_custom_deck_two(source_word, translations, testFiles)
     new_deck.upload_deck(is_custom=True)
     if os.path.exists(filename):
         os.remove(filename)
