@@ -208,6 +208,12 @@ async def update_word(update: Update):
     db.update_word(update.id, update.source_word, update.translations)
     return update
 
+@app.post("/updateAudio/")
+async def update_audio(id: List[int], audio: List[UploadFile] = File(...)):
+    print(id)
+    print("audio")
+    pass
+
 
 @app.post("/uploadTest")
 async def create_file(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):

@@ -77,6 +77,7 @@ class Server {
             formData.append("source_word", card.word)
             formData.append("translation", card.translations);
             // file and filename
+            console.log(card.audio);
             formData.append("file", card.audio, card.word);
         });
         console.log(baseDeck.sourceLanguage);
@@ -111,14 +112,30 @@ class Server {
         .then((response) => console.log(response));
     }
 
-    updateCard(card, id) {
+    updateAudio(id, audio) {
+        console.log("uploading");
+        const url = `${this.#serverURL}updateAudio/`
+        const formData = new FormData();
+       
+        console.log(audio)
+        console.log(parseInt(id))
+
+        formData.append("id", parseInt(id))
+        formData.append("audio", audio)
+
+        fetch(url, {method: "POST", body: formData});
+    }
+
+    updateCard(card, id, audioWasUpdated=true) {
+        if (audioWasUpdated) this.updateAudio(id, card.audio);
         console.log("Updating");
         const url = `${this.#serverURL}update/`
         console.log(card);
         const data = {
             "id": parseInt(id),
             "source_word":card.word,
-            "translations":card.translations
+            "translations":card.translations,
+            "audio":card.audio
         };
 
         console.log(data)

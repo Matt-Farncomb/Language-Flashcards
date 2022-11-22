@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from fastapi import UploadFile
 
 class Result(BaseModel):
     id: int

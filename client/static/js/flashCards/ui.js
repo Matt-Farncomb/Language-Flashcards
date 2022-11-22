@@ -342,6 +342,7 @@ class UI {
         if (ready) {
             console.log("ready to update and upload");
             document.querySelector("#update").classList.remove("disabledPointer");
+            console.log(this.#currentCustomCard.audio)
             document.querySelector("#update").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard, this.#card.id) });
         }
     }

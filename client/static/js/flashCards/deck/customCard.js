@@ -4,12 +4,14 @@ class CustomCard {
     #server;
     #recorder;
     #audio;
-    #modal
+    #modal;
+    #blob;
 
     constructor(server, ui, modal, audio=null) {
         this.#server = server;
         this.#recorder = new Recorder(this, ui, modal, audio);
         this.#modal = modal
+        this.audio = audio
     }
 
     get word() {
@@ -42,6 +44,14 @@ class CustomCard {
 
     set audio(audioClip) {
         this.#audio = audioClip; 
+    }
+
+    set blob(blob) {
+        this.#blob = blob;
+    }
+
+    get blob() {
+        return this.#blob;
     }
 
     #validateIsWord(selector) {
