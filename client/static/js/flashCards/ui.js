@@ -31,6 +31,9 @@ class UI {
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
 
+        // document.querySelector("#update").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard) });
+
+
         document.querySelectorAll(".source-language-input").forEach((e) => {
             e.addEventListener('click', () => { 
                 if (e.value == localStorage.getItem('source_language', 'lang')) e.value = "";
@@ -110,6 +113,8 @@ class UI {
         this.#validateLanguageOnChange('translation');
         this.#validateWordOnChange('source');
         this.#validateWordOnChange('translation');
+        this.#validateEditOnChange();
+
 
         this.#validateDrawCardOnChange("deck-size");
         this.#validateDrawCardOnChange("source-language");
@@ -150,6 +155,16 @@ class UI {
         }
     }
 
+    async readyToUpdate() {
+        const test = await this.#currentCustomCard.readyToUpload(this.#deck);
+        console.log(test);
+        if (test) {
+            this.enableUpdateCard();
+        } else {
+            this.disableUpdateCard();
+        }
+    }
+
     #revealEditForm() {
         this.#revealEditModal();
         const translations_needed = this.#back.length;
@@ -158,7 +173,9 @@ class UI {
 
         if (this.#front)  source.value = this.#front.word;
         if (this.#back) translation.value = this.#back[0].word;
+        
         for (let i = 1; i < translations_needed; i++) {
+            console.log(this.#back[i].word);
             this.#addTranslationWithContent(this.#back[i].word);
         }   
     }
@@ -214,12 +231,19 @@ class UI {
             // Instantiate the table with the existing HTML tbody
             // and the row with the template
             console.log("Adding");
-            const previousRow = document.querySelector("#add-translations-block");
-            const template = document.querySelector('#add-translation-template');
+            const previousRow = document.querySelector("#edit-card-modal .add-translations-block");
+            const template = document.querySelector('#edit-card-modal .translation-template');
 
             // Clone the new row and insert it into the table   
             const clone = template.content.cloneNode(true);
-            clone.value = content;
+            clone.querySelector(".translation").value = content;
+            clone.querySelector(".translation").onchange = (e) => {
+                console.log(e.target)
+                this.#updateDiplsayIfValid(e.target, this.validateInput(e.target));
+                this.readyToUploadUpdate();
+            }
+
+            console.log(content);
             clone.querySelector(".remove-translation").addEventListener(
                 'click' , (e) => e.target.parentElement.parentElement.remove() );
             
@@ -306,6 +330,22 @@ class UI {
         document.querySelector("#update").classList.add("is-success");
     }
 
+    readyToUploadUpdate() {
+        let ready = true;
+        const inputs = document.querySelectorAll("#edit-card-modal .input");
+        inputs.forEach((e) => {
+            if (!this.validateInput(e)) {
+                console.log("not ready to update and upload");  
+                ready = false;
+            }
+        })
+        if (ready) {
+            console.log("ready to update and upload");
+            document.querySelector("#update").classList.remove("disabledPointer");
+            document.querySelector("#update").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard, this.#card.id) });
+        }
+    }
+
  
 
     isValidLanguage(language) {
@@ -352,6 +392,48 @@ class UI {
             this.#currentCustomCard.isThisLanguageValid(id);
             this.readyToUpload();
         }
+    }
+
+    // async #validateOnChange(input_selector) {
+    //     input_selector.onchange = (e) => {
+    //         console.log("changed!");
+    //     }
+    // }
+
+
+
+    validateInput(e) {
+        if (e.validity.patternMismatch || e.value == "") {
+            console.log("invalid");
+            return false;
+        }
+        console.log("valid");
+        return true;
+    }
+
+    async #updateDiplsayIfValid(selector, isValid) {
+        const waited = await isValid;
+        if (waited) {
+            selector.classList.add("is-primary");
+            selector.classList.remove("is-danger");
+        } else if (!waited && selector.value != "") {
+            selector.classList.remove("is-primary");
+            selector.classList.add("is-danger");
+        }
+    }
+
+    async #validateEditOnChange() {
+        const inputs = document.querySelectorAll(`#edit-card-modal .input`);
+        console.log(inputs);
+        inputs.forEach((e) => {
+            e.onchange = () => {
+                console.log("changed!");
+                // this.validateInput(e);
+                this.#updateDiplsayIfValid(e, this.validateInput(e));
+                this.readyToUploadUpdate();
+            }
+        })
+        
     }
 
     #validateWordOnChange(id) {

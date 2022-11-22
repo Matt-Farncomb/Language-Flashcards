@@ -7,7 +7,7 @@ from typing import List
 from app import app
 from deck import Deck, languages, new_languages, language_by_string
 from database import Database
-from schemas import Result, Refresh, UploadedDeck, BlobTest
+from schemas import Result, Refresh, UploadedDeck, BlobTest, Update
 from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
 from fastapi.responses import FileResponse
@@ -200,7 +200,13 @@ def trimmed_wav():
     # https://www.tutorialexample.com/python-remove-silence-in-wav-using-librosa-librosa-tutorial/
     # something like this: clip = librosa.effects.trim(audio, top_db= 10)
     pass 
-      
+
+@app.post("/update/")
+async def update_word(update: Update):
+    print(update)
+    db = Database()
+    db.update_word(update.id, update.source_word, update.translations)
+    return update
 
 
 @app.post("/uploadTest")

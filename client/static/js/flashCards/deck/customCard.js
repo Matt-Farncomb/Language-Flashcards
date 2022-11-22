@@ -4,14 +4,16 @@ class CustomCard {
     #server;
     #recorder;
     #audio;
+    #modal
 
-    constructor(server, ui, recordButtonSelector, audio=null) {
+    constructor(server, ui, modal, audio=null) {
         this.#server = server;
-        this.#recorder = new Recorder(this, ui, recordButtonSelector, audio);
+        this.#recorder = new Recorder(this, ui, modal, audio);
+        this.#modal = modal
     }
 
     get word() {
-        return document.querySelector("#add-source").value;
+        return document.querySelector(`${this.#modal} .source`).value;
     }
 
     get translation() {
@@ -19,7 +21,7 @@ class CustomCard {
     }
 
     get translations() {
-        return [...document.querySelectorAll("#new-card-modal .translation")].map(e => e.value);
+        return [...document.querySelectorAll(`${this.#modal} .translation`)].map(e => e.value);
     }
 
     get sourceLanguage() {

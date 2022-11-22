@@ -10,11 +10,11 @@
 {% endblock %}
 
 {% block section %}
-  {{ macros.input("add-source-language", "source-language-input", "Choose sourse language", "languages") }}
-  {{ macros.input("edit-source", "", "Edit source word") }}
-  {{ macros.input("add-translation-language", "target-language-input","Choose target language", "languages") }}
+  {{ macros.input("edit-source-language", "source-language-input", "Choose sourse language", "languages") }}
+  {{ macros.input("edit-source", "source", "Edit source word") }}
+  {{ macros.input("edit-translation-language", "target-language-input","Choose target language", "languages") }}
  
-    <div id="add-translations-block" class="field">
+    <div class="field add-translations-block">
       <div class="field">
         <div class="control has-icons-right">
             <input id="edit-translation" class="input is-medium translation" type="text" pattern="\p{L}+" placeholder="Edit translation" autocomplete="off" maxlength="50">

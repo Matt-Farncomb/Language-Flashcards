@@ -138,7 +138,7 @@ class Database:
     def get_all_cards():
         return WordInfo.select()
 
-    def update_word(self, result):
+    def update_word_score(self, result):
         update = WordInfo.select().join(WordModel).where(WordModel.id == result.id).get()
         # update = WordModel.get(WordModel.id == result.id)
         if result.is_correct:
@@ -147,10 +147,23 @@ class Database:
             update.answered_wrong_count += 1
         update.used_count += 1
         update.save()
+    
+    
+    def update_word(self, id, word, translations):
         
-            
-            
-        # self.word_answered_wrong(result.id, result.is_correct)
+        source_word = WordModel.get(WordModel.id == id)
+        source_word.word = word
+        
+        for old_translation in source_word.translations:
+            old_translation.delete_instance() 
+
+        for translation in translations:
+            new_translation = WordModel(word=translation, parent=source_word, language=source_word.language)
+            new_translation.save()
+        
+        source_word.save()
+                
+
 
     def update_words(self, cards):
 

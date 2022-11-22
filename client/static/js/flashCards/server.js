@@ -111,6 +111,27 @@ class Server {
         .then((response) => console.log(response));
     }
 
+    updateCard(card, id) {
+        console.log("Updating");
+        const url = `${this.#serverURL}update/`
+        console.log(card);
+        const data = {
+            "id": parseInt(id),
+            "source_word":card.word,
+            "translations":card.translations
+        };
+
+        console.log(data)
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then((response) => response.json())
+        .then((response) => console.log(response));
+    }
+
     old_submitResult(deck) {
         console.log(deck);
         const url = `${this.#serverURL}results/`
