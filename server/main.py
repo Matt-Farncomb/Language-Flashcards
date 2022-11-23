@@ -210,9 +210,18 @@ async def update_word(update: Update):
 
 @app.post("/updateAudio/")
 async def update_audio(id: List[int], audio: List[UploadFile] = File(...)):
+    db = Database()
     print(id)
     print("audio")
-    pass
+    testfiles = []
+    for e in range(len(audio)):
+        contents = await audio[e].read()
+        filename = audio[e].filename
+        with open(filename, 'wb') as f:
+            f.write(contents)
+        
+        testfiles.append(contents)
+    db.update_audio(id, testfiles)
 
 
 @app.post("/uploadTest")

@@ -148,6 +148,11 @@ class Database:
         update.used_count += 1
         update.save()
     
+    def update_audio(self, id, audio):
+        query = Audio.select().join(WordModel).where(WordModel.id == id).get()
+        print(query.filename)
+        query.filename = audio[0]
+        query.save()
     
     def update_word(self, id, word, translations):
         
