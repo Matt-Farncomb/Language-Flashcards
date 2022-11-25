@@ -27,11 +27,11 @@ class CustomCard {
     }
 
     get sourceLanguage() {
-        return document.querySelector("#add-source-language").value;
+        return document.querySelector(`${this.#modal} .source-language`).value;
     }
 
     get targetLanguage() {
-        return document.querySelector("#add-translation-language").value;
+        return document.querySelector(`${this.#modal} .translation-language`).value;
     }
 
     get languages() {
@@ -85,21 +85,21 @@ class CustomCard {
         if (deck.hasCard(this.word)) {
             return false;
         }
-        const sourceInput = document.querySelector("#add-source");
+        const sourceInput = document.querySelector(`${this.#modal} .source`);
         const isWord = this.#validateIsWord(sourceInput);
         this.#updateDiplsayIfValid(sourceInput, isWord);
         return isWord;
     }
 
     #translationIsValid() {
-        const translationInput = document.querySelector("#add-translation");
+        const translationInput = document.querySelector(`${this.#modal} .translation`);
         const isWord = this.#validateIsWord(translationInput); 
         this.#updateDiplsayIfValid(translationInput, isWord);
         return isWord;
     }
 
     async isThisLanguageValid(selectorString) {
-        const selector = document.querySelector(`#add-${selectorString}-language`);
+        const selector = document.querySelector(`${this.#modal} .${selectorString}-language`);
         const available = await this.isAvailableLanguage(selector.value);
         const noDuplicate = this.sourceLanguage !== this.targetLanguage;
         this.#updateDiplsayIfValid(selector, noDuplicate && available)

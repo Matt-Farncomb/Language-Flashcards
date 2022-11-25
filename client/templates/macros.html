@@ -1,7 +1,7 @@
 {% macro input(id, extraclass, placeholder, languages) -%}
     <div class="field">
         <div class="control">
-            <input id="{{id}}" class="input is-medium {{extraclass}}" type="text" pattern="\p{L}+" placeholder="{{placeholder}}" list="{{languages}}" autocomplete="off" maxlength="50">
+            <input class="input is-medium {{id}} {{extraclass}}" type="text" pattern="\p{L}+" placeholder="{{placeholder}}" list="{{languages}}" autocomplete="off" maxlength="50">
         </div>
     </div>
 {%- endmacro %}

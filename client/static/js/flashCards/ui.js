@@ -31,7 +31,7 @@ class UI {
         document.querySelector("#user-sl").innerText = localStorage.getItem('source_language', 'lang');
         document.querySelector("#user-tl").innerText = localStorage.getItem('target_language', 'lang'); 
 
-        // document.querySelector("#update").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard) });
+        // document.querySelector("#edit-card-modal .submit").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard) });
 
 
         document.querySelectorAll(".source-language-input").forEach((e) => {
@@ -92,12 +92,12 @@ class UI {
         this.#whenClicked(".edit", () => this.#revealEditForm());
 
         this.#whenClicked("#create", () => this.#revealCardForm());
-        this.#whenClicked(".close-create-modal", () => this.#hideHardForm() );
-        this.#whenClicked(".close-edit-modal", () => this.#hideEditForm() );
+        this.#whenClicked("#new-card-modal .close-modal", () => this.#hideHardForm() );
+        this.#whenClicked("#edit-card-modal .close-modal", () => this.#hideEditForm() );
         this.#whenClicked("#clear", () => this.#clearCardForm());
-        this.#whenClicked("#clear-edit", () => this.#clearEditCardForm());
+        this.#whenClicked("#edit-card-modal .clear", () => this.#clearEditCardForm());
         this.#whenClicked("#upload", () => this.#server.uploadDeck(this.#baseDeck));
-        this.#whenClicked("#add", () => this.#getCardForUpload());
+        this.#whenClicked("#new-card-modal .submit", () => this.#getCardForUpload());
 
         // this.#whenClicked(".add-translation-fart", () => this.#addTranslation());
 
@@ -168,8 +168,8 @@ class UI {
     #revealEditForm() {
         this.#revealEditModal();
         const translations_needed = this.#back.length;
-        const source = document.querySelector("#edit-source");
-        const translation = document.querySelector("#edit-translation");
+        const source = document.querySelector("#edit-card-modal .source");
+        const translation = document.querySelector("#edit-card-modal .translation");
 
         if (this.#front)  source.value = this.#front.word;
         if (this.#back) translation.value = this.#back[0].word;
@@ -305,29 +305,29 @@ class UI {
     // }
 
     disableAddCard() {
-        document.querySelector("#add").classList.add("disabledPointer");    
-        document.querySelector("#add").classList.remove("is-success");
+        document.querySelector("#new-card-modal .submit").classList.add("disabledPointer");    
+        document.querySelector("#new-card-modal .submit").classList.remove("is-success");
         if (this.#baseDeck == null) {
             document.querySelector("#upload").classList.add("disabledPointer");
         } 
     }
 
     disableUpdateCard() {
-        document.querySelector("#update").classList.add("disabledPointer");    
-        document.querySelector("#update").classList.remove("is-success");
+        document.querySelector("#edit-card-modal .submit").classList.add("disabledPointer");    
+        document.querySelector("#edit-card-modal .submit").classList.remove("is-success");
     }
 
     enableAddCard() {
-        document.querySelector("#add").classList.remove("disabledPointer"); 
-        document.querySelector("#add").classList.add("is-success");
+        document.querySelector("#new-card-modal .submit").classList.remove("disabledPointer"); 
+        document.querySelector("#new-card-modal .submit").classList.add("is-success");
         if (this.#baseDeck != null) {
             document.querySelector("#upload").classList.remove("disabledPointer");
         }
     }
 
     enableUpdateCard() {
-        document.querySelector("#update").classList.remove("disabledPointer"); 
-        document.querySelector("#update").classList.add("is-success");
+        document.querySelector("#edit-card-modal .submit").classList.remove("disabledPointer"); 
+        document.querySelector("#edit-card-modal .submit").classList.add("is-success");
     }
 
     readyToUploadUpdate() {
@@ -341,9 +341,9 @@ class UI {
         })
         if (ready) {
             console.log("ready to update and upload");
-            document.querySelector("#update").classList.remove("disabledPointer");
+            document.querySelector("#edit-card-modal .submit").classList.remove("disabledPointer");
             console.log(this.#currentCustomCard.audio)
-            document.querySelector("#update").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard, this.#card.id) });
+            document.querySelector("#edit-card-modal .submit").addEventListener('click', () => { this.#server.updateCard(this.#currentCustomCard, this.#card.id) });
         }
     }
 
@@ -388,7 +388,7 @@ class UI {
     }
 
     async #validateLanguageOnChange(id) {
-        const input = document.querySelector(`#add-${id}-language`);
+        const input = document.querySelector(`#new-card-modal .${id}-language`);
         input.onchange = (e) => {
             this.#currentCustomCard.isThisLanguageValid(id);
             this.readyToUpload();
@@ -438,7 +438,7 @@ class UI {
     }
 
     #validateWordOnChange(id) {
-        const input = document.querySelector(`#add-${id}`);
+        const input = document.querySelector(`#new-card-modal .${id}`);
         input.onchange = (e) => {
             this.#currentCustomCard.wordIsReady(input);
             this.readyToUpload();
@@ -447,8 +447,8 @@ class UI {
     }
 
     #toggleLanguageLock(status) {
-        document.querySelector("#add-source-language").disabled = status;
-        document.querySelector("#add-translation-language").disabled = status;
+        document.querySelector("#new-card-modal .source-language").disabled = status;
+        document.querySelector("#new-card-modal .translation-language").disabled = status;
     }
 
     #clearCardForm() {
@@ -474,8 +474,8 @@ class UI {
     #clearWords() {
         document.querySelector("#add-source").value = "";
         document.querySelector("#add-source").classList.remove("is-primary", "is-danger");
-        document.querySelector("#add-translation").value = "";
-        document.querySelector("#add-translation").classList.remove("is-primary", "is-danger");
+        document.querySelector("#new-card-modal .translation").value = "";
+        document.querySelector("#new-card-modal .translation").classList.remove("is-primary", "is-danger");
         this.readyToUpload();
     }
 

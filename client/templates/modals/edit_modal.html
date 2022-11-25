@@ -1,50 +1,7 @@
-{% extends 'modals/base_modal.html' %}
+{% extends 'modals/base_card_modal.html' %}
 
 {% import 'macros.html' as macros %}
 
 {% block id %}edit-card-modal{% endblock %}
-
-{% block header %}
-    <p class="modal-card-title">Update Card</p>
-    <button class="delete close-edit-modal" aria-label="close"></button>
-{% endblock %}
-
-{% block section %}
-  {{ macros.input("edit-source-language", "source-language-input", "Choose sourse language", "languages") }}
-  {{ macros.input("edit-source", "source", "Edit source word") }}
-  {{ macros.input("edit-translation-language", "target-language-input","Choose target language", "languages") }}
- 
-    <div class="field add-translations-block">
-      <div class="field">
-        <div class="control has-icons-right">
-            <input id="edit-translation" class="input is-medium translation" type="text" pattern="\p{L}+" placeholder="Edit translation" autocomplete="off" maxlength="50">
-            <span class="icon is-medium is-right">
-                <i class="fas fa-plus add-translation-fart"></i>
-            </span>
-        </div>
-      </div>
-    </div>
-
-  <template class="translation-template">
-    <div class="field">
-      <div class="control has-icons-right">
-        <input class="input is-medium translation" type="text" pattern="\p{L}+" placeholder="Add translation" autocomplete="off" maxlength="50">
-        <span class="icon is-medium is-right remove-translation">
-          <i class="fa fa-minus" aria-hidden="true"></i>
-        </span>
-      </div>
-    </div>
-  </template>
-
-  {% include 'record.html' %}
-
-  {% endblock %}
-
-  {% block footer %}
-      <button class="button is-success" id="update">Update Card</button>
-      <button id="clear-edit" class="button is-danger">Clear</button>
-      <button class="button close-edit-modal">Cancel</button>
-    {% endblock %}
-
-  </div>  
-</div>
+{% block title %}Update Card{% endblock %}
+{% block submitstring %}Add{% endblock %}

@@ -1,17 +1,12 @@
 {% extends 'modals/include_duo.html' %}
 
 {% block id %}deck-modal{% endblock %}
-
 {% block titlestring %}Get new deck{% endblock %}
-
 {% block sectiontop %}
     {{ macros.numberInput("deck-size", "Total Cards", 10) }}
 {% endblock %}  
-
 {% block source_language_id %}source-language{% endblock %}
 {% block translation_language_id %}translation-language{% endblock %}
-
 {% block submitid %}draw-deck{% endblock %}
 {% block submitstring %}Draw Deck{% endblock %}
-
 {% block closemodalclass %}close-deck-modal{% endblock %}
