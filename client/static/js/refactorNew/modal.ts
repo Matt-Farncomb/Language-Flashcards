@@ -157,7 +157,7 @@ abstract class Modal {
     //     }
     // }
 
-    openModal() {
+    openModal(data: any) {
         if (this.modal) this.modal.classList.toggle("is-active");
     }
 
@@ -309,12 +309,10 @@ class UploadCardModal extends CardModal {
 class EditCardModal extends CardModal {
 
     private card: Card;
-    private ui: Ui;
 
-    constructor(id, ui) {
+    constructor(id) {
         super(id);
         this.buildTranslationInputList();
-        this.ui = ui;
     }
 
     buildTranslationInputList() {
@@ -350,14 +348,17 @@ class EditCardModal extends CardModal {
         })
     }
 
-    openModal(): void {
-        super.openModal();
+    openModal(card: any): void {
+        if (!(card instanceof Card)) {
+            throw TypeError("Opening an edit Modal requires argument of type Card");
+        }
+        super.openModal(card);
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
-            this.sourceLanguage.value = this.ui.currentCard.sourceLanguage;
-            this.targetLanguage.value = this.ui.currentCard.targetLanguage;
-            this.sourceWord.value = this.ui.currentCard.sourceLanguage;
+            this.sourceLanguage.value = this.card.sourceLanguage;
+            this.targetLanguage.value = this.card.targetLanguage;
+            this.sourceWord.value = this.card.sourceLanguage;
             for (let i = 0; i > this.translations.length; i++) {
-                this.translations[i].value = this.ui.currentCard.translations[i];
+                this.translations[i].value = this.card.translations[i];
             }
         }
 

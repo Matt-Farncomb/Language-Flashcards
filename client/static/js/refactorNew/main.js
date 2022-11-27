@@ -1,8 +1,7 @@
 try {
-    const editModal = new Modal("#edit-modal", submitEdit);
-    const fetchLibraryModal = new Modal("#edit-modal", fetchLibrary);
-    const drawDeckModal = new Modal("#edit-modal", fetchDeck);
-    const createDeckModal = new Modal("#edit-modal", submitDeck);
+    const UI = new UI(); 
 } catch (exception) {
+    console.error("Failed to create UI");
     console.error(exception);
 }
+

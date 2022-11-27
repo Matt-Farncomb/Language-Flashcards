@@ -29,12 +29,11 @@ function submitDeck (url, deck) {
     const formData = new FormData();
     
     deck.forEach(card => {
-        let wrapper = []; //wrapper necessary to submit file with other paramaters for some reason
         formData.append("source_word", card.word)
         formData.append("translations", card.translations);
         formData.append("file", card.audio, card.word); // file and filename
     });
-    
+
     formData.append("source_language", [baseDeck.sourceLanguage])
     formData.append("target_language", [baseDeck.targetLanguage])
     
