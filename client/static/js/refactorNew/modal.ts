@@ -1,41 +1,7 @@
-const LOGGING = true; // if true, log errors
+
 
 // type nullableHTMLInputElement = HTMLInputElement | null | undefined;
 type nullableHTMLInputElement = HTMLInputElement | null | undefined;
-
-function elementNotFoundInModalError(element: string, modal: string): void {
-    if (LOGGING) console.error(`${element} not found in ${modal}`);
-}
-
-function modalNotFoundError(modal: string): void {
-    if (LOGGING) console.error(`${modal} not found`);
-}
-
-function validationError(fieldName: string): void {
-    if (LOGGING) console.error(`${fieldName} could not be found and therefore not validated`);
-}
-
-function submitError(...fields: string[]) {
-    if (LOGGING) console.error(`Submit Error: Unable to submit because can't find one or more of the following fields: ${fields}`);
-}
-
-function failedFunctionError(message: string) {
-    if (LOGGING) console.error(message);
-}
-
-// function checkIsNull(...fields: string[]) {
-//     let nullFields: string[] = [];
-//     fields.forEach(field => {
-//         if (!field) nullFields.push(field);
-//     })
-//     return nullFields;
-// }
-
-// function checkIsNull(fieldString: string, field: HTMLElement | null): asserts field {
-//     if (!field) {
-//         throw new Error(`Cannot find${fieldString}`);
-//     }
-//   }
 
 abstract class Modal {
 
@@ -165,21 +131,25 @@ abstract class Modal {
         if (this.modal) this.modal.classList.toggle("is-active");
     }
 
-    // Check if language is in ALLOWED_LANGUAGES list
+    // Check if language is in validLangauges list
     validateLanguage(language: string) {
-        //do stuff
+       if (language in Serverr.validLangauges) {
+        // style good
+       } else {
+        // style bad
+       }
     }
 
     validateLanguages() {
         if (this.sourceLanguage) {
             this.validateLanguage(this.sourceLanguage.value);
         } else {
-            validationError("sourceLanguage");
+            logError("Cannot validate source language");
         }
         if (this.targetLanguage) {
             this.validateLanguage(this.targetLanguage.value);
         } else {
-            validationError("targetLanguage");
+            logError("Cannot validate target language");
         }
     }
 

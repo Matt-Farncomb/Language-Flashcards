@@ -2,6 +2,8 @@ class Serverr {
 
     static baseURL ="this.baseURL";
 
+    static validLangauges: Promise<string[]> = this.getValidLanguages();
+
 
     // post edited card to server
     static async postEdit(card: UploadCard) {
@@ -16,6 +18,19 @@ class Serverr {
         const response = await fetch(editUrl, {method: 'POST', body: formData});
         if (!response.ok) {
             logError(`Could not submit edit: ${response.status}`)
+        }
+    }
+
+    static async getValidLanguages(): Promise<string[]> {
+        const languagesURL = new URL(this.baseURL);
+        languagesURL.pathname = "get_languages";
+
+        const response = await fetch(languagesURL);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            logError(`Could not get languages: ${response.status}`);
+            return []; 
         }
     }
 

@@ -2,6 +2,12 @@
     <div class="modal-background"></div>
     <div class="modal-card">
 
+      <datalist id="languages">
+        {% for item in lang %}
+            <option value="{{ item }}">{{ item }}</option>
+        {% endfor %}
+      </datalist>
+
       <header class="modal-card-head">
         {% block header %}
         {% endblock %}
