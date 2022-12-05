@@ -55,10 +55,10 @@ class Serverr {
         }
     }
 
-    static async getDeck(count: number, sourceLanguage: string, targetLanguage: string) {
+    static async getDeck(count: string, sourceLanguage: string, targetLanguage: string): Promise<Response> {
         const editURL = new URL(this.baseURL);
         editURL.pathname = "get_deck";
-        editURL.searchParams.append("count", count.toString());
+        editURL.searchParams.append("count", count);
         editURL.searchParams.append("source_language", sourceLanguage);
         editURL.searchParams.append("target_language", targetLanguage);
 
@@ -66,6 +66,8 @@ class Serverr {
         if (!response.ok) {
             logError(`Could not draw deck: ${response.status}`); 
         }
+        return response.json();
+        
     }
 
     // post new score to server and update local score of same card on success to ensure consistency
@@ -84,6 +86,18 @@ class Serverr {
             card.updateLocalScore(score);
         }
 
+    }
+
+    static async goToTable(sourceLanguage: string, targetLanguage: string) {
+        const tableURL = new URL(this.baseURL);
+        tableURL.pathname = "table";
+        tableURL.searchParams.append("source_language", sourceLanguage);
+        tableURL.searchParams.append("target_language", targetLanguage);
+
+        const response = await fetch(tableURL);
+        if (!response.ok) {
+            logError(`Could not get table: ${response.status}`); 
+        }
     }
 
     
