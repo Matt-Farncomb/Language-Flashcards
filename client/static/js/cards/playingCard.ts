@@ -4,17 +4,11 @@ class PlayingCard extends BaseCard {
     #correctCount: number;
     #difficulty: string;
 
-    constructor(jsonString: string) {
-        super();
-        this._id = jsonString["id"];
-        this._sourceWord = jsonString["sourceWord"]; 
-        this._translations = jsonString["translations"];
-        this._sourceLanguage = jsonString["sourceLanguage"];
-        this._targetLanguage = jsonString["targetLanguage"];
-        this._audio = jsonString["audio"];
-        this.#incorrectCount = jsonString["incorrectCount"];
-        this.#correctCount = jsonString["correctCount"];
-        this.#difficulty = jsonString["difficulty"];
+    constructor(id: string, sourceWord: string, translations: string[], sourceLanguage: string, targetLanguage: string, audio: Blob) { 
+        super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
+        this.#incorrectCount = this.incorrectCount;
+        this.#correctCount = this.correctCount;
+        this.#difficulty = this.difficulty;
     }
 
     public get incorrectCount() {

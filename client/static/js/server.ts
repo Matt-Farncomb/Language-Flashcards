@@ -1,12 +1,12 @@
-class Serverr {
+class Server {
 
-    static baseURL ="this.baseURL";
+    static baseURL ="http://127.0.0.1:8000/";
 
     static validLangauges: Promise<string[]> = this.getValidLanguages();
 
 
     // post edited card to server
-    static async postEdit(card: UploadCard) {
+    static async postEdit(card: BaseCard) {
         const editUrl = new URL(this.baseURL);
         editUrl.pathname = "upload_deck";
 
@@ -36,7 +36,7 @@ class Serverr {
 
 
     // post new card deck to server
-    static async uploadDeck(deck: UploadCard[]) {
+    static async uploadDeck(deck: BaseCard[]) {
         const uploadURL = new URL(this.baseURL);
         uploadURL.pathname = "upload_deck";
 

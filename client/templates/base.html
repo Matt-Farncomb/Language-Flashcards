@@ -6,7 +6,7 @@
     <link href="{{ url_for('static', path='css/libraries/bulma.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
     {% for file_name in js_files %}
-        <script src="{{ url_for('static', path=file_name) }}"  type="text/javascript" charset="utf-8"></script>
+        <script src="{{ url_for('static', path=file_name) }}"  type="text/javascript" charset="utf-8" defer></script>
     {% endfor %}
     <title>Flash Cards</title>
     <script src="https://kit.fontawesome.com/e368562f24.js" crossorigin="anonymous"></script>

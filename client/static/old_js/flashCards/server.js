@@ -1,4 +1,4 @@
-class Server {
+class Serverr {
 
     #serverURL;
     #languages;

@@ -8,7 +8,7 @@
 
 {% block header %}
     <p class="modal-card-title">{% block titlestring %}{% endblock %}</p>
-    <button class="delete {{ close }}" aria-label="close"></button>
+    <button class="delete close" aria-label="close"></button>
 {% endblock %}
 
 {% block section %}
@@ -24,12 +24,12 @@
 
     <div class="field">
         <div class="control">
-            <input id="{% block source_language_id %}{% endblock %}" class="input is-medium source-language-input" type="text" pattern="\p{L}+" placeholder="Source Language" list="languages" autocomplete="off" maxlength="50">
+            <input class="input is-medium source-language" type="text" pattern="\p{L}+" placeholder="Source Language" list="languages" autocomplete="off" maxlength="50">
         </div>
     </div>
     <div class="field">
         <div class="control">
-            <input id="{% block translation_language_id %}{% endblock %}" class="input is-medium target-language-input" type="text" pattern="\p{L}+" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">
+            <input class="input is-medium translation-language" type="text" pattern="\p{L}+" placeholder="Translation Language" list="languages" autocomplete="off" maxlength="50">
         </div>
     </div>
 
@@ -38,7 +38,8 @@
 {% endblock %}
 
 {% block footer %}
-    <button type="button" class="button is-success {{ close }} disabledPointer" id="{% block submitid %}{% endblock %}">{% block submitstring %}{% endblock %}</button>
-    <button class="button {{ close }}">Cancel</button>
+    <button type="button" class="button is-success close disabledPointer submit">{% block submitstring %}{% endblock %}</button>
+    <button class="button is-danger clear">Clear</button>
+    <button class="button close">Cancel</button>
 {% endblock %}
 

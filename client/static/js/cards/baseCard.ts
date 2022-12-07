@@ -7,6 +7,15 @@ class BaseCard {
     protected _translations: string[];
     protected _audio: Blob
 
+    constructor(id: string, sourceWord: string, translations: string[], sourceLanguage: string, targetLanguage: string, audio: Blob) {
+        this._id = id;
+        this._sourceWord = sourceWord; 
+        this._translations = translations;
+        this._sourceLanguage = sourceLanguage;
+        this._targetLanguage = targetLanguage;
+        this._audio = audio;
+    }
+
     public get id() {
         return this._id;
     }

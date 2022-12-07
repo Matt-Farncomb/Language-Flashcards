@@ -1,8 +1,13 @@
 const LOGGING = true; // if true, log errors
 console.info(`Logging: ${LOGGING}`)
 
+const DEFAULT_LANGUAGES: LanguagePair = {
+    "source": "Spanish",
+    "target": "Finnish"
+}
+
 try {
-    const UI = new UI(); 
+    const ui = new Ui(); 
 } catch (exception) {
     logError("Failed to create UI");
     logError(exception);

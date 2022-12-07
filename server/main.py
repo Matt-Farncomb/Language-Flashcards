@@ -37,11 +37,16 @@ data_test = ""
 
 def get_js_files(dir: str):
     js_files = []
-    for path, dirs, fnames in os.walk(f"..\client\static\js\\{dir}"):
+    for path, dirs, fnames in os.walk(f"..\client\static\js\dest"):
         for filename in [f for f in fnames if f.endswith(".js")]:
             newPath = path.split("static")[1]+"\\\\"
             js_files.append(f"{newPath}{filename}")
     return js_files
+    # for path, dirs, fnames in os.walk(f"..\client\static\js\\{dir}"):
+    #     for filename in [f for f in fnames if f.endswith(".js")]:
+    #         newPath = path.split("static")[1]+"\\\\"
+    #         js_files.append(f"{newPath}{filename}")
+    # return js_files
     
 
 @app.get("/", response_class=HTMLResponse)
@@ -165,7 +170,8 @@ def update_db(refresh: Refresh):
     logger.info(f"update_db has been called for sl {refresh.source_language} and tl {refresh.target_language}")
     deck = Deck(refresh.source_language, refresh.target_language)
     print("made deck")
-    deck.build_deck_from_duo()
+    # do not delete
+    # deck.build_deck_from_duo()
     print("built deck")
     # for card in deck.deck:
     #     print(f"source: {card.source_word.word}, trans: {[x.word for x in card.translations]}")

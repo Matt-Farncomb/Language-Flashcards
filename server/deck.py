@@ -1,7 +1,9 @@
-import duolingo
+# import duolingo
+
+
 from decouple import config # type: ignore
 from bs4 import BeautifulSoup # type: ignore
-import requests 
+import requests
 from typing import List, BinaryIO 
 from database import Database
 import threading, queue
@@ -145,17 +147,17 @@ class Deck:
             self.deck = cards
             # print("made it past")
     
-    def build_deck_from_duo(self):
-        if len(self.deck) != 0:
-            raise Exception(f"Deck already created from {self.deck_type}")
-        else:
-            print("called")
-            #self.db.create_tables()
-            vocab = self.__get_vocab(self.source_language)
-            print("got vocab")
-            # self.target_vocab = self._get_vocab(self.target_language)
-            self.deck = self.__create_card_deck(vocab)
-            self.deck_type = "Duo"
+    # def build_deck_from_duo(self):
+    #     if len(self.deck) != 0:
+    #         raise Exception(f"Deck already created from {self.deck_type}")
+    #     else:
+    #         print("called")
+    #         #self.db.create_tables()
+    #         vocab = self.__get_vocab(self.source_language)
+    #         print("got vocab")
+    #         # self.target_vocab = self._get_vocab(self.target_language)
+    #         self.deck = self.__create_card_deck(vocab)
+    #         self.deck_type = "Duo"
     
     def build_deck_from_user_input(self, words_to_add):
         pass    

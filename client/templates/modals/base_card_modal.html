@@ -4,7 +4,7 @@
 
 {% block header %}
     <p class="modal-card-title">{% block title %}{% endblock %}</p>
-    <button class="delete close-modal" aria-label="close"></button>
+    <button class="delete close" aria-label="close"></button>
 {% endblock %}
 
 {% block section %}
@@ -41,6 +41,6 @@
 {% block footer %}
     <button class="button is-success submit">{% block submitstring %}{% endblock %}</button>
     <button class="button is-danger clear">Clear</button>
-    <button class="button close-modal">Cancel</button>
+    <button class="button close">Cancel</button>
     {% block extend_footer %}{% endblock %}
 {% endblock %}
