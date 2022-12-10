@@ -7,17 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
 class Recorder {
     constructor(recorderDiv) {
         const recordButton = recorderDiv.querySelector(".record");
@@ -34,13 +23,11 @@ class Modal {
         this._id = id;
         this._modal = document.querySelector(`${id}`);
         if (this._modal) {
-            this.sourceLanguage = this.nullCheckedQuerySelector(`.source-language`);
-            this.targetLanguage = this.nullCheckedQuerySelector(`.translation-language`);
+            this.sourceLanguage = new LanguageInput(this.nullCheckedQuerySelector(`.source-language`));
+            this.targetLanguage = new LanguageInput(this.nullCheckedQuerySelector(`.translation-language`));
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
-            const inputs = this.nullCheckedQuerySelectorAll(`.input`);
-            inputs.forEach(input => {
-                input.onchange = () => this.validateForSubmit();
-            });
+            this.targetLanguage.addSiblings(this.sourceLanguage);
+            this.sourceLanguage.addSiblings(this.targetLanguage);
             this.addClickEventToSelector(".submit", () => this.submit());
             this.addClickEventToSelector(".clear", () => this.clear());
             this.addClickEventToSelectorAll(".close", () => this.closeModal());
@@ -52,8 +39,15 @@ class Modal {
     get id() {
         return this._id;
     }
+    get languageInputs() {
+        return this._languageInputs;
+    }
     get modal() {
         return this._modal;
+    }
+    updateInputValue(input, value) {
+        input.value = value;
+        input.dispatchEvent(new Event('change'));
     }
     addClickEventToSelector(selector, callback) {
         const button = this.modal.querySelector(selector);
@@ -81,6 +75,22 @@ class Modal {
         }
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
+    languageQuerySelector(selector) {
+        var _a;
+        const element = (_a = this.modal) === null || _a === void 0 ? void 0 : _a.querySelector(selector);
+        if (element) {
+            return new LanguageInput(element);
+        }
+        throw new Error(`Cannot find ${selector} in ${this._id}`);
+    }
+    wordQuerySelector(selector) {
+        var _a;
+        const element = (_a = this.modal) === null || _a === void 0 ? void 0 : _a.querySelector(selector);
+        if (element) {
+            return new WordInput(element);
+        }
+        throw new Error(`Cannot find ${selector} in ${this._id}`);
+    }
     nullCheckedButtonQuerySelector(selector) {
         var _a;
         const element = (_a = this.modal) === null || _a === void 0 ? void 0 : _a.querySelector(selector);
@@ -89,36 +99,43 @@ class Modal {
         }
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
-    nullCheckedQuerySelectorAll(selector) {
+    inputQuerySelectorAll(selector) {
         var _a;
+        const inputsList = [];
         const elements = (_a = this.modal) === null || _a === void 0 ? void 0 : _a.querySelectorAll(selector);
         if (elements && elements.length > 0) {
-            return elements;
+            elements.forEach(element => {
+                if (element.classList.contains("language"))
+                    inputsList.push(new LanguageInput(element));
+                else if (element.classList.contains("word"))
+                    inputsList.push(new WordInput(element));
+                else
+                    throw new Error(`Inputs must containa class of "word" or "language" within ${this.modal.id}: ${element.classList}`);
+            });
+            return inputsList;
         }
-        throw new Error(`Cannot find ${selector} in ${this._id}`);
+        else {
+            throw new Error(`Cannot find ${selector} in ${this._id}`);
+        }
     }
     openModal() {
         if (this.modal)
             this.modal.classList.toggle("is-active");
     }
     closeModal() {
-        if (this.modal)
+        if (this.modal) {
+            this.clear();
             this.modal.classList.toggle("is-active");
-    }
-    validateLanguage(languageInput) {
-        if (languageInput.value in Server.validLangauges) {
-            languageInput.classList.add("is-primary");
-            languageInput.classList.remove("is-danger");
-            return true;
-        }
-        else {
-            languageInput.classList.add("is-danger");
-            languageInput.classList.remove("is-primary");
-            return false;
         }
     }
-    validateLanguages() {
-        return this.validateLanguage(this.sourceLanguage) && this.validateLanguage(this.targetLanguage);
+    languageIsValid(languageInput) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const awaitedLanguages = yield Server.validLangauges;
+            return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage();
+        });
+    }
+    notDuplicateLanguage() {
+        return this.sourceLanguage.value != this.targetLanguage.value;
     }
     clear() {
         if (this.modal) {
@@ -126,6 +143,7 @@ class Modal {
             if (inputs.length > 0) {
                 inputs.forEach(element => {
                     element.value = "";
+                    element.classList.remove("is-danger", "is-primary");
                 });
             }
             else {
@@ -138,30 +156,20 @@ class CardModal extends Modal {
     constructor(id) {
         super(id);
         if (this.modal) {
-            this.sourceWord = this.nullCheckedQuerySelector(`.source`);
-            this.translations = this.nullCheckedQuerySelectorAll(`.translation`);
-            const recorderDiv = this.nullCheckedQuerySelector(`.recorder`);
-            this.recorder = new Recorder(recorderDiv);
-        }
-    }
-    validateForSubmit() {
-        if (this.validateWords() && this.validateLanguages()) {
-            this.submitButton.classList.remove("disabledPointer");
-        }
-        else {
-            this.submitButton.classList.add("disabledPointer");
+            this.sourceWord = this.wordQuerySelector(`.source`);
+            this.translations = this.inputQuerySelectorAll(`.translation`);
         }
     }
     validateWord(wordInput) {
         if (wordInput.validity.patternMismatch || wordInput.value == "") {
-            wordInput.classList.add("is-primary");
-            wordInput.classList.remove("is-danger");
-            return true;
-        }
-        else {
             wordInput.classList.add("is-danger");
             wordInput.classList.remove("is-primary");
             return false;
+        }
+        else {
+            wordInput.classList.add("is-primary");
+            wordInput.classList.remove("is-danger");
+            return true;
         }
     }
     translationValues() {
@@ -169,29 +177,11 @@ class CardModal extends Modal {
         this.translations.forEach(element => values.push(element.value));
         return values;
     }
-    validateWords() {
-        const validations = [];
-        validations.push(this.validateWord(this.sourceWord));
-        if (this.translations) {
-            this.translations.forEach(element => {
-                validations.push(this.validateWord(element));
-            });
-        }
-        return !validations.includes(false);
-    }
 }
 class CreateDeckModal extends CardModal {
     constructor(id) {
         super(id);
         if (this.modal) {
-            this.addClickEventToSelector(`.add-card`, this.addCardToDeck);
-        }
-    }
-    addCardToDeck() {
-        if (this.sourceWord) {
-            const card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip);
-            this.deck.push(card);
-            this.clear();
         }
     }
     submit() {
@@ -200,37 +190,6 @@ class CreateDeckModal extends CardModal {
 class EditCardModal extends CardModal {
     constructor(id) {
         super(id);
-        this.buildTranslationInputList();
-    }
-    buildTranslationInputList() {
-        const translationinputs = this.nullCheckedQuerySelectorAll(".translation");
-        if (translationinputs)
-            translationinputs.forEach(element => {
-                const template = document.querySelector('.translation-template');
-                element.addEventListener('click', (e) => {
-                    if (template && 'content' in document.createElement('template')) {
-                        const translationsBlock = this.nullCheckedQuerySelector('.translation-block');
-                        if (translationsBlock) {
-                            const clone = template.content.cloneNode(true);
-                            translationsBlock.appendChild(clone);
-                            const removeButton = clone.querySelector(".remove-translation");
-                            if (removeButton) {
-                                removeButton.addEventListener('click', (e) => {
-                                    var _a, _b;
-                                    const clicked = e.target;
-                                    (_b = (_a = clicked === null || clicked === void 0 ? void 0 : clicked.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
-                                });
-                            }
-                        }
-                        else {
-                            logError(`translation-block not found in ${this.id}`);
-                        }
-                    }
-                    else {
-                        console.log("Cant't add");
-                    }
-                });
-            });
     }
     openModal() {
         super.openModal();
@@ -261,7 +220,6 @@ class EditCardModal extends CardModal {
 class FetchDeckModal extends Modal {
     constructor(id) {
         super(id);
-        this.count = this.nullCheckedQuerySelector(".count");
     }
     validateCount() {
         const number = parseInt(this.count.value);
@@ -269,14 +227,6 @@ class FetchDeckModal extends Modal {
     }
     submit() {
         this.fetchDeck();
-    }
-    validateForSubmit() {
-        if (this.validateLanguages() && this.validateCount()) {
-            this.submitButton.classList.remove("disabledPointer");
-        }
-        else {
-            this.submitButton.classList.add("disabledPointer");
-        }
     }
     fetchDeck() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -289,24 +239,13 @@ class FetchTableModal extends Modal {
     submit() {
         Server.goToTable(this.sourceLanguage.value, this.targetLanguage.value);
     }
-    validateForSubmit() {
-        if (this.validateLanguages()) {
-            this.submitButton.classList.remove("disabledPointer");
-        }
-        else {
-            this.submitButton.classList.add("disabledPointer");
-        }
-    }
 }
-var _Ui_instances, _Ui_getDeck;
 class Ui {
     constructor() {
-        _Ui_instances.add(this);
-        this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
-        const previousDeck = __classPrivateFieldGet(this, _Ui_instances, "m", _Ui_getDeck).call(this);
+        const previousDeck = this.getDeck();
         const user = localStorage.getItem('current_user');
         if (previousDeck) {
             this.deck = previousDeck;
@@ -366,14 +305,97 @@ class Ui {
     }
     shuffle() {
     }
-}
-_Ui_instances = new WeakSet(), _Ui_getDeck = function _Ui_getDeck() {
-    const json = localStorage.getItem("deck");
-    if (json && json != "{}") {
-        const localDeck = JSON.parse(json);
-        return localDeck.map(element => new PlayingCard(element["id"], element["source_word"], element["translations"], element["source_language"], element["target_language"], element["audio"]));
+    getDeck() {
+        const json = localStorage.getItem("deck");
+        if (json && json != "{}") {
+            const localDeck = JSON.parse(json);
+            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"], element["translations"], element["source_language"], element["target_language"], element["audio"]));
+        }
     }
-};
+}
+class ExtendedInput {
+    constructor(input) {
+        this._htmlElement = input;
+        this._siblings = [];
+        this._htmlElement.oninput = () => this.validate();
+        this._htmlElement.onchange = () => this.checkIfUnique();
+    }
+    get value() {
+        return this._htmlElement.value;
+    }
+    set value(value) {
+        this._htmlElement.value = value;
+    }
+    addSiblings(sibling) {
+        this._siblings.push(sibling);
+    }
+    isEmpty() {
+        return (this._htmlElement.value == "");
+    }
+    validate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (yield this.isValid()) {
+                this.styleValid();
+            }
+            else {
+                this.styleInvalid();
+            }
+        });
+    }
+    styleValid() {
+        if (!this.isEmpty()) {
+            this._htmlElement.classList.add("is-primary");
+            this._htmlElement.classList.remove("is-danger");
+        }
+        else {
+            this._htmlElement.classList.remove("is-danger", "is-primary");
+        }
+    }
+    styleInvalid() {
+        if (!this.isEmpty()) {
+            this._htmlElement.classList.add("is-danger");
+            this._htmlElement.classList.remove("is-primary");
+        }
+        else {
+            this._htmlElement.classList.remove("is-danger", "is-primary");
+        }
+    }
+    checkIfUnique() {
+        if (this._siblings.length > 0) {
+            for (let sibling of this._siblings) {
+                if (sibling.value == this.value) {
+                    this.styleInvalid();
+                    sibling.styleInvalid();
+                }
+                else if (sibling.value != this.value) {
+                    this.validate();
+                    sibling.validate();
+                }
+            }
+        }
+    }
+}
+class WordInput extends ExtendedInput {
+    constructor(input) {
+        super(input);
+    }
+    isValid() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return !(this._htmlElement.validity.patternMismatch || this.isEmpty());
+        });
+    }
+}
+class LanguageInput extends ExtendedInput {
+    constructor(input) {
+        super(input);
+    }
+    isValid() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const awaitedLanguages = yield Server.validLangauges;
+            return awaitedLanguages.includes(this.value);
+        });
+    }
+}
 const LOGGING = true;
 console.info(`Logging: ${LOGGING}`);
 const DEFAULT_LANGUAGES = {
@@ -409,7 +431,7 @@ class Server {
             languagesURL.pathname = "get_languages";
             const response = yield fetch(languagesURL);
             if (response.ok) {
-                return yield response.json();
+                return JSON.parse(yield response.json());
             }
             else {
                 logError(`Could not get languages: ${response.status}`);
@@ -513,28 +535,24 @@ class BaseCard {
         return this._audio;
     }
 }
-var _PlayingCard_incorrectCount, _PlayingCard_correctCount, _PlayingCard_difficulty;
 class PlayingCard extends BaseCard {
     constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
         super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
-        _PlayingCard_incorrectCount.set(this, void 0);
-        _PlayingCard_correctCount.set(this, void 0);
-        _PlayingCard_difficulty.set(this, void 0);
-        __classPrivateFieldSet(this, _PlayingCard_incorrectCount, this.incorrectCount, "f");
-        __classPrivateFieldSet(this, _PlayingCard_correctCount, this.correctCount, "f");
-        __classPrivateFieldSet(this, _PlayingCard_difficulty, this.difficulty, "f");
+        this._incorrectCount = this.incorrectCount;
+        this._correctCount = this.correctCount;
+        this._difficulty = this.difficulty;
     }
     get incorrectCount() {
-        return __classPrivateFieldGet(this, _PlayingCard_incorrectCount, "f");
+        return this._incorrectCount;
     }
     get correctCount() {
-        return __classPrivateFieldGet(this, _PlayingCard_correctCount, "f");
+        return this._correctCount;
     }
     get difficulty() {
-        return __classPrivateFieldGet(this, _PlayingCard_difficulty, "f");
+        return this._difficulty;
     }
     updateLocalScore(score) {
-        __classPrivateFieldSet(this, _PlayingCard_correctCount, __classPrivateFieldGet(this, _PlayingCard_correctCount, "f") + score, "f");
+        this._correctCount += score;
     }
     serialiseData() {
         return JSON.stringify({
@@ -544,5 +562,4 @@ class PlayingCard extends BaseCard {
         });
     }
 }
-_PlayingCard_incorrectCount = new WeakMap(), _PlayingCard_correctCount = new WeakMap(), _PlayingCard_difficulty = new WeakMap();
 //# sourceMappingURL=test.js.map

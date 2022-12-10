@@ -7,28 +7,27 @@ abstract class Modal {
 
     private _id: string;
     private _modal: HTMLDivElement | null;
-    protected sourceLanguage: HTMLInputElement;
-    protected targetLanguage: HTMLInputElement;
+    protected sourceLanguage: LanguageInput;
+    protected targetLanguage: LanguageInput;
     protected submitButton: HTMLButtonElement;
+
+    private _languageInputs: LanguageInput[];
 
     constructor(id: string) {
         this._id = id;
         this._modal = document.querySelector(`${id}`);
 
         if (this._modal) {
-            this.sourceLanguage = this.nullCheckedQuerySelector(`.source-language`);
-            this.targetLanguage = this.nullCheckedQuerySelector(`.translation-language`);
+            
+            // this.sourceLanguage = this.languageQuerySelector(`.source-language`);
+            this.sourceLanguage = new LanguageInput(this.nullCheckedQuerySelector(`.source-language`))
+            this.targetLanguage = new LanguageInput(this.nullCheckedQuerySelector(`.translation-language`))
+
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
 
-            const inputs: NodeListOf<HTMLInputElement> = this.nullCheckedQuerySelectorAll(`.input`);
-            
-            // this.sourceLanguage.onchange = () => this.validateLanguages();
-            // this.targetLanguage.onchange = () => this.validateLanguages();
-
-            inputs.forEach(input => {
-                input.onchange = () => this.validateForSubmit();
-            })
-
+            this.targetLanguage.addSiblings(this.sourceLanguage);
+            this.sourceLanguage.addSiblings(this.targetLanguage);
+              
             this.addClickEventToSelector(".submit", () => this.submit());
             this.addClickEventToSelector(".clear", () => this.clear());
             this.addClickEventToSelectorAll(".close", () => this.closeModal());
@@ -44,8 +43,17 @@ abstract class Modal {
         return this._id;
     }
 
+    public get languageInputs() {
+        return this._languageInputs;
+    }
+
     protected get modal() {
         return this._modal;
+    }
+
+    protected updateInputValue(input: HTMLInputElement, value: string) {
+        input.value = value;
+        input.dispatchEvent(new Event('change'));   
     }
 
     addClickEventToSelector(selector: string, callback: ()=> void ): void {
@@ -67,11 +75,30 @@ abstract class Modal {
         else logError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
 
-    nullCheckedQuerySelector(selector: string): HTMLInputElement {
-        const element: nullableHTMLInputElement = this.modal?.querySelector(selector);
+    nullCheckedQuerySelector(selector: string): HTMLInputElement{
+        const element: HTMLInputElement = this.modal?.querySelector(selector);
         if (element) {
             return element;
         }
+       
+        throw new Error(`Cannot find ${selector} in ${this._id}`);
+    }
+
+    languageQuerySelector(selector: string): LanguageInput{
+        const element: HTMLInputElement = this.modal?.querySelector(selector);
+        if (element) {
+            return new LanguageInput(element);
+        }
+       
+        throw new Error(`Cannot find ${selector} in ${this._id}`);
+    }
+
+    wordQuerySelector(selector: string): WordInput{
+        const element: HTMLInputElement = this.modal?.querySelector(selector);
+        if (element) {
+            return new WordInput(element);
+        }
+       
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
 
@@ -83,12 +110,22 @@ abstract class Modal {
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
 
-    nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
+    inputQuerySelectorAll(selector: string): ExtendedInput[] {
+
+        const inputsList: WordInput[] = [];
         const elements: NodeListOf<HTMLInputElement> | undefined = this.modal?.querySelectorAll(selector);
+
         if (elements && elements.length > 0) {
-            return elements;
+            elements.forEach(element => {
+                if (element.classList.contains("language")) inputsList.push(new LanguageInput(element));
+                else if (element.classList.contains("word")) inputsList.push(new WordInput(element)); 
+                else throw new Error(`Inputs must containa class of "word" or "language" within ${this.modal.id}: ${element.classList}`);
+            });
+            return inputsList;
+        } else {
+            throw new Error(`Cannot find ${selector} in ${this._id}`);
         }
-        throw new Error(`Cannot find ${selector} in ${this._id}`);
+        
     }
 
     public openModal() {
@@ -96,24 +133,60 @@ abstract class Modal {
     }
 
     private closeModal() {
-        if (this.modal) this.modal.classList.toggle("is-active");
-    }
-
-    private validateLanguage(languageInput: HTMLInputElement): boolean {
-        if (languageInput.value in Server.validLangauges) {
-            languageInput.classList.add("is-primary");
-            languageInput.classList.remove("is-danger")
-            return true;
-        } else {
-            languageInput.classList.add("is-danger");
-            languageInput.classList.remove("is-primary");
-            return false;
+        if (this.modal) {
+            this.clear();
+            this.modal.classList.toggle("is-active");
         }
     }
 
-    protected validateLanguages(): boolean {
-        return this.validateLanguage(this.sourceLanguage) && this.validateLanguage(this.targetLanguage);         
+
+    private async languageIsValid(languageInput: HTMLInputElement) {
+        const awaitedLanguages = await Server.validLangauges;
+        return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage()
     }
+
+    // private async showIfInputIsValid(input: HTMLInputElement, isValid:boolean) {
+    //     if (isValid) {
+    //         input.classList.add("is-primary");
+    //         input.classList.remove("is-danger")
+    //     } else {
+    //         input.classList.add("is-danger");
+    //         input.classList.remove("is-primary");
+    //     }
+    // }
+
+    // private async newvalidateForSubmit() {
+    //     const isSourceLanguageValid = this.languageIsValid(this.sourceLanguage);
+    //     const isTargetLanguageValid = this.languageIsValid(this.targetLanguage);
+    // }
+
+
+
+    // private async validateLanguage(languageInput: LanguageInput): Promise<boolean> {
+    //     const awaitedLanguages = await Server.validLangauges;
+    //     console.log("called");
+    //     if (awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage()) {  
+    //         languageInput.classList.add("is-primary");
+    //         languageInput.classList.remove("is-danger")
+    //         return true;
+    //     } else {
+    //         languageInput.classList.add("is-danger");
+    //         languageInput.classList.remove("is-primary");
+    //         return false;
+    //     }
+    // }
+
+    private notDuplicateLanguage() {
+        return this.sourceLanguage.value != this.targetLanguage.value;
+    }
+
+    // protected async validateLanguages(): Promise<boolean> {
+    //     return await this.validateLanguage(this.sourceLanguage) && await this.validateLanguage(this.targetLanguage);         
+    // }
+
+    // protected async newValidateLanguages(): Promise<boolean> {
+    //     return await this.languageIsValid(this.sourceLanguage) && await this.languageIsValid(this.targetLanguage);         
+    // }
 
     protected clear() {
         if (this.modal) {
@@ -121,6 +194,8 @@ abstract class Modal {
             if (inputs.length > 0) {
                 inputs.forEach(element => {
                     element.value = "";
+                    // this.updateInputValue(element, "");
+                    element.classList.remove("is-danger","is-primary");
                 })
             } else {
                 logError(`Unable to find inputs in ${this._id}`);
@@ -132,15 +207,17 @@ abstract class Modal {
 
     abstract submit(): void;
 
-    abstract validateForSubmit(): void;
+    // abstract validateForSubmit(): void;
 
 }
 
+
+
 abstract class CardModal extends Modal {
 
-    protected recorder;
-    protected sourceWord: HTMLInputElement;
-    protected translations: NodeListOf<HTMLInputElement>;
+    // protected recorder;
+    protected sourceWord: WordInput;
+    protected translations: WordInput[];
     // protected translations = { "inputs": [],  "values": []};
     
     // protected translations: NodeListOf<HTMLInputElement>;
@@ -153,11 +230,11 @@ abstract class CardModal extends Modal {
         if (this.modal) {
 
             // const sourceWord: nullableHTMLInputElement = this.modal.querySelector(`.source-language`);
-            this.sourceWord = this.nullCheckedQuerySelector(`.source`);
-            this.translations = this.nullCheckedQuerySelectorAll(`.translation`);
+            this.sourceWord = this.wordQuerySelector(`.source`);
+            this.translations = this.inputQuerySelectorAll(`.translation`);
 
-            const recorderDiv = this.nullCheckedQuerySelector(`.recorder`);
-            this.recorder = new Recorder(recorderDiv);
+            // const recorderDiv = this.modalQuerySelector(`.recorder`);
+            // this.recorder = new Recorder(recorderDiv);
 
             // this.sourceWord.onchange = () => this.validateForSubmit();
             // this.translations.forEach(translation => translation.onchange = () => this.validateForSubmit());
@@ -166,24 +243,25 @@ abstract class CardModal extends Modal {
         }
     }
 
-    validateForSubmit(): void {
-        if (this.validateWords() && this.validateLanguages()) {
-            this.submitButton.classList.remove("disabledPointer");
-        } else {
-            this.submitButton.classList.add("disabledPointer");
-        }    
-    }
+    // async validateForSubmit(): Promise<void> {
+    //     console.log("validating");
+    //     if (this.validateWords() && await this.validateLanguages()) {
+    //         this.submitButton.classList.remove("disabledPointer");
+    //     } else {
+    //         this.submitButton.classList.add("disabledPointer");
+    //     }    
+    // }
 
     validateWord(wordInput: HTMLInputElement):boolean {
         if (wordInput.validity.patternMismatch || wordInput.value == "") {
-            wordInput.classList.add("is-primary");
-            wordInput.classList.remove("is-danger")
-            return true;
-        }
-        else {
             wordInput.classList.add("is-danger");
             wordInput.classList.remove("is-primary");
             return false;
+        }
+        else {
+            wordInput.classList.add("is-primary");
+            wordInput.classList.remove("is-danger")
+            return true;
         } 
     }
 
@@ -193,20 +271,20 @@ abstract class CardModal extends Modal {
         return values;
     }
 
-    validateWords() {
-        const validations: boolean[] = [];
+    // validateWords() {
+    //     const validations: boolean[] = [];
 
-        validations.push(this.validateWord(this.sourceWord))
+    //     validations.push(this.validateWord(this.sourceWord))
 
-        if (this.translations) {
-            this.translations.forEach(element => {
-                validations.push(this.validateWord(element));
-            })
-        }
+    //     if (this.translations) {
+    //         this.translations.forEach(element => {
+    //             validations.push(this.validateWord(element));
+    //         })
+    //     }
 
-        return !validations.includes(false)
+    //     return !validations.includes(false)
 
-    }
+    // }
 }
 
 class CreateDeckModal extends CardModal {
@@ -220,7 +298,7 @@ class CreateDeckModal extends CardModal {
 
             // const addCard: nullableHTMLInputElement = this.modal.querySelector(`.add-card`);
 
-            this.addClickEventToSelector(`.add-card`,  this.addCardToDeck);
+            // this.addClickEventToSelector(`.add-card`,  this.addCardToDeck);
 
             // if (addCard) {
             //     addCard.addEventListener('click', () => {
@@ -232,13 +310,13 @@ class CreateDeckModal extends CardModal {
     }
 
 
-    addCardToDeck() {
-        if (this.sourceWord) {
-            const card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip);
-            this.deck.push(card);
-            this.clear();
-        }
-    }
+    // addCardToDeck() {
+    //     if (this.sourceWord) {
+    //         const card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip);
+    //         this.deck.push(card);
+    //         this.clear();
+    //     }
+    // }
 
     submit() {
 
@@ -251,41 +329,41 @@ class EditCardModal extends CardModal {
 
     constructor(id: string) {
         super(id);
-        this.buildTranslationInputList();
+        // this.buildTranslationInputList();
     }
 
-    buildTranslationInputList() {
-        const translationinputs = this.nullCheckedQuerySelectorAll(".translation");
-        if (translationinputs) translationinputs.forEach(element => {
-            const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
-            element.addEventListener('click', (e) => {
-                if (template && 'content' in document.createElement('template')) {
-                    // const clicked = e.target as HTMLElement;
-                    // const translationsBlock = clicked?.parentElement?.parentElement?.parentElement?.parentElement;
-                    // const translationsBlock: HTMLTemplateElement | null = this.modal!.querySelector('.translation-block');
-                    const translationsBlock: nullableHTMLInputElement = this.nullCheckedQuerySelector('.translation-block')
-                    if (translationsBlock) {
-                        const clone = (template.content.cloneNode(true) as HTMLDivElement);
-                        translationsBlock.appendChild(clone);
-                        const removeButton = clone.querySelector(".remove-translation");
-                        if (removeButton) {
-                            removeButton.addEventListener(
-                                'click' , (e) => {
-                                    const clicked = e.target as HTMLElement;
-                                    clicked?.parentElement?.parentElement?.remove();
-                                }
-                            );
-                        }
-                    } else {
-                        logError(`translation-block not found in ${this.id}`)
-                    }
+    // buildTranslationInputList() {
+    //     const translationinputs = this.inputQuerySelectorAll(".translation");
+    //     if (translationinputs) translationinputs.forEach(element => {
+    //         const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
+    //         element.addEventListener('click', (e) => {
+    //             if (template && 'content' in document.createElement('template')) {
+    //                 // const clicked = e.target as HTMLElement;
+    //                 // const translationsBlock = clicked?.parentElement?.parentElement?.parentElement?.parentElement;
+    //                 // const translationsBlock: HTMLTemplateElement | null = this.modal!.querySelector('.translation-block');
+    //                 const translationsBlock: nullableHTMLInputElement = this.modalQuerySelector('.translation-block')
+    //                 if (translationsBlock) {
+    //                     const clone = (template.content.cloneNode(true) as HTMLDivElement);
+    //                     translationsBlock.appendChild(clone);
+    //                     const removeButton = clone.querySelector(".remove-translation");
+    //                     if (removeButton) {
+    //                         removeButton.addEventListener(
+    //                             'click' , (e) => {
+    //                                 const clicked = e.target as HTMLElement;
+    //                                 clicked?.parentElement?.parentElement?.remove();
+    //                             }
+    //                         );
+    //                     }
+    //                 } else {
+    //                     logError(`translation-block not found in ${this.id}`)
+    //                 }
 
-                } else {
-                    console.log("Cant't add");
-                }
-            })
-        })
-    }
+    //             } else {
+    //                 console.log("Cant't add");
+    //             }
+    //         })
+    //     })
+    // }
     // tTODO: takes only language pair or null so some modals can just not use the argument
     openModal(): void {
         super.openModal();
@@ -323,7 +401,7 @@ class FetchDeckModal extends Modal {
 
     constructor(id: string) {
         super(id);
-        this.count = this.nullCheckedQuerySelector(".count");
+        // this.count = this.modalQuerySelector(".count");
     }
 
     validateCount() {
@@ -335,13 +413,13 @@ class FetchDeckModal extends Modal {
         this.fetchDeck();
     }
 
-    validateForSubmit(): void {
-        if (this.validateLanguages() && this.validateCount()) {
-            this.submitButton.classList.remove("disabledPointer");
-        } else {
-            this.submitButton.classList.add("disabledPointer");
-        }    
-    }
+    // async validateForSubmit(): Promise<void> {
+    //     if (await this.validateLanguages() && this.validateCount()) {
+    //         this.submitButton.classList.remove("disabledPointer");
+    //     } else {
+    //         this.submitButton.classList.add("disabledPointer");
+    //     }    
+    // }
 
     async fetchDeck() {
         const jsonDeck:Response = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
@@ -358,11 +436,11 @@ class FetchTableModal extends Modal {
         Server.goToTable(this.sourceLanguage.value, this.targetLanguage.value);
     }
 
-    validateForSubmit(): void {
-        if (this.validateLanguages()) {
-            this.submitButton.classList.remove("disabledPointer");
-        } else {
-            this.submitButton.classList.add("disabledPointer");
-        }    
-    }
+    // async validateForSubmit(): Promise<void> {
+    //     if (await this.validateLanguages()) {
+    //         this.submitButton.classList.remove("disabledPointer");
+    //     } else {
+    //         this.submitButton.classList.add("disabledPointer");
+    //     }    
+    // }
 }

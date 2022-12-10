@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
 from fastapi.responses import FileResponse
 import base64
+import json
 
 import librosa  
 import soundfile as sf
@@ -35,6 +36,8 @@ templates = Jinja2Templates(directory=f"..\client\\templates")
 
 data_test = ""
 
+valid_languages = ["Spanish", "Finnish", "Vietnamese", "English"]
+
 def get_js_files(dir: str):
     js_files = []
     for path, dirs, fnames in os.walk(f"..\client\static\js\dest"):
@@ -47,7 +50,10 @@ def get_js_files(dir: str):
     #         newPath = path.split("static")[1]+"\\\\"
     #         js_files.append(f"{newPath}{filename}")
     # return js_files
-    
+
+@app.get("/get_languages")
+def get_languages():
+    return json.dumps(valid_languages)
 
 @app.get("/", response_class=HTMLResponse)
 def read_item(request: Request):  

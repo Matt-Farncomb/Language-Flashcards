@@ -11,12 +11,12 @@ class Ui {
 
     constructor() {
         
-        this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
+        // this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
 
-        const previousDeck: PlayingCard[] | undefined = this.#getDeck();
+        const previousDeck: PlayingCard[] | undefined = this.getDeck();
         const user = localStorage.getItem('current_user');
 
         if (previousDeck) {
@@ -89,15 +89,15 @@ class Ui {
     }
 
 
-    next() {
+    public next() {
 
     }
 
-    shuffle() {
+    public shuffle() {
 
     }
 
-    #getDeck(): PlayingCard[] | undefined {  
+    private getDeck(): PlayingCard[] | undefined {  
         const json: string | null = localStorage.getItem("deck");
         if (json && json != "{}") {
             const localDeck: Record<string, any>[] = JSON.parse(json);

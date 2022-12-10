@@ -8,14 +8,14 @@
 {% endblock %}
 
 {% block section %}
-  {{ macros.input("source-language", "source-language-input", "Choose sourse language", "languages") }}
-  {{ macros.input("source", "source", "Source word") }}
-  {{ macros.input("translation-language", "target-language-input","Choose target language", "languages") }}
+  {{ macros.input("source-language", "language", "Choose sourse language", "languages") }}
+  {{ macros.input("source", "word", "Source word") }}
+  {{ macros.input("translation-language", "language","Choose target language", "languages") }}
  
     <div class="field translations-block">
       <div class="field">
         <div class="control has-icons-right">
-            <input class="input is-medium translation" type="text" pattern="\p{L}+" placeholder="Edit translation" autocomplete="off" maxlength="50">
+            <input class="input is-medium translation word" type="text" pattern="\p{L}+" placeholder="Edit translation" autocomplete="off" maxlength="50">
             <span class="icon is-medium is-right">
                 <i class="fas fa-plus add-translation-fart"></i>
             </span>
@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block footer %}
-    <button class="button is-success submit">{% block submitstring %}{% endblock %}</button>
+    <button class="button is-success submit disabledPointer">{% block submitstring %}{% endblock %}</button>
     <button class="button is-danger clear">Clear</button>
     <button class="button close">Cancel</button>
     {% block extend_footer %}{% endblock %}

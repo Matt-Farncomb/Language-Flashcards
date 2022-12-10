@@ -27,7 +27,7 @@ class Server {
 
         const response = await fetch(languagesURL);
         if (response.ok) {
-            return await response.json();
+            return JSON.parse(await response.json());
         } else {
             logError(`Could not get languages: ${response.status}`);
             return []; 

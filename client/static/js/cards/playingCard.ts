@@ -1,30 +1,30 @@
 class PlayingCard extends BaseCard {
 
-    #incorrectCount: number;
-    #correctCount: number;
-    #difficulty: string;
+    private _incorrectCount: number;
+    private _correctCount: number;
+    private _difficulty: string;
 
     constructor(id: string, sourceWord: string, translations: string[], sourceLanguage: string, targetLanguage: string, audio: Blob) { 
         super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
-        this.#incorrectCount = this.incorrectCount;
-        this.#correctCount = this.correctCount;
-        this.#difficulty = this.difficulty;
+        this._incorrectCount = this.incorrectCount;
+        this._correctCount = this.correctCount;
+        this._difficulty = this.difficulty;
     }
 
     public get incorrectCount() {
-        return this.#incorrectCount;
+        return this._incorrectCount;
     }
 
     public get correctCount() {
-        return this.#correctCount;
+        return this._correctCount;
     }
 
     public get difficulty() {
-        return this.#difficulty;
+        return this._difficulty;
     }
 
     public updateLocalScore(score: number) {
-        this.#correctCount += score;
+        this._correctCount += score;
     }
 
     public serialiseData(): string {
