@@ -21,8 +21,16 @@ abstract class ExtendedInput {
     }
 
     // Siblings are used to ensure that they can't have the same value as each other
-    public addSiblings(sibling: ExtendedInput) {
+    public addSibling(sibling: ExtendedInput) {
         this._siblings.push(sibling);
+    }
+
+    public addSiblings(siblings: ExtendedInput[]) {
+        siblings.forEach(sibling => {
+            if (sibling != this) {
+                this.addSibling(sibling)
+            }
+        })
     }
 
     public isEmpty() {
@@ -57,17 +65,21 @@ abstract class ExtendedInput {
         }
     }
 
+    // Check if any siblings (and this) have any duplicate values 
+    // style appropriately if they do/don't
     protected checkIfUnique() {
         if (this._siblings.length > 0) {
-            for (let sibling of this._siblings) {
-                if (sibling.value == this.value) {
-                    this.styleInvalid();
-                    sibling.styleInvalid();
-                } else if (sibling.value != this.value){
-                    this.validate();
-                    sibling.validate();
+            this._siblings.forEach((element: ExtendedInput) => {
+                const invalid = element._siblings.filter(innerElement => element.value == innerElement.value);
+                if (invalid.length == 0) {
+                    element.validate();
+                } else {
+                    invalid.forEach(e => {
+                        element.styleInvalid();
+                        e.styleInvalid();
+                    })
                 }
-            }
+            });
         } 
     }
 

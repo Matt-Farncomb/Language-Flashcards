@@ -21,7 +21,7 @@ nav .buttons .button:last-child {
   margin:auto;
 }
 
-.add-translation-fart, .remove-translation {
+.add-translation, .remove-translation {
   pointer-events: all !important;
 }
 
