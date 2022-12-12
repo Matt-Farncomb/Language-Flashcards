@@ -1,7 +1,7 @@
 class Recorder {
 
     private recordButton: HTMLButtonElement;
-    private _clip: Blob;
+    private _clip: Blob | undefined;
 
     constructor(recorderDiv: HTMLDivElement) {
 
@@ -9,6 +9,8 @@ class Recorder {
 
         if (recordButton) {
             this.recordButton = recordButton;
+        } else {
+            throw Error(`Class 'record' cannot be found in recorder`);
         }
 
     }

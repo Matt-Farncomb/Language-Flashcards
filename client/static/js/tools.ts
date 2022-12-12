@@ -7,6 +7,28 @@ function logError(message: string) {
     if (LOGGING) console.error(message);
 }
 
+function nullCheckedQuerySelector(containingDiv: HTMLDivElement | null, selector: string): HTMLInputElement | undefined {
+    if (containingDiv) {
+        const element: HTMLInputElement | null = containingDiv.querySelector(selector);
+        if (element) {
+            return element;
+        }
+        throw new Error(`Cannot find ${selector} in ${containingDiv.id}`);
+    }
+    else throw new Error(`Cannot find modal`);
+}
+
+function addClickEventToSelector(containingDiv: HTMLDivElement | null, selector: string, callback: ()=> void ): void {
+    if (containingDiv) {
+        const button: HTMLButtonElement | null = containingDiv.querySelector(selector);
+        if (button) {
+            button.addEventListener('click', () => callback() );
+        }
+        else logError(`Could not assign 'click' to ${selector} in ${containingDiv.id}`);
+    }
+    else logError(`Could not find ${containingDiv}.`);
+}
+
 // function addClickEventToSelector(selector: string, callback: ()=> void ): void {
 //     const button: HTMLButtonElement | null | undefined = this.modal.querySelector(selector);
 //     if (button) {

@@ -10,7 +10,7 @@ const DEFAULT_LANGUAGES: LanguagePair = {
 
 try {
     const ui = new Ui(); 
-} catch (exception) {
+} catch (exception: any) {
     logError("Failed to create UI");
     logError(exception);
 }

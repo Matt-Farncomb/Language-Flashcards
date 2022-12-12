@@ -1,8 +1,8 @@
 
 
 class Ui {
-    currentCard: PlayingCard;
-    deck: PlayingCard[];
+    currentCard: PlayingCard | undefined;
+    deck: PlayingCard[] | undefined;
     editModal: EditCardModal;
     createDeckModal: CreateDeckModal;
     fetchDeckModal: FetchDeckModal;
@@ -11,7 +11,7 @@ class Ui {
 
     constructor() {
         
-        // this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
+        this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
@@ -27,8 +27,10 @@ class Ui {
         }
         
         this.addClickEventToSelector("#open-edit-card-modal", () => {
-            this.editModal.populateCard(this.currentCard);
-            this.editModal.openModal();
+            if (this.currentCard) {
+                this.editModal.populateCard(this.currentCard);
+                this.editModal.openModal();
+                }
             }
         );
 
@@ -70,7 +72,7 @@ class Ui {
      }
 
     addClickEventToSelector(selector: string, callback: ()=> void ): void {
-        const button: HTMLButtonElement | null | undefined = document.querySelector(selector);
+        const button: HTMLButtonElement | null = document.querySelector(selector);
         if (button) {
             button.addEventListener('click', () => { callback() });
         }

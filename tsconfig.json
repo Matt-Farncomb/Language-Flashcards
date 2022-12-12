@@ -4,6 +4,7 @@
       "target": "es6",
       "module": "amd",
       "noImplicitAny": true,
+      "strict": true,
       "removeComments": true,
       "preserveConstEnums": true,
       "outFile": "client/static/js/dest/test.js",
