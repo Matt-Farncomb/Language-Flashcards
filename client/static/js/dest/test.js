@@ -30,16 +30,14 @@ class Modal {
         const targetLanguage = nullCheckedQuerySelector(modal, `.translation-language`);
         if (modal && sourceLanguage && targetLanguage) {
             this._modal = modal;
-            this.sourceLanguage = new LanguageInput(sourceLanguage);
-            this.targetLanguage = new LanguageInput(targetLanguage);
+            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
+            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
             this.addClickEventToModalElement(".submit", () => this.submit());
             this.addClickEventToModalElement(".clear", () => this.clear());
             this.addClickEventToModalElements(".close", () => this.closeModal());
-            this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"));
-            this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"));
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -104,6 +102,11 @@ class Modal {
             return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage();
         });
     }
+    createNewInput(input, element) {
+        const test = new input(element);
+        test.addOnChangeEvent(() => console.log("farting!!!"));
+        return test;
+    }
     notDuplicateLanguage() {
         return this.sourceLanguage.value != this.targetLanguage.value;
     }
@@ -135,12 +138,10 @@ class CardModal extends Modal {
         const sourceWord = nullCheckedQuerySelector(this.modal, `.source`);
         const translations = this.nullCheckedQuerySelectorAll(`.translation`);
         if (sourceWord && translations.length > 0) {
-            this.sourceWord = new WordInput(sourceWord);
-            this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
-            translations.forEach(inputElement => this.translations.push(new WordInput(inputElement)));
+            this.sourceWord = this.createNewInput(WordInput, sourceWord);
+            translations.forEach(inputElement => this.createNewInput(LanguageInput, inputElement));
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
-                wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
             });
         }
         else {
@@ -182,11 +183,10 @@ class CardModal extends Modal {
                                     if (lastTranslation) {
                                         const newTranslation = lastTranslation.querySelector(".translation");
                                         if (newTranslation) {
-                                            const newWordInput = new WordInput(newTranslation);
+                                            const newWordInput = this.createNewInput(WordInput, newTranslation);
                                             newWordInput.addSiblings(this.translations);
                                             this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                             this.translations.push(newWordInput);
-                                            newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                                             const removeButton = clone.querySelector(".remove-translation");
                                             if (removeButton) {
                                                 removeButton.addEventListener('click', (e) => {

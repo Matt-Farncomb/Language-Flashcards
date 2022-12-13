@@ -17,8 +17,12 @@ abstract class Modal {
         if (modal && sourceLanguage && targetLanguage) {
 
             this._modal = modal;
-            this.sourceLanguage = new LanguageInput(sourceLanguage)
-            this.targetLanguage = new LanguageInput(targetLanguage)
+            // this.sourceLanguage = new LanguageInput(sourceLanguage)
+            // this.targetLanguage = new LanguageInput(targetLanguage)
+
+            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
+            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
+
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
             // this.inputs.push(this.sourceLanguage, this.targetLanguage);
@@ -33,8 +37,10 @@ abstract class Modal {
             //     element.addOnChangeEvent(() => console.log("farts are smelly"));
             // })
 
-            this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-            this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+            // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+            // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+
+            
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -74,9 +80,6 @@ abstract class Modal {
         else logError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
     
-
-    
-
     nullCheckedButtonQuerySelector(selector: string): HTMLButtonElement {
         const element: HTMLButtonElement | null = this.modal.querySelector(selector);
         if (element) {
@@ -112,6 +115,12 @@ abstract class Modal {
     private async languageIsValid(languageInput: HTMLInputElement) {
         const awaitedLanguages = await Server.validLangauges;
         return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage()
+    }
+
+    protected createNewInput(input: typeof WordInput | typeof LanguageInput, element: HTMLInputElement) {
+        const test = new input(element);
+        test.addOnChangeEvent(() => console.log("farting!!!"));
+        return test;
     }
 
     // private async showIfInputIsValid(input: HTMLInputElement, isValid:boolean) {
@@ -199,17 +208,19 @@ abstract class CardModal extends Modal {
 
         // if modal not found, base will throw errors
         if (sourceWord && translations.length > 0) {
-            this.sourceWord = new WordInput(sourceWord);
-            this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
+
+            this.sourceWord = this.createNewInput(WordInput, sourceWord);
+            // this.sourceWord = new WordInput(sourceWord);
+            // this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
             // this.inputs.push(sourceWord);
             
            
             // create a word input for every translation
-            translations.forEach(inputElement => this.translations.push(new WordInput(inputElement)))
+            translations.forEach(inputElement => this.createNewInput(LanguageInput, inputElement));
             // every translation word input gets every other translation word input added as a sibling
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
-                wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
+                // wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                 }
             );
 
@@ -258,12 +269,14 @@ abstract class CardModal extends Modal {
                                 if (lastTranslation) {
                                     const newTranslation: HTMLInputElement | null = lastTranslation.querySelector(".translation");
                                     if (newTranslation) {
-                                        const newWordInput = new WordInput(newTranslation);
+                                        // const newWordInput = new WordInput(newTranslation);
+                                        const newWordInput = this.createNewInput(WordInput, newTranslation);
+
                                         newWordInput.addSiblings(this.translations);
                                         this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                         this.translations.push(newWordInput);
 
-                                        newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
+                                        // newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
 
                                         const removeButton = clone.querySelector(".remove-translation");
                                         if (removeButton) {
