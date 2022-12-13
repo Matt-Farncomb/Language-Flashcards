@@ -38,6 +38,8 @@ class Modal {
             this.addClickEventToModalElement(".submit", () => this.submit());
             this.addClickEventToModalElement(".clear", () => this.clear());
             this.addClickEventToModalElements(".close", () => this.closeModal());
+            this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"));
+            this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"));
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -134,8 +136,12 @@ class CardModal extends Modal {
         const translations = this.nullCheckedQuerySelectorAll(`.translation`);
         if (sourceWord && translations.length > 0) {
             this.sourceWord = new WordInput(sourceWord);
+            this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
             translations.forEach(inputElement => this.translations.push(new WordInput(inputElement)));
-            this.translations.forEach(wordInput => wordInput.addSiblings(this.translations));
+            this.translations.forEach(wordInput => {
+                wordInput.addSiblings(this.translations);
+                wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
+            });
         }
         else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
@@ -180,6 +186,7 @@ class CardModal extends Modal {
                                             newWordInput.addSiblings(this.translations);
                                             this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                             this.translations.push(newWordInput);
+                                            newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                                             const removeButton = clone.querySelector(".remove-translation");
                                             if (removeButton) {
                                                 removeButton.addEventListener('click', (e) => {
@@ -374,6 +381,9 @@ class ExtendedInput {
     }
     set value(value) {
         this._htmlElement.value = value;
+    }
+    addOnChangeEvent(func) {
+        this._htmlElement.addEventListener('change', func);
     }
     addSibling(sibling) {
         this._siblings.push(sibling);

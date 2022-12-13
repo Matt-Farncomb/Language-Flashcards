@@ -20,6 +20,10 @@ abstract class ExtendedInput {
         this._htmlElement.value = value
     }
 
+    public addOnChangeEvent(func: ()=> void): void {
+        this._htmlElement.addEventListener('change', func);
+    }
+
     // Siblings are used to ensure that they can't have the same value as each other
     public addSibling(sibling: ExtendedInput) {
         this._siblings.push(sibling);

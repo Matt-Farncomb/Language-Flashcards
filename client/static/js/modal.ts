@@ -5,6 +5,7 @@ abstract class Modal {
     protected sourceLanguage: LanguageInput;
     protected targetLanguage: LanguageInput;
     protected submitButton: HTMLButtonElement;
+    // protected inputs: ExtendedInput[] = [];
 
     constructor(id: string) {
         this._id = id;
@@ -20,12 +21,20 @@ abstract class Modal {
             this.targetLanguage = new LanguageInput(targetLanguage)
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
+            // this.inputs.push(this.sourceLanguage, this.targetLanguage);
             
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
 
             this.addClickEventToModalElement(".submit", () => this.submit());
             this.addClickEventToModalElement(".clear", () => this.clear());
             this.addClickEventToModalElements(".close", () => this.closeModal());
+
+            // this.inputs.forEach(element => {
+            //     element.addOnChangeEvent(() => console.log("farts are smelly"));
+            // })
+
+            this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+            this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -191,11 +200,18 @@ abstract class CardModal extends Modal {
         // if modal not found, base will throw errors
         if (sourceWord && translations.length > 0) {
             this.sourceWord = new WordInput(sourceWord);
+            this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
+            // this.inputs.push(sourceWord);
+            
            
             // create a word input for every translation
             translations.forEach(inputElement => this.translations.push(new WordInput(inputElement)))
             // every translation word input gets every other translation word input added as a sibling
-            this.translations.forEach(wordInput => wordInput.addSiblings(this.translations));
+            this.translations.forEach(wordInput => {
+                wordInput.addSiblings(this.translations);
+                wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
+                }
+            );
 
             // const recorderDiv = this.modalQuerySelector(`.recorder`);
             // this.recorder = new Recorder(recorderDiv);
@@ -246,6 +262,9 @@ abstract class CardModal extends Modal {
                                         newWordInput.addSiblings(this.translations);
                                         this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                         this.translations.push(newWordInput);
+
+                                        newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
+
                                         const removeButton = clone.querySelector(".remove-translation");
                                         if (removeButton) {
                                             removeButton.addEventListener(
