@@ -9,7 +9,7 @@ abstract class ExtendedInput {
         this._htmlElement = input;
         this._siblings = [];
         this._htmlElement.oninput = () => this.validate();
-        this._htmlElement.onchange = () => this.checkIfUnique();
+        // this._htmlElement.onchange = () => this.checkIfUnique();
     }
 
     public get value() {
@@ -71,7 +71,8 @@ abstract class ExtendedInput {
 
     // Check if any siblings (and this) have any duplicate values 
     // style appropriately if they do/don't
-    protected checkIfUnique() {
+    protected checkIfUnique(): boolean {
+        let unique = true;
         if (this._siblings.length > 0) {
             this._siblings.forEach((element: ExtendedInput) => {
                 const invalid = element._siblings.filter(innerElement => element.value == innerElement.value);
@@ -81,10 +82,18 @@ abstract class ExtendedInput {
                     invalid.forEach(e => {
                         element.styleInvalid();
                         e.styleInvalid();
+                        if (unique) unique = false;
                     })
                 }
             });
         } 
+        return unique;
+    }
+
+    public async isReady(): Promise<boolean> {
+        const valid = await this.isValid();
+        const unique = this.checkIfUnique();
+        return valid && unique;
     }
 
 }
@@ -110,5 +119,7 @@ class LanguageInput extends ExtendedInput {
         const awaitedLanguages = await Server.validLangauges;
         return awaitedLanguages.includes(this.value);
     }
+
+    
 
 }

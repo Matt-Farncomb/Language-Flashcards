@@ -96,19 +96,10 @@ class Modal {
             this.modal.classList.toggle("is-active");
         }
     }
-    languageIsValid(languageInput) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const awaitedLanguages = yield Server.validLangauges;
-            return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage();
-        });
-    }
     createNewInput(input, element) {
-        const test = new input(element);
-        test.addOnChangeEvent(() => console.log("farting!!!"));
-        return test;
-    }
-    notDuplicateLanguage() {
-        return this.sourceLanguage.value != this.targetLanguage.value;
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
     }
     clear() {
         if (this.modal) {
@@ -126,7 +117,25 @@ class Modal {
     }
     readyToSubmit() {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield this.sourceLanguage.isValid()) && (yield this.targetLanguage.isValid());
+            return (yield this.sourceLanguage.isReady()) && this.targetLanguage.isReady();
+        });
+    }
+    revealSubmitButton() {
+        var _a;
+        (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.remove("disabledPointer");
+    }
+    hideSubmitButton() {
+        var _a;
+        (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+    }
+    toggleSubmitButton() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (yield this.readyToSubmit()) {
+                this.revealSubmitButton();
+            }
+            else {
+                this.hideSubmitButton();
+            }
         });
     }
 }
@@ -139,10 +148,11 @@ class CardModal extends Modal {
         const translations = this.nullCheckedQuerySelectorAll(`.translation`);
         if (sourceWord && translations.length > 0) {
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
-            translations.forEach(inputElement => this.createNewInput(LanguageInput, inputElement));
+            translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
             });
+            console.log(this.translations);
         }
         else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
@@ -185,6 +195,7 @@ class CardModal extends Modal {
                                         if (newTranslation) {
                                             const newWordInput = this.createNewInput(WordInput, newTranslation);
                                             newWordInput.addSiblings(this.translations);
+                                            console.log(this.translations);
                                             this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                             this.translations.push(newWordInput);
                                             const removeButton = clone.querySelector(".remove-translation");
@@ -212,8 +223,9 @@ class CardModal extends Modal {
     }
     allTranslationsAreValid() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("here");
             for (let translation of this.translations) {
-                if (!translation.isValid()) {
+                if (!(yield translation.isReady())) {
                     return false;
                 }
             }
@@ -225,7 +237,10 @@ class CardModal extends Modal {
             readyToSubmit: { get: () => super.readyToSubmit }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield _super.readyToSubmit.call(this)) && (yield this.sourceWord.isValid()) && this.allTranslationsAreValid();
+            const baseInputsReady = yield _super.readyToSubmit.call(this);
+            const sourceWordReady = yield this.sourceWord.isValid();
+            const translationsReady = yield this.allTranslationsAreValid();
+            return baseInputsReady && sourceWordReady && translationsReady;
         });
     }
 }
@@ -374,7 +389,6 @@ class ExtendedInput {
         this._htmlElement = input;
         this._siblings = [];
         this._htmlElement.oninput = () => this.validate();
-        this._htmlElement.onchange = () => this.checkIfUnique();
     }
     get value() {
         return this._htmlElement.value;
@@ -427,6 +441,7 @@ class ExtendedInput {
         }
     }
     checkIfUnique() {
+        let unique = true;
         if (this._siblings.length > 0) {
             this._siblings.forEach((element) => {
                 const invalid = element._siblings.filter(innerElement => element.value == innerElement.value);
@@ -437,10 +452,20 @@ class ExtendedInput {
                     invalid.forEach(e => {
                         element.styleInvalid();
                         e.styleInvalid();
+                        if (unique)
+                            unique = false;
                     });
                 }
             });
         }
+        return unique;
+    }
+    isReady() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const valid = yield this.isValid();
+            const unique = this.checkIfUnique();
+            return valid && unique;
+        });
     }
 }
 class WordInput extends ExtendedInput {

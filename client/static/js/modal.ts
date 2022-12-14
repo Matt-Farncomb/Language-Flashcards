@@ -112,59 +112,13 @@ abstract class Modal {
     }
 
 
-    private async languageIsValid(languageInput: HTMLInputElement) {
-        const awaitedLanguages = await Server.validLangauges;
-        return awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage()
-    }
-
     protected createNewInput(input: typeof WordInput | typeof LanguageInput, element: HTMLInputElement) {
-        const test = new input(element);
-        test.addOnChangeEvent(() => console.log("farting!!!"));
-        return test;
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
+        // return (new input(element).addOnChangeEvent(() => this.toggleSubmitButton());)
+
     }
-
-    // private async showIfInputIsValid(input: HTMLInputElement, isValid:boolean) {
-    //     if (isValid) {
-    //         input.classList.add("is-primary");
-    //         input.classList.remove("is-danger")
-    //     } else {
-    //         input.classList.add("is-danger");
-    //         input.classList.remove("is-primary");
-    //     }
-    // }
-
-    // private async newvalidateForSubmit() {
-    //     const isSourceLanguageValid = this.languageIsValid(this.sourceLanguage);
-    //     const isTargetLanguageValid = this.languageIsValid(this.targetLanguage);
-    // }
-
-
-
-    // private async validateLanguage(languageInput: LanguageInput): Promise<boolean> {
-    //     const awaitedLanguages = await Server.validLangauges;
-    //     console.log("called");
-    //     if (awaitedLanguages.includes(languageInput.value) && this.notDuplicateLanguage()) {  
-    //         languageInput.classList.add("is-primary");
-    //         languageInput.classList.remove("is-danger")
-    //         return true;
-    //     } else {
-    //         languageInput.classList.add("is-danger");
-    //         languageInput.classList.remove("is-primary");
-    //         return false;
-    //     }
-    // }
-
-    private notDuplicateLanguage() {
-        return this.sourceLanguage.value != this.targetLanguage.value;
-    }
-
-    // protected async validateLanguages(): Promise<boolean> {
-    //     return await this.validateLanguage(this.sourceLanguage) && await this.validateLanguage(this.targetLanguage);         
-    // }
-
-    // protected async newValidateLanguages(): Promise<boolean> {
-    //     return await this.languageIsValid(this.sourceLanguage) && await this.languageIsValid(this.targetLanguage);         
-    // }
 
     protected clear() {
         if (this.modal) {
@@ -186,7 +140,23 @@ abstract class Modal {
     abstract submit(): void;
 
     async readyToSubmit(): Promise<boolean> {
-        return await this.sourceLanguage.isValid() && await this.targetLanguage.isValid()
+        return await this.sourceLanguage.isReady() && this.targetLanguage.isReady();
+    }
+
+    revealSubmitButton() {
+        this.modal.querySelector(".submit")?.classList.remove("disabledPointer");
+    }
+
+    hideSubmitButton() {
+        this.modal.querySelector(".submit")?.classList.add("disabledPointer");
+    }
+
+    protected async toggleSubmitButton() {
+        if (await this.readyToSubmit()) {
+            this.revealSubmitButton();
+        } else {
+            this.hideSubmitButton();
+        }
     }
 
 }
@@ -216,13 +186,15 @@ abstract class CardModal extends Modal {
             
            
             // create a word input for every translation
-            translations.forEach(inputElement => this.createNewInput(LanguageInput, inputElement));
+            translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             // every translation word input gets every other translation word input added as a sibling
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
                 // wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                 }
             );
+
+            console.log(this.translations);
 
             // const recorderDiv = this.modalQuerySelector(`.recorder`);
             // this.recorder = new Recorder(recorderDiv);
@@ -273,6 +245,7 @@ abstract class CardModal extends Modal {
                                         const newWordInput = this.createNewInput(WordInput, newTranslation);
 
                                         newWordInput.addSiblings(this.translations);
+                                        console.log(this.translations);
                                         this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                         this.translations.push(newWordInput);
 
@@ -303,9 +276,10 @@ abstract class CardModal extends Modal {
     }
 
     async allTranslationsAreValid() {
+        console.log("here")
         // const areAllValuesValid = (translations: WordInput[]) => translations.every(translation => await translation.isValid());
         for (let translation of this.translations) {
-            if (!translation.isValid()) {
+            if (!await translation.isReady()) {
                 return false;
             }
         }
@@ -313,7 +287,10 @@ abstract class CardModal extends Modal {
     }
 
     async readyToSubmit(): Promise<boolean> {
-        return await super.readyToSubmit() && await this.sourceWord.isValid() && this.allTranslationsAreValid();
+        const baseInputsReady = await super.readyToSubmit();
+        const sourceWordReady = await this.sourceWord.isValid();
+        const translationsReady = await this.allTranslationsAreValid();
+        return baseInputsReady && sourceWordReady && translationsReady;
     }
 
 }
