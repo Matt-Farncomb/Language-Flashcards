@@ -283,18 +283,23 @@ class FetchDeckModal extends Modal {
         super(id);
         const count = nullCheckedQuerySelector(this.modal, ".count");
         if (count) {
-            this.count = count;
+            this.count = this.createNewInput(NumberInput, count);
         }
         else {
             throw Error(`Class 'count' cannot be found in ${this.id}`);
         }
     }
-    validateCount() {
-        const number = parseInt(this.count.value);
-        return (number <= 10 && number > 0);
-    }
     submit() {
         this.fetchDeck();
+    }
+    readyToSubmit() {
+        const _super = Object.create(null, {
+            readyToSubmit: { get: () => super.readyToSubmit }
+        });
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("INput ready");
+            return (yield _super.readyToSubmit.call(this)) && (yield this.count.isValid());
+        });
     }
     fetchDeck() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -486,6 +491,17 @@ class LanguageInput extends ExtendedInput {
         return __awaiter(this, void 0, void 0, function* () {
             const awaitedLanguages = yield Server.validLangauges;
             return awaitedLanguages.includes(this.value);
+        });
+    }
+}
+class NumberInput extends ExtendedInput {
+    constructor(input) {
+        super(input);
+    }
+    isValid() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const number = parseInt(this.value);
+            return number > 0 && number <= 10;
         });
     }
 }

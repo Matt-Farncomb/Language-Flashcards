@@ -112,7 +112,7 @@ abstract class Modal {
     }
 
 
-    protected createNewInput(input: typeof WordInput | typeof LanguageInput, element: HTMLInputElement) {
+    protected createNewInput(input: typeof WordInput | typeof LanguageInput | typeof NumberInput, element: HTMLInputElement) {
         const newInput = new input(element);
         newInput.addOnChangeEvent(() => this.toggleSubmitButton());
         return newInput;
@@ -399,7 +399,7 @@ class EditCardModal extends CardModal {
 
 class FetchDeckModal extends Modal {
 
-    count: HTMLInputElement;
+    count: NumberInput;
 
     constructor(id: string) {
         super(id);
@@ -407,7 +407,7 @@ class FetchDeckModal extends Modal {
         const count: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".count");
 
         if (count) {
-            this.count = count;
+            this.count = this.createNewInput(NumberInput, count);
         }
         else {
             throw Error(`Class 'count' cannot be found in ${this.id}`);
@@ -415,22 +415,14 @@ class FetchDeckModal extends Modal {
         
     }
 
-    validateCount() {
-        const number = parseInt(this.count.value);
-        return ( number <= 10 && number > 0)
-    }
-
     submit(): void {
         this.fetchDeck();
     }
 
-    // async validateForSubmit(): Promise<void> {
-    //     if (await this.validateLanguages() && this.validateCount()) {
-    //         this.submitButton.classList.remove("disabledPointer");
-    //     } else {
-    //         this.submitButton.classList.add("disabledPointer");
-    //     }    
-    // }
+    async readyToSubmit(): Promise<boolean> {
+        return await super.readyToSubmit() && await this.count.isValid(); 
+    }
+    
 
     async fetchDeck() {
         const jsonDeck:Response = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);

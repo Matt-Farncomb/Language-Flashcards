@@ -119,7 +119,16 @@ class LanguageInput extends ExtendedInput {
         const awaitedLanguages = await Server.validLangauges;
         return awaitedLanguages.includes(this.value);
     }
+}
 
-    
+class NumberInput extends ExtendedInput {
 
+    constructor(input: HTMLInputElement) {
+        super(input);
+    }
+
+    public async isValid(): Promise<boolean> {
+        const number = parseInt(this.value);
+        return number > 0 && number <= 10;
+    }
 }
