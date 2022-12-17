@@ -13,6 +13,7 @@ class Recorder {
         const recordButton = recorderDiv.querySelector(".record");
         if (recordButton) {
             this.recordButton = recordButton;
+            this.recordButton.addEventListener('click', this.record);
         }
         else {
             throw Error(`Class 'record' cannot be found in recorder`);
@@ -20,6 +21,9 @@ class Recorder {
     }
     get clip() {
         return this._clip;
+    }
+    record() {
+        console.log("recording");
     }
 }
 class Modal {
@@ -146,13 +150,14 @@ class CardModal extends Modal {
         this.buildTranslationInputList();
         const sourceWord = nullCheckedQuerySelector(this.modal, `.source`);
         const translations = this.nullCheckedQuerySelectorAll(`.translation`);
-        if (sourceWord && translations.length > 0) {
+        const recorderDiv = this.modal.querySelector(`.recorder`);
+        if (sourceWord && translations.length > 0 && recorderDiv) {
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
+            this.recorder = new Recorder(recorderDiv);
             translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
             });
-            console.log(this.translations);
         }
         else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
@@ -195,7 +200,6 @@ class CardModal extends Modal {
                                         if (newTranslation) {
                                             const newWordInput = this.createNewInput(WordInput, newTranslation);
                                             newWordInput.addSiblings(this.translations);
-                                            console.log(this.translations);
                                             this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                             this.translations.push(newWordInput);
                                             const removeButton = clone.querySelector(".remove-translation");
@@ -223,7 +227,6 @@ class CardModal extends Modal {
     }
     allTranslationsAreValid() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("here");
             for (let translation of this.translations) {
                 if (!(yield translation.isReady())) {
                     return false;
@@ -297,7 +300,6 @@ class FetchDeckModal extends Modal {
             readyToSubmit: { get: () => super.readyToSubmit }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("INput ready");
             return (yield _super.readyToSubmit.call(this)) && (yield this.count.isValid());
         });
     }

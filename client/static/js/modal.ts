@@ -165,7 +165,7 @@ abstract class Modal {
 
 abstract class CardModal extends Modal {
 
-    // protected recorder;
+    protected recorder;
     protected sourceWord: WordInput;
     protected translations: WordInput[] = [];    
 
@@ -175,16 +175,14 @@ abstract class CardModal extends Modal {
 
         const sourceWord: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, `.source`);
         const translations: NodeListOf<HTMLInputElement> | undefined = this.nullCheckedQuerySelectorAll(`.translation`);
+        const recorderDiv: HTMLDivElement | null  = this.modal.querySelector(`.recorder`);
 
         // if modal not found, base will throw errors
-        if (sourceWord && translations.length > 0) {
+        if (sourceWord && translations.length > 0 && recorderDiv) {
 
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
-            // this.sourceWord = new WordInput(sourceWord);
-            // this.sourceWord.addOnChangeEvent(() => console.log("farts are smelly"));
-            // this.inputs.push(sourceWord);
-            
-           
+            this.recorder = new Recorder(recorderDiv);
+                      
             // create a word input for every translation
             translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             // every translation word input gets every other translation word input added as a sibling
@@ -194,10 +192,9 @@ abstract class CardModal extends Modal {
                 }
             );
 
-            console.log(this.translations);
+            
 
-            // const recorderDiv = this.modalQuerySelector(`.recorder`);
-            // this.recorder = new Recorder(recorderDiv);
+           
  
         } else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
@@ -241,16 +238,10 @@ abstract class CardModal extends Modal {
                                 if (lastTranslation) {
                                     const newTranslation: HTMLInputElement | null = lastTranslation.querySelector(".translation");
                                     if (newTranslation) {
-                                        // const newWordInput = new WordInput(newTranslation);
                                         const newWordInput = this.createNewInput(WordInput, newTranslation);
-
                                         newWordInput.addSiblings(this.translations);
-                                        console.log(this.translations);
                                         this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                                         this.translations.push(newWordInput);
-
-                                        // newWordInput.addOnChangeEvent(() => console.log("farts are smelly"));
-
                                         const removeButton = clone.querySelector(".remove-translation");
                                         if (removeButton) {
                                             removeButton.addEventListener(
@@ -276,7 +267,6 @@ abstract class CardModal extends Modal {
     }
 
     async allTranslationsAreValid() {
-        console.log("here")
         // const areAllValuesValid = (translations: WordInput[]) => translations.every(translation => await translation.isValid());
         for (let translation of this.translations) {
             if (!await translation.isReady()) {
@@ -341,39 +331,6 @@ class EditCardModal extends CardModal {
         // this.buildTranslationInputList();
     }
 
-    // buildTranslationInputList() {
-    //     const translationinputs = this.inputQuerySelectorAll(".translation");
-    //     if (translationinputs) translationinputs.forEach(element => {
-    //         const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
-    //         element.addEventListener('click', (e) => {
-    //             if (template && 'content' in document.createElement('template')) {
-    //                 // const clicked = e.target as HTMLElement;
-    //                 // const translationsBlock = clicked?.parentElement?.parentElement?.parentElement?.parentElement;
-    //                 // const translationsBlock: HTMLTemplateElement | null = this.modal!.querySelector('.translation-block');
-    //                 const translationsBlock: nullableHTMLInputElement = this.modalQuerySelector('.translation-block')
-    //                 if (translationsBlock) {
-    //                     const clone = (template.content.cloneNode(true) as HTMLDivElement);
-    //                     translationsBlock.appendChild(clone);
-    //                     const removeButton = clone.querySelector(".remove-translation");
-    //                     if (removeButton) {
-    //                         removeButton.addEventListener(
-    //                             'click' , (e) => {
-    //                                 const clicked = e.target as HTMLElement;
-    //                                 clicked?.parentElement?.parentElement?.remove();
-    //                             }
-    //                         );
-    //                     }
-    //                 } else {
-    //                     logError(`translation-block not found in ${this.id}`)
-    //                 }
-
-    //             } else {
-    //                 console.log("Cant't add");
-    //             }
-    //         })
-    //     })
-    // }
-    // tTODO: takes only language pair or null so some modals can just not use the argument
     openModal(): void {
         super.openModal();
     }
@@ -438,12 +395,4 @@ class FetchTableModal extends Modal {
     submit(): void {
         Server.goToTable(this.sourceLanguage.value, this.targetLanguage.value);
     }
-
-    // async validateForSubmit(): Promise<void> {
-    //     if (await this.validateLanguages()) {
-    //         this.submitButton.classList.remove("disabledPointer");
-    //     } else {
-    //         this.submitButton.classList.add("disabledPointer");
-    //     }    
-    // }
 }

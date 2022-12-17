@@ -9,6 +9,7 @@ class Recorder {
 
         if (recordButton) {
             this.recordButton = recordButton;
+            this.recordButton.addEventListener('click', this.record);
         } else {
             throw Error(`Class 'record' cannot be found in recorder`);
         }
@@ -17,5 +18,9 @@ class Recorder {
 
     get clip() {
         return this._clip;
+    }
+
+    record() {
+        console.log("recording");
     }
 }
