@@ -9,11 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class Recorder {
-    constructor(recorderDiv) {
+    constructor(recorderDiv, audioURL = null) {
         const recordButton = recorderDiv.querySelector(".record");
-        if (recordButton) {
+        const audioPlayer = recorderDiv.querySelector(`.player`);
+        if (recordButton && audioPlayer) {
+            this.mediaRecorder = null;
             this.recordButton = recordButton;
-            this.recordButton.addEventListener('click', this.record);
+            this.audioPlayer = audioPlayer;
+            this.chunks = [];
+            if (audioURL) {
+                this.audioPlayer.src = audioURL;
+            }
+            ;
+            this.recordButton.addEventListener('click', () => {
+                if (this.mediaRecorder && this.mediaRecorder.state == "recording") {
+                    this.stop();
+                }
+                else {
+                    this.record();
+                }
+            });
         }
         else {
             throw Error(`Class 'record' cannot be found in recorder`);
@@ -22,8 +37,38 @@ class Recorder {
     get clip() {
         return this._clip;
     }
+    set clip(value) {
+        this._clip = value;
+    }
     record() {
-        console.log("recording");
+        return __awaiter(this, void 0, void 0, function* () {
+            this.recordButton.innerHTML = "Stop <i class='fas fa-record-vinyl'></i>";
+            let self = this;
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = yield navigator.mediaDevices.getUserMedia({ audio: true });
+                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaRecorder.start();
+                this.chunks = [];
+                this.mediaRecorder.ondataavailable = (e) => this.chunks.push(e.data);
+                this.mediaRecorder.onstop = () => {
+                    this.audioPlayer.setAttribute('controls', '');
+                    const blob = new Blob(self.chunks, { 'type': 'audio/ogg; codecs=opus' });
+                    this.chunks = [];
+                    const audioURL = window.URL.createObjectURL(blob);
+                    this.audioPlayer.src = audioURL;
+                    this.clip = blob;
+                };
+            }
+            else {
+                console.log('getUserMedia not supported on your browser!');
+            }
+        });
+    }
+    stop() {
+        if (this.mediaRecorder) {
+            this.recordButton.innerHTML = "Record <i class='fas fa-record-vinyl'></i>";
+            this.mediaRecorder.stop();
+        }
     }
 }
 class Modal {
@@ -253,6 +298,11 @@ class CreateDeckModal extends CardModal {
         this.deck = [];
         if (this.modal) {
         }
+    }
+    addCardToDeck() {
+        this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
+        this.deck.push(this.card);
+        this.clear();
     }
     submit() {
     }
@@ -525,11 +575,13 @@ class Server {
     static postEdit(card) {
         return __awaiter(this, void 0, void 0, function* () {
             const editUrl = new URL(this.baseURL);
-            editUrl.pathname = "upload_deck";
+            editUrl.pathname = "edit_card";
             const formData = new FormData();
             formData.append("source_word", card.sourceWord);
             formData.append("translations", JSON.stringify(card.translations));
-            formData.append("file", card.audio, card.sourceWord);
+            if (card.audio) {
+                formData.append("file", card.audio, card.sourceWord);
+            }
             const response = yield fetch(editUrl, { method: 'POST', body: formData });
             if (!response.ok) {
                 logError(`Could not submit edit: ${response.status}`);
@@ -560,7 +612,9 @@ class Server {
             deck.forEach(card => {
                 formData.append("source_word", card.sourceWord);
                 formData.append("translations", JSON.stringify(card.translations));
-                formData.append("audio", card.audio);
+                if (card.audio) {
+                    formData.append("audio", card.audio);
+                }
             });
             const response = yield fetch(uploadURL, { method: 'POST', body: formData });
             if (!response.ok) {

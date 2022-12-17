@@ -4,17 +4,19 @@ class Server {
 
     static validLangauges: Promise<string[]> = this.getValidLanguages();
 
-
     // post edited card to server
     static async postEdit(card: BaseCard) {
         const editUrl = new URL(this.baseURL);
-        editUrl.pathname = "upload_deck";
+        editUrl.pathname = "edit_card";
 
         const formData = new FormData();
         formData.append("source_word", card.sourceWord)
         formData.append("translations", JSON.stringify(card.translations));
-        formData.append("file", card.audio, card.sourceWord); // file and filename
 
+        if (card.audio) {
+            formData.append("file", card.audio, card.sourceWord); // file and filename        
+        }
+       
         const response = await fetch(editUrl, {method: 'POST', body: formData});
         if (!response.ok) {
             logError(`Could not submit edit: ${response.status}`)
@@ -39,14 +41,15 @@ class Server {
     static async uploadDeck(deck: BaseCard[]) {
         const uploadURL = new URL(this.baseURL);
         uploadURL.pathname = "upload_deck";
-
         const formData = new FormData();
         formData.append("source_language", deck[0].sourceLanguage);
         formData.append("target_language", deck[0].targetLanguage);
         deck.forEach(card => {
             formData.append("source_word", card.sourceWord);
             formData.append("translations", JSON.stringify(card.translations));
-            formData.append("audio", card.audio);
+            if (card.audio) {
+                formData.append("audio", card.audio);
+            }
         })
 
         const response = await fetch(uploadURL, { method: 'POST', body: formData })

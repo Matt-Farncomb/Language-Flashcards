@@ -169,6 +169,8 @@ abstract class CardModal extends Modal {
     protected sourceWord: WordInput;
     protected translations: WordInput[] = [];    
 
+    protected card: BaseCard | undefined;
+
     constructor(id: string) {
         super(id);
         this.buildTranslationInputList();
@@ -308,13 +310,21 @@ class CreateDeckModal extends CardModal {
     }
 
 
-    // addCardToDeck() {
-    //     if (this.sourceWord) {
-    //         const card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip);
-    //         this.deck.push(card);
-    //         this.clear();
-    //     }
-    // }
+    addCardToDeck() {
+        
+        this.card = new BaseCard(
+            this.id, 
+            this.sourceWord.value, 
+            this.translationValues(), 
+            this.sourceLanguage.value, 
+            this.targetLanguage.value, 
+            this.recorder.clip ? this.recorder.clip : null
+            );
+
+        this.deck.push(this.card);
+        this.clear();
+        
+    }
 
     submit() {
 
@@ -324,7 +334,6 @@ class CreateDeckModal extends CardModal {
 class EditCardModal extends CardModal {
 
     // card will be initialised whenever this modal is opened
-    private card: PlayingCard | undefined;
 
     constructor(id: string) {
         super(id);
@@ -335,7 +344,7 @@ class EditCardModal extends CardModal {
         super.openModal();
     }
 
-    populateCard(card: PlayingCard) {
+    populateCard(card: BaseCard) {
         this.card = card;
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
             this.sourceLanguage.value = card.sourceLanguage;
