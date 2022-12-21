@@ -220,6 +220,7 @@ abstract class CardModal extends Modal {
     public translationValues() {
         const values: string[] = [];
         this.translations.forEach(element => values.push(element.value));
+        console.log(values);
         return values;
     }
 
@@ -293,25 +294,21 @@ class CreateDeckModal extends CardModal {
 
     constructor(id: string) {
         super(id);
+        const upload: HTMLButtonElement | null = this.modal.querySelector(`.upload-deck`);
 
-        if (this.modal) {
-
-            // const addCard: nullableHTMLInputElement = this.modal.querySelector(`.add-card`);
-
-            // this.addClickEventToSelector(`.add-card`,  this.addCardToDeck);
-
-            // if (addCard) {
-            //     addCard.addEventListener('click', () => {
-            //         this.addCardToDeck();
-            //     })
-            // }
+        if (upload) {
+            upload.addEventListener('click', () => {
+                Server.uploadDeck(this.deck);
+            })
         }
-
     }
 
+    async readyToSubmit(): Promise<boolean> {
+        const baseInputsReady = await super.readyToSubmit();
+        return baseInputsReady;
+    }
 
     addCardToDeck() {
-        
         this.card = new BaseCard(
             this.id, 
             this.sourceWord.value, 
@@ -319,15 +316,22 @@ class CreateDeckModal extends CardModal {
             this.sourceLanguage.value, 
             this.targetLanguage.value, 
             this.recorder.clip ? this.recorder.clip : null
-            );
-
+        );
         this.deck.push(this.card);
         this.clear();
-        
+    }
+
+    revealUploadButton() {
+        this.modal.querySelector(".upload-deck")?.classList.remove("disabledPointer");
+    }
+
+    hideUploadButton() {
+        this.modal.querySelector(".upload-deck")?.classList.add("disabledPointer");
     }
 
     submit() {
-
+      this.addCardToDeck();
+      this.revealUploadButton();
     }
 }
 

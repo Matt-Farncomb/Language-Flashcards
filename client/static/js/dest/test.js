@@ -223,6 +223,7 @@ class CardModal extends Modal {
     translationValues() {
         const values = [];
         this.translations.forEach(element => values.push(element.value));
+        console.log(values);
         return values;
     }
     buildTranslationInputList() {
@@ -296,15 +297,38 @@ class CreateDeckModal extends CardModal {
     constructor(id) {
         super(id);
         this.deck = [];
-        if (this.modal) {
+        const upload = this.modal.querySelector(`.upload-deck`);
+        if (upload) {
+            upload.addEventListener('click', () => {
+                Server.uploadDeck(this.deck);
+            });
         }
+    }
+    readyToSubmit() {
+        const _super = Object.create(null, {
+            readyToSubmit: { get: () => super.readyToSubmit }
+        });
+        return __awaiter(this, void 0, void 0, function* () {
+            const baseInputsReady = yield _super.readyToSubmit.call(this);
+            return baseInputsReady;
+        });
     }
     addCardToDeck() {
         this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
         this.deck.push(this.card);
         this.clear();
     }
+    revealUploadButton() {
+        var _a;
+        (_a = this.modal.querySelector(".upload-deck")) === null || _a === void 0 ? void 0 : _a.classList.remove("disabledPointer");
+    }
+    hideUploadButton() {
+        var _a;
+        (_a = this.modal.querySelector(".upload-deck")) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+    }
     submit() {
+        this.addCardToDeck();
+        this.revealUploadButton();
     }
 }
 class EditCardModal extends CardModal {
@@ -611,7 +635,7 @@ class Server {
             formData.append("target_language", deck[0].targetLanguage);
             deck.forEach(card => {
                 formData.append("source_word", card.sourceWord);
-                formData.append("translations", JSON.stringify(card.translations));
+                formData.append("translation", JSON.stringify(card.translations));
                 if (card.audio) {
                     formData.append("audio", card.audio);
                 }

@@ -39,6 +39,7 @@ class Server {
 
     // post new card deck to server
     static async uploadDeck(deck: BaseCard[]) {
+        
         const uploadURL = new URL(this.baseURL);
         uploadURL.pathname = "upload_deck";
         const formData = new FormData();
@@ -46,7 +47,7 @@ class Server {
         formData.append("target_language", deck[0].targetLanguage);
         deck.forEach(card => {
             formData.append("source_word", card.sourceWord);
-            formData.append("translations", JSON.stringify(card.translations));
+            formData.append("translation", JSON.stringify(card.translations));
             if (card.audio) {
                 formData.append("audio", card.audio);
             }

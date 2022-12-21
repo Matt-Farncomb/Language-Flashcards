@@ -236,17 +236,19 @@ async def update_audio(id: List[int], audio: List[UploadFile] = File(...)):
     db.update_audio(id, testfiles)
 
 
-@app.post("/uploadTest")
-async def create_file(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
+# @app.post("/uploadTest")
+@app.post("/upload_deck")
+async def upload_deck(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
 # async def create_file(file: UploadFile = File(...)):
     translations = []
+    print(source_language)
     for e in range(len(source_word)):
         translations.append(translation[e].split(","))
-    print(translations)
+    print(translation)
     # print(translation)
     # print(file)
     
-    print("upload test")
+    print(f"file: {file}")
     testFiles = []
     
     for e in range(len(file)):

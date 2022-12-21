@@ -25,10 +25,8 @@ class Recorder {
             this.recordButton.addEventListener('click', () => { 
                 if (this.mediaRecorder && this.mediaRecorder.state == "recording") {
                     this.stop();
-                    // this.ui.readyToUpload();
                 } else {
                     this.record();
-                    // this.ui.disableAddCard();
                 }
             });
 

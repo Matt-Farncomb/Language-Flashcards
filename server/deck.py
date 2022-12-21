@@ -101,6 +101,8 @@ class Deck:
         # print(self.deck)
     
     def add_custom_deck_two(self, source_words, translations, audio_files):
+        print(f"source_words: {source_words}")
+        print(f"audio_files: {audio_files}")
         for i in range(len(source_words)):
             new_word = Word(source_words[i], self.source_language, audio_files[i])
             new_translations = []
