@@ -136,6 +136,12 @@ class Modal {
             throw new Error(`Cannot find ${selector} in ${this._id}`);
         }
     }
+    lockDownInput(selector) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
+    }
+    unlockInput(selector) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
+    }
     openModal() {
         this.modal.classList.toggle("is-active");
     }
@@ -313,10 +319,27 @@ class CreateDeckModal extends CardModal {
             return baseInputsReady;
         });
     }
+    clearWords() {
+        const wordInputs = this.modal.querySelectorAll(".word");
+        if (wordInputs.length > 0) {
+            wordInputs.forEach(element => {
+                element.value = "";
+                element.classList.remove("is-danger", "is-primary");
+            });
+        }
+        else {
+            logError(`Unable to find word inputs in ${this.id}`);
+        }
+    }
+    closeModal() {
+        super.closeModal();
+        this.unlockInput(".language");
+    }
     addCardToDeck() {
         this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
         this.deck.push(this.card);
-        this.clear();
+        this.clearWords();
+        this.lockDownInput(".language");
     }
     revealUploadButton() {
         var _a;
@@ -637,7 +660,7 @@ class Server {
                 formData.append("source_word", card.sourceWord);
                 formData.append("translation", JSON.stringify(card.translations));
                 if (card.audio) {
-                    formData.append("audio", card.audio);
+                    formData.append("file", card.audio);
                 }
             });
             const response = yield fetch(uploadURL, { method: 'POST', body: formData });

@@ -39,7 +39,6 @@ abstract class Modal {
 
             // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
             // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-
             
         }
         else {
@@ -100,11 +99,19 @@ abstract class Modal {
         
     }
 
+    protected lockDownInput(selector: string) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
+    }
+
+    protected unlockInput(selector: string) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
+    }
+
     public openModal() {
         this.modal.classList.toggle("is-active");
     }
 
-    private closeModal() {
+    protected closeModal() {
         if (this.modal) {
             this.clear();
             this.modal.classList.toggle("is-active");
@@ -308,6 +315,25 @@ class CreateDeckModal extends CardModal {
         return baseInputsReady;
     }
 
+    clearWords() {
+        const wordInputs: NodeListOf<HTMLInputElement> = this.modal.querySelectorAll(".word");
+        if (wordInputs.length > 0) {
+            wordInputs.forEach(element => {
+                element.value = "";
+                // this.updateInputValue(element, "");
+                element.classList.remove("is-danger","is-primary");
+            })
+        } else {
+            logError(`Unable to find word inputs in ${this.id}`);
+        }
+    }
+
+    closeModal() {
+        super.closeModal();
+        this.unlockInput(".language");
+        this.deck = [];
+    }
+
     addCardToDeck() {
         this.card = new BaseCard(
             this.id, 
@@ -318,7 +344,8 @@ class CreateDeckModal extends CardModal {
             this.recorder.clip ? this.recorder.clip : null
         );
         this.deck.push(this.card);
-        this.clear();
+        this.clearWords();
+        this.lockDownInput(".language");
     }
 
     revealUploadButton() {

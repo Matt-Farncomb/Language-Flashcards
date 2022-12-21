@@ -49,7 +49,7 @@ class Server {
             formData.append("source_word", card.sourceWord);
             formData.append("translation", JSON.stringify(card.translations));
             if (card.audio) {
-                formData.append("audio", card.audio);
+                formData.append("file", card.audio);
             }
         })
 
