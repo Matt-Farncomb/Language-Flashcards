@@ -47,7 +47,7 @@ class Server {
         formData.append("target_language", deck[0].targetLanguage);
         deck.forEach(card => {
             formData.append("source_word", card.sourceWord);
-            formData.append("translation", JSON.stringify(card.translations));
+            formData.append("translations", JSON.stringify(card.translations));
             if (card.audio) {
                 formData.append("file", card.audio);
             }
@@ -56,6 +56,8 @@ class Server {
         const response = await fetch(uploadURL, { method: 'POST', body: formData })
         if (!response.ok) {
             logError(`Could not upload deck: ${response.status}`);
+        } else {
+            logInfo(response.statusText);
         }
     }
 

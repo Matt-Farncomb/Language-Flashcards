@@ -7,6 +7,10 @@ function logError(message: string) {
     if (LOGGING) console.error(message);
 }
 
+function logInfo(message: string) {
+    if (LOGGING) console.info(message);
+}
+
 function nullCheckedQuerySelector(containingDiv: HTMLDivElement | null, selector: string): HTMLInputElement | undefined {
     if (containingDiv) {
         const element: HTMLInputElement | null = containingDiv.querySelector(selector);

@@ -306,6 +306,7 @@ class CreateDeckModal extends CardModal {
         if (upload) {
             upload.addEventListener('click', () => {
                 Server.uploadDeck(this.deck);
+                this.closeModal();
             })
         }
     }

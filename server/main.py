@@ -238,17 +238,9 @@ async def update_audio(id: List[int], audio: List[UploadFile] = File(...)):
 
 # @app.post("/uploadTest")
 @app.post("/upload_deck")
-async def upload_deck(source_language: List[str], target_language: List[str], source_word: List[str], translation: List[str], file: List[UploadFile] = File(...)):
-# async def create_file(file: UploadFile = File(...)):
-    translations = []
-    print(source_language)
-    for e in range(len(source_word)):
-        translations.append(translation[e].split(","))
-    print(translation)
-    # print(translation)
-    # print(file)
-    
-    print(f"file: {file}")
+async def upload_deck(source_language: List[str], target_language: List[str], source_word: List[str], translations: List[str], file: List[UploadFile] = File(...)):
+
+    loaded_translations = [ json.loads(translation) for translation in translations ]
     testFiles = []
     
     for e in range(len(file)):
@@ -265,13 +257,13 @@ async def upload_deck(source_language: List[str], target_language: List[str], so
         testFiles.append(contents)
     
     new_deck = Deck(source_language[0], target_language[0])
-    new_deck.add_custom_deck_two(source_word, translations, testFiles)
+    new_deck.add_custom_deck_two(source_word, loaded_translations, testFiles)
     new_deck.upload_deck(is_custom=True)
+    
     if os.path.exists(filename):
         os.remove(filename)
     else:
         print(f"{filename}does not exist")
-    # print(new_deck.deck)
    
     return "new_deck.deck"
 

@@ -307,6 +307,7 @@ class CreateDeckModal extends CardModal {
         if (upload) {
             upload.addEventListener('click', () => {
                 Server.uploadDeck(this.deck);
+                this.closeModal();
             });
         }
     }
@@ -334,6 +335,7 @@ class CreateDeckModal extends CardModal {
     closeModal() {
         super.closeModal();
         this.unlockInput(".language");
+        this.deck = [];
     }
     addCardToDeck() {
         this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
@@ -658,7 +660,7 @@ class Server {
             formData.append("target_language", deck[0].targetLanguage);
             deck.forEach(card => {
                 formData.append("source_word", card.sourceWord);
-                formData.append("translation", JSON.stringify(card.translations));
+                formData.append("translations", JSON.stringify(card.translations));
                 if (card.audio) {
                     formData.append("file", card.audio);
                 }
@@ -666,6 +668,9 @@ class Server {
             const response = yield fetch(uploadURL, { method: 'POST', body: formData });
             if (!response.ok) {
                 logError(`Could not upload deck: ${response.status}`);
+            }
+            else {
+                logInfo(response.statusText);
             }
         });
     }
@@ -718,6 +723,10 @@ Server.validLangauges = _a.getValidLanguages();
 function logError(message) {
     if (LOGGING)
         console.error(message);
+}
+function logInfo(message) {
+    if (LOGGING)
+        console.info(message);
 }
 function nullCheckedQuerySelector(containingDiv, selector) {
     if (containingDiv) {
