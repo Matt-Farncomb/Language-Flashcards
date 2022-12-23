@@ -17,14 +17,14 @@ class LocalDeck {
         if (json && json != "{}") {
 
             const localDeck: Record<string, any>[] = JSON.parse(json);
-
+            console.log(localDeck)
             return localDeck.map(element => new PlayingCard(
                 element["id"],
-                element["source_word"],
+                element["source_word"]["word"],
                 element["translations"],
-                element["source_language"],
-                element["target_language"],
-                element["audio"],
+                element["source_word"]["language"],
+                element["translations"][0]["__data__"]["language"],
+                element["source_word"]["voice"],
                 ) );       
         }
     }

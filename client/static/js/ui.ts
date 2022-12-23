@@ -12,10 +12,12 @@ class Ui {
 
     currentCard: PlayingCard | undefined;
     deck: PlayingCard[] | undefined;
+    front: HTMLSpanElement;
 
-    begin: HTMLAnchorElement | undefined;
-    edit: HTMLAnchorElement | undefined;
-    clear: HTMLButtonElement | undefined;
+    begin: HTMLAnchorElement;
+    edit: HTMLAnchorElement;
+    clear: HTMLButtonElement;
+    play: HTMLButtonElement;
 
     constructor() {
         
@@ -29,17 +31,26 @@ class Ui {
         const beginButton: HTMLAnchorElement | null = document.querySelector(".begin");
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
         const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
+        const playButton: HTMLButtonElement | null = document.querySelector(".play");
+        const front: HTMLSpanElement | null = document.querySelector(".card-content span");
 
         
-        if (beginButton && editButton && clearButton) {
+        if (beginButton && editButton && clearButton && front && editButton && playButton) {
+            this.front = front;
             this.begin = beginButton;
+            this.edit = editButton;
             this.clear = clearButton;
+            this.play = playButton;
             this.clear.onclick = () => {
                 LocalDeck.clear(); 
             }
+            
 
             if (previousDeck) {
                 this.deck = previousDeck;
+                this.begin.onclick = () => {
+                    this.loadCard(this.deck![0]);
+                }
             } else {
                 this.begin.classList.add("disabledPointer");
             }
@@ -49,10 +60,14 @@ class Ui {
                 this.deck = LocalDeck.get();
                 if (!this.deck) {
                     this.begin?.classList.add("disabledPointer");
+                    this.unloadCard();
                 } else {
                     this.begin?.classList.remove("disabledPointer");
                 }
             });
+        } else {
+            throw logError("Could not create UI");
+            
         }
 
 
@@ -127,6 +142,18 @@ class Ui {
 
     public shuffle() {
 
+    }
+
+    public loadCard(playingCard: PlayingCard) {
+        this.currentCard = playingCard;
+        // console.log(this.currentCard)
+        this.front.innerHTML = this.currentCard.sourceWord;
+    }
+
+    public unloadCard() {
+        this.currentCard;
+        // console.log(this.currentCard)
+        this.front.innerHTML = "";
     }
 
     // private getDeck(): PlayingCard[] | undefined {  

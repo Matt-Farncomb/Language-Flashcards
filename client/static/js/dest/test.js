@@ -474,20 +474,27 @@ class Ui {
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
-        const previousDeck = this.getDeck();
+        const previousDeck = LocalDeck.get();
         const user = localStorage.getItem('current_user');
         const beginButton = document.querySelector(".begin");
         const editButton = document.querySelector(".edit");
         const clearButton = document.querySelector(".clear-deck");
-        if (beginButton && editButton && clearButton) {
+        const playButton = document.querySelector(".play");
+        const front = document.querySelector(".card-content span");
+        if (beginButton && editButton && clearButton && front && editButton && playButton) {
+            this.front = front;
             this.begin = beginButton;
+            this.edit = editButton;
             this.clear = clearButton;
+            this.play = playButton;
             this.clear.onclick = () => {
-                DeckStorage.clear();
-                window.dispatchEvent(new Event("deckUpdated"));
+                LocalDeck.clear();
             };
             if (previousDeck) {
                 this.deck = previousDeck;
+                this.begin.onclick = () => {
+                    this.loadCard(this.deck[0]);
+                };
             }
             else {
                 this.begin.classList.add("disabledPointer");
@@ -495,14 +502,18 @@ class Ui {
             addEventListener('deckUpdated', () => {
                 var _a, _b;
                 console.log("update");
-                this.deck = this.getDeck();
+                this.deck = LocalDeck.get();
                 if (!this.deck) {
                     (_a = this.begin) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+                    this.unloadCard();
                 }
                 else {
                     (_b = this.begin) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
                 }
             });
+        }
+        else {
+            throw logError("Could not create UI");
         }
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard) {
@@ -559,12 +570,13 @@ class Ui {
     }
     shuffle() {
     }
-    getDeck() {
-        const json = localStorage.getItem("deck");
-        if (json && json != "{}") {
-            const localDeck = JSON.parse(json);
-            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"], element["translations"], element["source_language"], element["target_language"], element["audio"]));
-        }
+    loadCard(playingCard) {
+        this.currentCard = playingCard;
+        this.front.innerHTML = this.currentCard.sourceWord;
+    }
+    unloadCard() {
+        this.currentCard;
+        this.front.innerHTML = "";
     }
 }
 class ExtendedInput {
@@ -683,6 +695,24 @@ class NumberInput extends ExtendedInput {
         });
     }
 }
+class LocalDeck {
+    static setItem(value) {
+        localStorage.setItem("deck", value);
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+    static clear() {
+        localStorage.clear();
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+    static get() {
+        const json = localStorage.getItem("deck");
+        if (json && json != "{}") {
+            const localDeck = JSON.parse(json);
+            console.log(localDeck);
+            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"]["word"], element["translations"], element["source_word"]["language"], element["translations"][0]["__data__"]["language"], element["source_word"]["voice"]));
+        }
+    }
+}
 const LOGGING = true;
 console.info(`Logging: ${LOGGING}`);
 const DEFAULT_LANGUAGES = {
@@ -764,7 +794,7 @@ class Server {
             }
             else {
                 const responseText = yield response.text();
-                DeckStorage.setItem("deck", responseText);
+                LocalDeck.setItem(responseText);
             }
             return response;
         });
@@ -802,16 +832,6 @@ _a = Server;
 Server.baseURL = "http://127.0.0.1:8000/";
 Server.validLangauges = _a.getValidLanguages();
 const deckUpdated = new CustomEvent('deckUpdated');
-class DeckStorage {
-    static setItem(key, value) {
-        localStorage.setItem(key, value);
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-    static clear() {
-        localStorage.clear();
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-}
 function logError(message) {
     if (LOGGING)
         console.error(message);
