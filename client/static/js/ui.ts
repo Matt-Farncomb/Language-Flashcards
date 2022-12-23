@@ -1,13 +1,21 @@
 
 
+
 class Ui {
-    currentCard: PlayingCard | undefined;
-    deck: PlayingCard[] | undefined;
+    
     editModal: EditCardModal;
     createDeckModal: CreateDeckModal;
     fetchDeckModal: FetchDeckModal;
     fetchTableModal: FetchTableModal;
+
     currentLanguages: LanguagePair;
+
+    currentCard: PlayingCard | undefined;
+    deck: PlayingCard[] | undefined;
+
+    begin: HTMLAnchorElement | undefined;
+    edit: HTMLAnchorElement | undefined;
+    clear: HTMLButtonElement | undefined;
 
     constructor() {
         
@@ -16,16 +24,39 @@ class Ui {
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
 
-        const previousDeck: PlayingCard[] | undefined = this.getDeck();
+        const previousDeck = this.getDeck();
         const user = localStorage.getItem('current_user');
+        const beginButton: HTMLAnchorElement | null = document.querySelector(".begin");
+        const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
+        const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
 
-        if (previousDeck) {
-            this.deck = previousDeck;
-        } else {
-            // The user has never made any cards
-            // So handle this with a message prompt of some kind
-        }
         
+        if (beginButton && editButton && clearButton) {
+            this.begin = beginButton;
+            this.clear = clearButton;
+            this.clear.onclick = () => {
+                DeckStorage.clear(); 
+                window.dispatchEvent(new Event("deckUpdated"));
+            }
+
+            if (previousDeck) {
+                this.deck = previousDeck;
+            } else {
+                this.begin.classList.add("disabledPointer");
+            }
+
+            addEventListener('deckUpdated', () => { 
+                console.log("update");
+                this.deck = this.getDeck();
+                if (!this.deck) {
+                    this.begin?.classList.add("disabledPointer");
+                } else {
+                    this.begin?.classList.remove("disabledPointer");
+                }
+            });
+        }
+
+
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard) {
                 this.editModal.populateCard(this.currentCard);
@@ -102,6 +133,7 @@ class Ui {
     private getDeck(): PlayingCard[] | undefined {  
         const json: string | null = localStorage.getItem("deck");
         if (json && json != "{}") {
+
             const localDeck: Record<string, any>[] = JSON.parse(json);
             return localDeck.map(element => new PlayingCard(
                 element["id"],
@@ -110,7 +142,8 @@ class Ui {
                 element["source_language"],
                 element["target_language"],
                 element["audio"],
-                ) );      
+                ) );  
+                 
         }
     }
 }

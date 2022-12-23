@@ -72,7 +72,14 @@ class Server {
         if (!response.ok) {
             logError(`Could not draw deck: ${response.status}`); 
         }
-        return response.json();
+        else {
+            const responseText = await response.text()
+            DeckStorage.setItem("deck", responseText);
+            // localStorage.setItem("deck", responseText);
+            // window.dispatchEvent(new Event("deckUpdated"));
+        }
+        
+        return response;
         
     }
 

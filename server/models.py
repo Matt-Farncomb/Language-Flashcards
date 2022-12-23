@@ -5,7 +5,6 @@ from peewee import *
 from app import db 
 
 
-
 class BaseModel(Model): # type: ignore
     class Meta:
         database = db

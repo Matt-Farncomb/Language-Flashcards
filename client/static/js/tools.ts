@@ -3,6 +3,29 @@ type LanguagePair = {
     "target": string;
 }
 
+
+type ServerCard = {
+    id: string,
+    source_word: string,
+    translations: number,
+    difficulty: string
+}
+
+const deckUpdated = new CustomEvent('deckUpdated');
+
+class DeckStorage {
+
+    static setItem(key: string, value: string) {
+        localStorage.setItem(key, value);
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+
+    static clear() {
+        localStorage.clear();
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+}
+
 function logError(message: string) {
     if (LOGGING) console.error(message);
 }
@@ -32,6 +55,8 @@ function addClickEventToSelector(containingDiv: HTMLDivElement | null, selector:
     }
     else logError(`Could not find ${containingDiv}.`);
 }
+
+
 
 // function addClickEventToSelector(selector: string, callback: ()=> void ): void {
 //     const button: HTMLButtonElement | null | undefined = this.modal.querySelector(selector);

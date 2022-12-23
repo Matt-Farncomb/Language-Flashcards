@@ -423,8 +423,11 @@ class FetchDeckModal extends Modal {
     
 
     async fetchDeck() {
-        const jsonDeck:Response = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
-        console.log(jsonDeck);
+        const deck:any = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
+        // console.log(deck);
+        // localStorage.setItem("deck", deck);
+        // const json:[any] = await jsonDeck.json();
+        // console.log(json[0]);
         // const serializedDeck = deck.map( element => element.serialiseData() )
         // localStorage.setItem("deck", JSON.stringify(serializedDeck));
     }

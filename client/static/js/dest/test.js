@@ -8,6 +8,61 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class BaseCard {
+    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
+        this._id = id;
+        this._sourceWord = sourceWord;
+        this._translations = translations;
+        this._sourceLanguage = sourceLanguage;
+        this._targetLanguage = targetLanguage;
+        this._audio = audio;
+    }
+    get id() {
+        return this._id;
+    }
+    get sourceLanguage() {
+        return this._sourceLanguage;
+    }
+    get targetLanguage() {
+        return this._targetLanguage;
+    }
+    get sourceWord() {
+        return this._sourceWord;
+    }
+    get translations() {
+        return this._translations;
+    }
+    get audio() {
+        return this._audio;
+    }
+}
+class PlayingCard extends BaseCard {
+    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
+        super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
+        this._incorrectCount = this.incorrectCount;
+        this._correctCount = this.correctCount;
+        this._difficulty = this.difficulty;
+    }
+    get incorrectCount() {
+        return this._incorrectCount;
+    }
+    get correctCount() {
+        return this._correctCount;
+    }
+    get difficulty() {
+        return this._difficulty;
+    }
+    updateLocalScore(score) {
+        this._correctCount += score;
+    }
+    serialiseData() {
+        return JSON.stringify({
+            id: this.id,
+            sourceWord: this.sourceWord,
+            translations: this.translations
+        });
+    }
+}
 class Recorder {
     constructor(recorderDiv, audioURL = null) {
         const recordButton = recorderDiv.querySelector(".record");
@@ -404,8 +459,7 @@ class FetchDeckModal extends Modal {
     }
     fetchDeck() {
         return __awaiter(this, void 0, void 0, function* () {
-            const jsonDeck = yield Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
-            console.log(jsonDeck);
+            const deck = yield Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
         });
     }
 }
@@ -422,10 +476,33 @@ class Ui {
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
         const previousDeck = this.getDeck();
         const user = localStorage.getItem('current_user');
-        if (previousDeck) {
-            this.deck = previousDeck;
-        }
-        else {
+        const beginButton = document.querySelector(".begin");
+        const editButton = document.querySelector(".edit");
+        const clearButton = document.querySelector(".clear-deck");
+        if (beginButton && editButton && clearButton) {
+            this.begin = beginButton;
+            this.clear = clearButton;
+            this.clear.onclick = () => {
+                DeckStorage.clear();
+                window.dispatchEvent(new Event("deckUpdated"));
+            };
+            if (previousDeck) {
+                this.deck = previousDeck;
+            }
+            else {
+                this.begin.classList.add("disabledPointer");
+            }
+            addEventListener('deckUpdated', () => {
+                var _a, _b;
+                console.log("update");
+                this.deck = this.getDeck();
+                if (!this.deck) {
+                    (_a = this.begin) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+                }
+                else {
+                    (_b = this.begin) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
+                }
+            });
         }
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard) {
@@ -685,7 +762,11 @@ class Server {
             if (!response.ok) {
                 logError(`Could not draw deck: ${response.status}`);
             }
-            return response.json();
+            else {
+                const responseText = yield response.text();
+                DeckStorage.setItem("deck", responseText);
+            }
+            return response;
         });
     }
     static updateScore(card, score) {
@@ -720,6 +801,17 @@ class Server {
 _a = Server;
 Server.baseURL = "http://127.0.0.1:8000/";
 Server.validLangauges = _a.getValidLanguages();
+const deckUpdated = new CustomEvent('deckUpdated');
+class DeckStorage {
+    static setItem(key, value) {
+        localStorage.setItem(key, value);
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+    static clear() {
+        localStorage.clear();
+        window.dispatchEvent(new Event("deckUpdated"));
+    }
+}
 function logError(message) {
     if (LOGGING)
         console.error(message);
@@ -750,60 +842,5 @@ function addClickEventToSelector(containingDiv, selector, callback) {
     }
     else
         logError(`Could not find ${containingDiv}.`);
-}
-class BaseCard {
-    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
-        this._id = id;
-        this._sourceWord = sourceWord;
-        this._translations = translations;
-        this._sourceLanguage = sourceLanguage;
-        this._targetLanguage = targetLanguage;
-        this._audio = audio;
-    }
-    get id() {
-        return this._id;
-    }
-    get sourceLanguage() {
-        return this._sourceLanguage;
-    }
-    get targetLanguage() {
-        return this._targetLanguage;
-    }
-    get sourceWord() {
-        return this._sourceWord;
-    }
-    get translations() {
-        return this._translations;
-    }
-    get audio() {
-        return this._audio;
-    }
-}
-class PlayingCard extends BaseCard {
-    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
-        super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
-        this._incorrectCount = this.incorrectCount;
-        this._correctCount = this.correctCount;
-        this._difficulty = this.difficulty;
-    }
-    get incorrectCount() {
-        return this._incorrectCount;
-    }
-    get correctCount() {
-        return this._correctCount;
-    }
-    get difficulty() {
-        return this._difficulty;
-    }
-    updateLocalScore(score) {
-        this._correctCount += score;
-    }
-    serialiseData() {
-        return JSON.stringify({
-            id: this.id,
-            sourceWord: this.sourceWord,
-            translations: this.translations
-        });
-    }
 }
 //# sourceMappingURL=test.js.map

@@ -171,6 +171,19 @@ def get_cards(source_language: str, target_language: str, count: int, is_custom:
         print(card.source_word.word)
     return deck.deck
 
+@app.get("/get_deck/") 
+def get_deck(source_language: str, target_language: str, count: int):
+    # logging.info(f"get_cards called to get {count} in total")
+    logger.info(f"getting cards")
+    deck = Deck(source_language, target_language)
+    
+    deck.build_deck_from_db(count, 1)
+
+    for card in deck.deck:
+        print(card.source_word.word)
+    return deck.deck
+
+
 @app.post("/refresh/") 
 def update_db(refresh: Refresh):
     logger.info(f"update_db has been called for sl {refresh.source_language} and tl {refresh.target_language}")
