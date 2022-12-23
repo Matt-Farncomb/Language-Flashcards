@@ -13,19 +13,6 @@ type ServerCard = {
 
 const deckUpdated = new CustomEvent('deckUpdated');
 
-class DeckStorage {
-
-    static setItem(key: string, value: string) {
-        localStorage.setItem(key, value);
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-
-    static clear() {
-        localStorage.clear();
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-}
-
 function logError(message: string) {
     if (LOGGING) console.error(message);
 }

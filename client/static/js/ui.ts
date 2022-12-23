@@ -24,7 +24,7 @@ class Ui {
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
 
-        const previousDeck = this.getDeck();
+        const previousDeck = LocalDeck.get();
         const user = localStorage.getItem('current_user');
         const beginButton: HTMLAnchorElement | null = document.querySelector(".begin");
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
@@ -35,8 +35,7 @@ class Ui {
             this.begin = beginButton;
             this.clear = clearButton;
             this.clear.onclick = () => {
-                DeckStorage.clear(); 
-                window.dispatchEvent(new Event("deckUpdated"));
+                LocalDeck.clear(); 
             }
 
             if (previousDeck) {
@@ -47,7 +46,7 @@ class Ui {
 
             addEventListener('deckUpdated', () => { 
                 console.log("update");
-                this.deck = this.getDeck();
+                this.deck = LocalDeck.get();
                 if (!this.deck) {
                     this.begin?.classList.add("disabledPointer");
                 } else {
@@ -130,20 +129,20 @@ class Ui {
 
     }
 
-    private getDeck(): PlayingCard[] | undefined {  
-        const json: string | null = localStorage.getItem("deck");
-        if (json && json != "{}") {
+    // private getDeck(): PlayingCard[] | undefined {  
+    //     // const json: string | null = localStorage.getItem("deck");
+    //     // if (json && json != "{}") {
 
-            const localDeck: Record<string, any>[] = JSON.parse(json);
-            return localDeck.map(element => new PlayingCard(
-                element["id"],
-                element["source_word"],
-                element["translations"],
-                element["source_language"],
-                element["target_language"],
-                element["audio"],
-                ) );  
+    //     //     const localDeck: Record<string, any>[] = JSON.parse(json);
+    //     //     return localDeck.map(element => new PlayingCard(
+    //     //         element["id"],
+    //     //         element["source_word"],
+    //     //         element["translations"],
+    //     //         element["source_language"],
+    //     //         element["target_language"],
+    //     //         element["audio"],
+    //     //         ) );  
                  
-        }
-    }
+    //     // }
+    // }
 }
