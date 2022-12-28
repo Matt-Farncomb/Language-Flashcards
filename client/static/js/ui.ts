@@ -18,6 +18,9 @@ class Ui {
     edit: HTMLAnchorElement;
     clear: HTMLButtonElement;
     play: HTMLButtonElement;
+    flip: NodeListOf<HTMLButtonElement>;
+
+    clip: HTMLAudioElement | undefined;
 
     constructor() {
         
@@ -34,9 +37,10 @@ class Ui {
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
         const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
         const playButton: HTMLButtonElement | null = document.querySelector(".play");
+        const flipButtons: NodeListOf<HTMLButtonElement> = document.querySelectorAll(".flip");
         const front: HTMLSpanElement | null = document.querySelector(".card-content span");
 
-        if (nextCardButton && editButton && clearButton && front && editButton && playButton) {
+        if (nextCardButton && editButton && clearButton && front && editButton && playButton  && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
@@ -44,7 +48,8 @@ class Ui {
             this.edit = editButton;
             this.clear = clearButton;
             this.play = playButton;
-            
+            this.flip = flipButtons;
+
             this.clear.onclick = () => {
                 StoredDeck.clear(); 
             }
@@ -52,6 +57,16 @@ class Ui {
             this.nextCard.onclick = () => {
                 this.begin();
             }
+
+            this.play.onclick = () => {
+                this.playClip();
+            }
+
+            this.flip.forEach(element => {
+                element.onclick = () => this.flipCard(2);
+            })
+           
+            
             
 
             if (this.deck.loaded) {
@@ -179,16 +194,46 @@ class Ui {
     }
 
     // Update card UI to display playingCard data
-    public loadCard(playingCard: PlayingCard) {
+    public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.currentCard = playingCard;
         this.front.innerHTML = this.currentCard.sourceWord;
+        this.play.classList.remove("is-hidden");
+
+        const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
+        const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
+
+        this.clip = new Audio();
+        this.clip.src = audioURL;
     }
 
     // Update card UI to display no data
     public unloadCard() {
         this.front.innerHTML = "";
         this.edit.classList.add("disabledPointer");
+        this.play.classList.add("is-hidden");
     }
+
+    private playClip() {
+        this.clip?.play();
+    }
+
+    private flipCard(time: number) {
+        console.log("flipping");
+        const innerCard: HTMLElement | null = document.querySelector(".flip-card-inner");
+        if (innerCard) {
+            innerCard.style.transition = `${time}s`;
+            innerCard.classList.toggle("flip");
+        }
+        
+    }
+
+    // #flipOverCard(time) {
+       
+    // }
+
+    // #slowFlip() {
+    //     this.#flipOverCard(2);
+    // }
 
     // private getDeck(): PlayingCard[] | undefined {  
     //     // const json: string | null = localStorage.getItem("deck");

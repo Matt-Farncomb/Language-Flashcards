@@ -521,8 +521,9 @@ class Ui {
         const editButton = document.querySelector(".edit");
         const clearButton = document.querySelector(".clear-deck");
         const playButton = document.querySelector(".play");
+        const flipButtons = document.querySelectorAll(".flip");
         const front = document.querySelector(".card-content span");
-        if (nextCardButton && editButton && clearButton && front && editButton && playButton) {
+        if (nextCardButton && editButton && clearButton && front && editButton && playButton && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
@@ -530,12 +531,19 @@ class Ui {
             this.edit = editButton;
             this.clear = clearButton;
             this.play = playButton;
+            this.flip = flipButtons;
             this.clear.onclick = () => {
                 StoredDeck.clear();
             };
             this.nextCard.onclick = () => {
                 this.begin();
             };
+            this.play.onclick = () => {
+                this.playClip();
+            };
+            this.flip.forEach(element => {
+                element.onclick = () => this.flipCard(2);
+            });
             if (this.deck.loaded) {
             }
             else {
@@ -631,12 +639,32 @@ class Ui {
     shuffle() {
     }
     loadCard(playingCard) {
-        this.currentCard = playingCard;
-        this.front.innerHTML = this.currentCard.sourceWord;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.currentCard = playingCard;
+            this.front.innerHTML = this.currentCard.sourceWord;
+            this.play.classList.remove("is-hidden");
+            const fetchedAudio = yield fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
+            const audioURL = window.URL.createObjectURL(yield fetchedAudio.blob());
+            this.clip = new Audio();
+            this.clip.src = audioURL;
+        });
     }
     unloadCard() {
         this.front.innerHTML = "";
         this.edit.classList.add("disabledPointer");
+        this.play.classList.add("is-hidden");
+    }
+    playClip() {
+        var _a;
+        (_a = this.clip) === null || _a === void 0 ? void 0 : _a.play();
+    }
+    flipCard(time) {
+        console.log("flipping");
+        const innerCard = document.querySelector(".flip-card-inner");
+        if (innerCard) {
+            innerCard.style.transition = `${time}s`;
+            innerCard.classList.toggle("flip");
+        }
     }
 }
 class ExtendedInput {
