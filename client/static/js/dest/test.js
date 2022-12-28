@@ -8,6 +8,48 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class StoredDeck {
+    static setItem(value) {
+        localStorage.setItem("deck", value);
+        window.dispatchEvent(deckUpdated);
+    }
+    static clear() {
+        localStorage.clear();
+        window.dispatchEvent(deckCleared);
+    }
+    static get() {
+        const json = localStorage.getItem("deck");
+        if (json && json != "{}") {
+            const localDeck = JSON.parse(json);
+            console.log(localDeck);
+            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"]["word"], element["translations"], element["source_word"]["language"], element["translations"][0]["__data__"]["language"], element["source_word"]["voice"]));
+        }
+    }
+}
+class Deck {
+    constructor() {
+        this.deck = [];
+    }
+    get loaded() {
+        return this.deck.length > 0;
+    }
+    load() {
+        const storedDeck = StoredDeck.get();
+        if (storedDeck) {
+            this.deck = storedDeck;
+        }
+    }
+    clear() {
+        this.deck = [];
+    }
+    drawCard() {
+        if (this.deck) {
+            const top = this.deck.shift();
+            this.deck.push(top);
+            return top;
+        }
+    }
+}
 class BaseCard {
     constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
         this._id = id;
@@ -474,42 +516,44 @@ class Ui {
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
-        const previousDeck = LocalDeck.get();
         const user = localStorage.getItem('current_user');
-        const beginButton = document.querySelector(".begin");
+        const nextCardButton = document.querySelector(".begin");
         const editButton = document.querySelector(".edit");
         const clearButton = document.querySelector(".clear-deck");
         const playButton = document.querySelector(".play");
         const front = document.querySelector(".card-content span");
-        if (beginButton && editButton && clearButton && front && editButton && playButton) {
+        if (nextCardButton && editButton && clearButton && front && editButton && playButton) {
+            this.deck = new Deck();
+            this.deck.load();
             this.front = front;
-            this.begin = beginButton;
+            this.nextCard = nextCardButton;
             this.edit = editButton;
             this.clear = clearButton;
             this.play = playButton;
             this.clear.onclick = () => {
-                LocalDeck.clear();
+                StoredDeck.clear();
             };
-            if (previousDeck) {
-                this.deck = previousDeck;
-                this.begin.onclick = () => {
-                    this.loadCard(this.deck[0]);
-                };
+            this.nextCard.onclick = () => {
+                this.begin();
+            };
+            if (this.deck.loaded) {
             }
             else {
-                this.begin.classList.add("disabledPointer");
+                this.nextCard.classList.add("disabledPointer");
             }
             addEventListener('deckUpdated', () => {
                 var _a, _b;
-                console.log("update");
-                this.deck = LocalDeck.get();
-                if (!this.deck) {
-                    (_a = this.begin) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
-                    this.unloadCard();
-                }
-                else {
-                    (_b = this.begin) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
-                }
+                (_a = this.deck) === null || _a === void 0 ? void 0 : _a.load();
+                (_b = this.nextCard) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
+                this.nextCard.onclick = () => {
+                    this.begin();
+                };
+            });
+            addEventListener('deckCleared', () => {
+                var _a, _b;
+                (_a = this.nextCard) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+                this.unloadCard();
+                (_b = this.deck) === null || _b === void 0 ? void 0 : _b.clear();
             });
         }
         else {
@@ -548,6 +592,16 @@ class Ui {
             this.currentLanguages = DEFAULT_LANGUAGES;
         }
     }
+    begin() {
+        var _a;
+        const topCard = (_a = this.deck) === null || _a === void 0 ? void 0 : _a.drawCard();
+        if (topCard) {
+            this.loadCard(topCard);
+            this.nextCard.innerHTML = "Next";
+            this.edit.classList.remove("disabledPointer");
+            this.nextCard.onclick = () => this.next();
+        }
+    }
     addClickEventToSelector(selector, callback) {
         const button = document.querySelector(selector);
         if (button) {
@@ -567,6 +621,12 @@ class Ui {
             console.error(`Could not assign 'click' to ${selector}`);
     }
     next() {
+        var _a;
+        console.log("fart next");
+        const nextCard = (_a = this.deck) === null || _a === void 0 ? void 0 : _a.drawCard();
+        if (nextCard) {
+            this.loadCard(nextCard);
+        }
     }
     shuffle() {
     }
@@ -575,8 +635,8 @@ class Ui {
         this.front.innerHTML = this.currentCard.sourceWord;
     }
     unloadCard() {
-        this.currentCard;
         this.front.innerHTML = "";
+        this.edit.classList.add("disabledPointer");
     }
 }
 class ExtendedInput {
@@ -695,24 +755,6 @@ class NumberInput extends ExtendedInput {
         });
     }
 }
-class LocalDeck {
-    static setItem(value) {
-        localStorage.setItem("deck", value);
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-    static clear() {
-        localStorage.clear();
-        window.dispatchEvent(new Event("deckUpdated"));
-    }
-    static get() {
-        const json = localStorage.getItem("deck");
-        if (json && json != "{}") {
-            const localDeck = JSON.parse(json);
-            console.log(localDeck);
-            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"]["word"], element["translations"], element["source_word"]["language"], element["translations"][0]["__data__"]["language"], element["source_word"]["voice"]));
-        }
-    }
-}
 const LOGGING = true;
 console.info(`Logging: ${LOGGING}`);
 const DEFAULT_LANGUAGES = {
@@ -794,7 +836,7 @@ class Server {
             }
             else {
                 const responseText = yield response.text();
-                LocalDeck.setItem(responseText);
+                StoredDeck.setItem(responseText);
             }
             return response;
         });
@@ -832,6 +874,7 @@ _a = Server;
 Server.baseURL = "http://127.0.0.1:8000/";
 Server.validLangauges = _a.getValidLanguages();
 const deckUpdated = new CustomEvent('deckUpdated');
+const deckCleared = new CustomEvent('deckCleared');
 function logError(message) {
     if (LOGGING)
         console.error(message);

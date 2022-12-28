@@ -74,7 +74,7 @@ class Server {
         }
         else {
             const responseText = await response.text()
-            LocalDeck.setItem(responseText);
+            StoredDeck.setItem(responseText);
             // localStorage.setItem("deck", responseText);
             // window.dispatchEvent(new Event("deckUpdated"));
         }

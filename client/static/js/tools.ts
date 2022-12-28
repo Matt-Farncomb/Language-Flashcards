@@ -12,6 +12,7 @@ type ServerCard = {
 }
 
 const deckUpdated = new CustomEvent('deckUpdated');
+const deckCleared = new CustomEvent('deckCleared');
 
 function logError(message: string) {
     if (LOGGING) console.error(message);

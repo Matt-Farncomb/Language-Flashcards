@@ -11,10 +11,10 @@ class Ui {
     currentLanguages: LanguagePair;
 
     currentCard: PlayingCard | undefined;
-    deck: PlayingCard[] | undefined;
+    deck: Deck | undefined;
     front: HTMLSpanElement;
 
-    begin: HTMLAnchorElement;
+    nextCard: HTMLAnchorElement;
     edit: HTMLAnchorElement;
     clear: HTMLButtonElement;
     play: HTMLButtonElement;
@@ -26,48 +26,66 @@ class Ui {
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
 
-        const previousDeck = LocalDeck.get();
+        // const previousDeck = StoredDeck.get();
+        // const previousDeck = new Deck();
+        // previousDeck.load();
         const user = localStorage.getItem('current_user');
-        const beginButton: HTMLAnchorElement | null = document.querySelector(".begin");
+        const nextCardButton: HTMLAnchorElement | null = document.querySelector(".begin");
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
         const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
         const playButton: HTMLButtonElement | null = document.querySelector(".play");
         const front: HTMLSpanElement | null = document.querySelector(".card-content span");
 
-        
-        if (beginButton && editButton && clearButton && front && editButton && playButton) {
+        if (nextCardButton && editButton && clearButton && front && editButton && playButton) {
+            this.deck = new Deck();
+            this.deck.load();
             this.front = front;
-            this.begin = beginButton;
+            this.nextCard = nextCardButton;
             this.edit = editButton;
             this.clear = clearButton;
             this.play = playButton;
+            
             this.clear.onclick = () => {
-                LocalDeck.clear(); 
+                StoredDeck.clear(); 
+            }
+
+            this.nextCard.onclick = () => {
+                this.begin();
             }
             
 
-            if (previousDeck) {
-                this.deck = previousDeck;
-                this.begin.onclick = () => {
-                    this.loadCard(this.deck![0]);
-                }
+            if (this.deck.loaded) {
+                // this.nextCard.onclick = () => {
+                //     this.begin();
+                //     // this.loadCard(this.deck![0]);
+                //     // this.nextCard.innerHTML = "Next";
+                // }
             } else {
-                this.begin.classList.add("disabledPointer");
+                this.nextCard.classList.add("disabledPointer");
             }
+
+            // addEventListener('begin', () => {
+            //     this.loadCard(this.deck![0]);
+            //     this.nextCard.innerHTML = "Next";
+            //     this.edit.classList.remove("disabledPointer");
+            // });
 
             addEventListener('deckUpdated', () => { 
-                console.log("update");
-                this.deck = LocalDeck.get();
-                if (!this.deck) {
-                    this.begin?.classList.add("disabledPointer");
-                    this.unloadCard();
-                } else {
-                    this.begin?.classList.remove("disabledPointer");
+                this.deck?.load();
+                this.nextCard?.classList.remove("disabledPointer");
+                this.nextCard.onclick = () => {
+                    this.begin();
                 }
             });
+
+            addEventListener('deckCleared', () => { 
+                this.nextCard?.classList.add("disabledPointer");
+                this.unloadCard();
+                this.deck?.clear();
+            });
+
         } else {
             throw logError("Could not create UI");
-            
         }
 
 
@@ -116,6 +134,18 @@ class Ui {
         }
      }
 
+    // draw a card and display its data
+    // update UI to show the game has not started
+    begin() {
+        const topCard = this.deck?.drawCard();
+        if (topCard) {
+            this.loadCard(topCard); // update card UI to show card info of "topCard"
+            this.nextCard.innerHTML = "Next";
+            this.edit.classList.remove("disabledPointer");
+            this.nextCard.onclick = () => this.next(); // the next button will now call "next()" instead of "begin()"
+        }       
+    }
+
     addClickEventToSelector(selector: string, callback: ()=> void ): void {
         const button: HTMLButtonElement | null = document.querySelector(selector);
         if (button) {
@@ -137,23 +167,27 @@ class Ui {
 
 
     public next() {
-
+        console.log("fart next");
+        const nextCard = this.deck?.drawCard();
+        if (nextCard) {
+            this.loadCard(nextCard);
+        }
     }
 
     public shuffle() {
 
     }
 
+    // Update card UI to display playingCard data
     public loadCard(playingCard: PlayingCard) {
         this.currentCard = playingCard;
-        // console.log(this.currentCard)
         this.front.innerHTML = this.currentCard.sourceWord;
     }
 
+    // Update card UI to display no data
     public unloadCard() {
-        this.currentCard;
-        // console.log(this.currentCard)
         this.front.innerHTML = "";
+        this.edit.classList.add("disabledPointer");
     }
 
     // private getDeck(): PlayingCard[] | undefined {  
@@ -171,5 +205,4 @@ class Ui {
     //     //         ) );  
                  
     //     // }
-    // }
 }

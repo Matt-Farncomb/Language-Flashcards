@@ -1,13 +1,13 @@
-class LocalDeck {
+class StoredDeck {
 
     static setItem(value: string) {
         localStorage.setItem("deck", value);
-        window.dispatchEvent(new Event("deckUpdated"));
+        window.dispatchEvent(deckUpdated);
     }
 
     static clear() {
         localStorage.clear();
-        window.dispatchEvent(new Event("deckUpdated"));
+        window.dispatchEvent(deckCleared);
     }
 
     static get(): PlayingCard[] | undefined {
