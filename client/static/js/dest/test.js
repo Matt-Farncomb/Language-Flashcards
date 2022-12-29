@@ -295,7 +295,6 @@ class CardModal extends Modal {
     constructor(id) {
         super(id);
         this.translations = [];
-        this.buildTranslationInputList();
         const sourceWord = nullCheckedQuerySelector(this.modal, `.source`);
         const translations = this.nullCheckedQuerySelectorAll(`.translation`);
         const recorderDiv = this.modal.querySelector(`.recorder`);
@@ -329,50 +328,73 @@ class CardModal extends Modal {
         console.log(values);
         return values;
     }
-    buildTranslationInputList() {
-        const translationinputs = this.nullCheckedQuerySelectorAll(".translation");
-        if (translationinputs.length > 0)
-            translationinputs.forEach(element => {
-                if (element.parentElement) {
-                    const addButton = element.parentElement.querySelector(".add-translation");
-                    const template = document.querySelector('.translation-template');
-                    if (addButton) {
-                        addButton.addEventListener('click', (e) => {
-                            if (template && 'content' in document.createElement('template')) {
-                                const translationsBlock = nullCheckedQuerySelector(this.modal, '.translations-block');
-                                if (translationsBlock) {
-                                    const clone = template.content.cloneNode(true);
-                                    translationsBlock.appendChild(clone);
-                                    const lastTranslation = translationsBlock.lastElementChild;
-                                    if (lastTranslation) {
-                                        const newTranslation = lastTranslation.querySelector(".translation");
-                                        if (newTranslation) {
-                                            const newWordInput = this.createNewInput(WordInput, newTranslation);
-                                            newWordInput.addSiblings(this.translations);
-                                            this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
-                                            this.translations.push(newWordInput);
-                                            const removeButton = clone.querySelector(".remove-translation");
-                                            if (removeButton) {
-                                                removeButton.addEventListener('click', (e) => {
-                                                    var _a, _b;
-                                                    const clicked = e.target;
-                                                    (_b = (_a = clicked === null || clicked === void 0 ? void 0 : clicked.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
-                                                });
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    logError(`translation-block not found in ${this.id}`);
-                                }
-                            }
-                            else {
-                                logError("Cant't add click event on plus icon");
-                            }
-                        });
-                    }
+    cloneInputBlockFromTemplate() {
+        const template = document.querySelector('.translation-template');
+        if (template && 'content' in document.createElement('template')) {
+            const clone = template.content.cloneNode(true);
+            return clone;
+        }
+        else {
+            logError("Could not create clone");
+        }
+    }
+    addClonedInputToBlock(clone) {
+        const translationsBlock = nullCheckedQuerySelector(this.modal, '.translations-block');
+        if (translationsBlock) {
+            translationsBlock.appendChild(clone);
+            const previouslyAddedTranslation = translationsBlock.lastElementChild;
+            if (previouslyAddedTranslation) {
+                const translationJustAdded = previouslyAddedTranslation.querySelector(".translation");
+                if (translationJustAdded) {
+                    return translationJustAdded;
                 }
-            });
+            }
+        }
+    }
+    addInput() {
+        var _a;
+        const clone = this.cloneInputBlockFromTemplate();
+        if (clone) {
+            const translationJustAdded = this.addClonedInputToBlock(clone);
+            if (translationJustAdded) {
+                const newWordInput = this.createNewInput(WordInput, translationJustAdded);
+                newWordInput.addSiblings(this.translations);
+                this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
+                this.translations.push(newWordInput);
+                const removeButton = (_a = translationJustAdded.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector(".remove-translation");
+                if (removeButton) {
+                    console.log("removing");
+                    removeButton.addEventListener('click', (e) => {
+                        var _a, _b;
+                        console.log("removed");
+                        const clicked = e.target;
+                        (_b = (_a = clicked === null || clicked === void 0 ? void 0 : clicked.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
+                    });
+                }
+            }
+        }
+        else {
+            logError(`translation-block not found in ${this.id}`);
+        }
+    }
+    addInputOnClick() {
+        const translationinput = this.modal.querySelector(".translation");
+        if (translationinput) {
+            if (translationinput.parentElement) {
+                const addButton = translationinput.parentElement.querySelector(".add-translation");
+                const template = document.querySelector('.translation-template');
+                if (addButton) {
+                    addButton.addEventListener('click', (e) => {
+                        if (template && 'content' in document.createElement('template')) {
+                            this.addInput();
+                        }
+                        else {
+                            logError("Cant't add click event on plus icon");
+                        }
+                    });
+                }
+            }
+        }
     }
     allTranslationsAreValid() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -400,6 +422,7 @@ class CreateDeckModal extends CardModal {
     constructor(id) {
         super(id);
         this.deck = [];
+        this.addInputOnClick();
         const upload = this.modal.querySelector(`.upload-deck`);
         if (upload) {
             upload.addEventListener('click', () => {
@@ -435,7 +458,7 @@ class CreateDeckModal extends CardModal {
         this.deck = [];
     }
     addCardToDeck() {
-        this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues(), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
+        this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues().map(translation => new Word(translation)), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
         this.deck.push(this.card);
         this.clearWords();
         this.lockDownInput(".language");
@@ -460,14 +483,50 @@ class EditCardModal extends CardModal {
     openModal() {
         super.openModal();
     }
+    buildInputList(translations) {
+        translations.forEach(translation => {
+            var _a;
+            const clone = this.cloneInputBlockFromTemplate();
+            if (clone) {
+                const translationJustAdded = this.addClonedInputToBlock(clone);
+                if (translationJustAdded) {
+                    const newWordInput = this.createNewInput(WordInput, translationJustAdded);
+                    newWordInput.value = translation.word;
+                    console.log(translation.word);
+                    newWordInput.addSiblings(this.translations);
+                    this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
+                    this.translations.push(newWordInput);
+                    const removeButton = (_a = translationJustAdded.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector(".remove-translation");
+                    if (removeButton) {
+                        console.log("removing");
+                        removeButton.addEventListener('click', (e) => {
+                            var _a, _b;
+                            console.log("removed");
+                            const clicked = e.target;
+                            (_b = (_a = clicked === null || clicked === void 0 ? void 0 : clicked.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
+                        });
+                    }
+                }
+            }
+            else {
+                logError(`translation-block not found in ${this.id}`);
+            }
+        });
+    }
     populateCard(card) {
         this.card = card;
+        this.translations[0].value = card.translations[0].word;
+        if (card.translations.length > 1) {
+            this.buildInputList(card.translations.slice(1));
+        }
+        this.addInputOnClick();
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
             this.sourceLanguage.value = card.sourceLanguage;
             this.targetLanguage.value = card.targetLanguage;
-            this.sourceWord.value = card.sourceLanguage;
+            this.sourceWord.value = card.sourceWord;
+            console.log(card.translations.length);
             for (let i = 0; i > this.translations.length; i++) {
-                this.translations[i].value = card.translations[i];
+                this.translations[i].value = card.translations[i].word;
             }
         }
     }
@@ -942,5 +1001,13 @@ function addClickEventToSelector(containingDiv, selector, callback) {
     }
     else
         logError(`Could not find ${containingDiv}.`);
+}
+class Word {
+    constructor(word, id = null, language = null, parent = null) {
+        this.id = id;
+        this.word = word;
+        this.language = language;
+        this.parent = parent;
+    }
 }
 //# sourceMappingURL=test.js.map

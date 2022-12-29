@@ -4,6 +4,10 @@ button > i {
   pointer-events: none;
 }
 
+li {
+  list-style-type: none;
+}
+
 nav .buttons .button:last-child {
   margin-right: .75em;
 }

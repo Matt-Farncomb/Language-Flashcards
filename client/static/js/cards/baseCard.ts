@@ -4,10 +4,10 @@ class BaseCard {
     protected _sourceLanguage: string;
     protected _targetLanguage: string;
     protected _sourceWord: string;
-    protected _translations: string[];
+    protected _translations: Word[];
     protected _audio: Blob | null
 
-    constructor(id: string, sourceWord: string, translations: string[], sourceLanguage: string, targetLanguage: string, audio: Blob | null) {
+    constructor(id: string, sourceWord: string, translations: Word[], sourceLanguage: string, targetLanguage: string, audio: Blob | null) {
         this._id = id;
         this._sourceWord = sourceWord; 
         this._translations = translations;

@@ -180,7 +180,7 @@ abstract class CardModal extends Modal {
 
     constructor(id: string) {
         super(id);
-        this.buildTranslationInputList();
+        
 
         const sourceWord: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, `.source`);
         const translations: NodeListOf<HTMLInputElement> | undefined = this.nullCheckedQuerySelectorAll(`.translation`);
@@ -200,11 +200,6 @@ abstract class CardModal extends Modal {
                 // wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                 }
             );
-
-            
-
-           
- 
         } else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
         }
@@ -231,50 +226,77 @@ abstract class CardModal extends Modal {
         return values;
     }
 
-    buildTranslationInputList() {
-        const translationinputs = this.nullCheckedQuerySelectorAll(".translation");
-        if (translationinputs.length > 0) translationinputs.forEach(element => {
-            if (element.parentElement) {
-                const addButton = element.parentElement.querySelector(".add-translation");
+    protected cloneInputBlockFromTemplate(): HTMLDivElement | undefined {
+        const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
+        if (template && 'content' in document.createElement('template')) {
+            const clone = (template.content.cloneNode(true) as HTMLDivElement);
+            return clone;       
+        } else {
+            logError("Could not create clone");
+        }
+    }
+
+    protected addClonedInputToBlock(clone: HTMLDivElement): HTMLInputElement | undefined {
+        const translationsBlock: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, '.translations-block');
+        if (translationsBlock) {
+            translationsBlock.appendChild(clone);
+            const previouslyAddedTranslation = translationsBlock.lastElementChild;
+            if (previouslyAddedTranslation) {
+                const translationJustAdded: HTMLInputElement | null = previouslyAddedTranslation.querySelector(".translation");
+                if (translationJustAdded) {
+                    return translationJustAdded;
+                }
+            }
+        }
+    }
+
+    protected addInput() {
+        
+        const clone: HTMLDivElement | undefined = this.cloneInputBlockFromTemplate();
+        if (clone) {
+            const translationJustAdded = this.addClonedInputToBlock(clone); 
+            if (translationJustAdded) {
+                const newWordInput = this.createNewInput(WordInput, translationJustAdded);
+                newWordInput.addSiblings(this.translations);
+                this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
+                this.translations.push(newWordInput);
+                const removeButton = translationJustAdded.parentElement?.querySelector(".remove-translation");
+                if (removeButton) {
+                    console.log("removing")
+                    removeButton.addEventListener(
+                        'click' , (e) => {
+                            console.log("removed")
+                            const clicked = e.target as HTMLElement;
+                            clicked?.parentElement?.parentElement?.remove();
+                        })
+                    }
+                }
+            } else {
+                logError(`translation-block not found in ${this.id}`)
+            }
+            
+        
+    }
+
+    protected addInputOnClick() {
+        // const translationinputs = this.nullCheckedQuerySelectorAll(".translation");
+        const translationinput = this.modal.querySelector(".translation");
+        if (translationinput) {
+            if (translationinput.parentElement) {
+                const addButton = translationinput.parentElement.querySelector(".add-translation");
                 const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
                 if (addButton) {
                     addButton.addEventListener('click', (e) => {
                         if (template && 'content' in document.createElement('template')) {
-                            const translationsBlock: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, '.translations-block')
-                            if (translationsBlock) {
-                                const clone = (template.content.cloneNode(true) as HTMLDivElement);
-                                translationsBlock.appendChild(clone);
-                                const lastTranslation = translationsBlock.lastElementChild;
-                                if (lastTranslation) {
-                                    const newTranslation: HTMLInputElement | null = lastTranslation.querySelector(".translation");
-                                    if (newTranslation) {
-                                        const newWordInput = this.createNewInput(WordInput, newTranslation);
-                                        newWordInput.addSiblings(this.translations);
-                                        this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
-                                        this.translations.push(newWordInput);
-                                        const removeButton = clone.querySelector(".remove-translation");
-                                        if (removeButton) {
-                                            removeButton.addEventListener(
-                                                'click' , (e) => {
-                                                    const clicked = e.target as HTMLElement;
-                                                    clicked?.parentElement?.parentElement?.remove();
-                                                }
-                                            );
-                                        }
-                                    }
-                                    
-                                }
-                            } else {
-                                logError(`translation-block not found in ${this.id}`)
-                            }
+                            this.addInput();
                         } else {
                             logError("Cant't add click event on plus icon");
                         }
                     })
                 }
             }
-        })
-    }
+        }
+    }   
 
     async allTranslationsAreValid() {
         // const areAllValuesValid = (translations: WordInput[]) => translations.every(translation => await translation.isValid());
@@ -301,6 +323,8 @@ class CreateDeckModal extends CardModal {
 
     constructor(id: string) {
         super(id);
+        this.addInputOnClick();
+        
         const upload: HTMLButtonElement | null = this.modal.querySelector(`.upload-deck`);
 
         if (upload) {
@@ -339,7 +363,7 @@ class CreateDeckModal extends CardModal {
         this.card = new BaseCard(
             this.id, 
             this.sourceWord.value, 
-            this.translationValues(), 
+            this.translationValues().map(translation => new Word(translation)), 
             this.sourceLanguage.value, 
             this.targetLanguage.value, 
             this.recorder.clip ? this.recorder.clip : null
@@ -370,20 +394,69 @@ class EditCardModal extends CardModal {
     constructor(id: string) {
         super(id);
         // this.buildTranslationInputList();
+
     }
 
     openModal(): void {
         super.openModal();
     }
 
+    // removeTranslationInput() {
+    //     const translationBlock = this.modal.querySelector(".translations-block");
+    //     console.log(translationBlock);
+    //     if (translationBlock) {
+    //         translationBlock.innerHTML = "";
+    //     }
+       
+
+    // }
+
+    private buildInputList(translations: Word[]) {
+        translations.forEach(translation => {
+            const clone: HTMLDivElement | undefined = this.cloneInputBlockFromTemplate();
+            if (clone) {
+                const translationJustAdded = this.addClonedInputToBlock(clone); 
+                if (translationJustAdded) {
+                    const newWordInput = this.createNewInput(WordInput, translationJustAdded);
+                    newWordInput.value = translation.word;
+                    console.log(translation.word)
+                    newWordInput.addSiblings(this.translations);
+                    this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
+                    this.translations.push(newWordInput);
+                    const removeButton = translationJustAdded.parentElement?.querySelector(".remove-translation");
+                    if (removeButton) {
+                        console.log("removing")
+                        removeButton.addEventListener(
+                            'click' , (e) => {
+                                console.log("removed")
+                                const clicked = e.target as HTMLElement;
+                                clicked?.parentElement?.parentElement?.remove();
+                            })
+                        }
+                    }
+                } else {
+                    logError(`translation-block not found in ${this.id}`)
+                }
+            }
+        )
+    }
+
     populateCard(card: BaseCard) {
         this.card = card;
+        this.translations[0].value = card.translations[0].word;
+        if (card.translations.length > 1) {
+            // this.removeTranslationInput();
+            this.buildInputList(card.translations.slice(1));
+        }
+        this.addInputOnClick();
+        
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
             this.sourceLanguage.value = card.sourceLanguage;
             this.targetLanguage.value = card.targetLanguage;
-            this.sourceWord.value = card.sourceLanguage;
+            this.sourceWord.value = card.sourceWord;
+            console.log(card.translations.length)
             for (let i = 0; i > this.translations.length; i++) {
-                this.translations[i].value = card.translations[i];
+                this.translations[i].value = card.translations[i].word;
             }
         }
     }
@@ -410,7 +483,6 @@ class FetchDeckModal extends Modal {
         else {
             throw Error(`Class 'count' cannot be found in ${this.id}`);
         }
-        
     }
 
     submit(): void {
@@ -421,15 +493,8 @@ class FetchDeckModal extends Modal {
         return await super.readyToSubmit() && await this.count.isValid(); 
     }
     
-
-    async fetchDeck() {
+    async fetchDeck(): Promise<void> {
         const deck:any = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
-        // console.log(deck);
-        // localStorage.setItem("deck", deck);
-        // const json:[any] = await jsonDeck.json();
-        // console.log(json[0]);
-        // const serializedDeck = deck.map( element => element.serialiseData() )
-        // localStorage.setItem("deck", JSON.stringify(serializedDeck));
     }
 
 }
