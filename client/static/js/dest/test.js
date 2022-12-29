@@ -21,8 +21,8 @@ class StoredDeck {
         const json = localStorage.getItem("deck");
         if (json && json != "{}") {
             const localDeck = JSON.parse(json);
-            console.log(localDeck);
-            return localDeck.map(element => new PlayingCard(element["id"], element["source_word"]["word"], element["translations"], element["source_word"]["language"], element["translations"][0]["__data__"]["language"], element["source_word"]["voice"]));
+            const translationLanguage = localDeck[0].translations[0].__data__.language;
+            return localDeck.map(element => new PlayingCard(element.id, element.source_word.word, element.translations.map((translation) => translation.__data__), element.source_word.language, translationLanguage, element.source_word.voice));
         }
     }
 }
@@ -522,11 +522,13 @@ class Ui {
         const clearButton = document.querySelector(".clear-deck");
         const playButton = document.querySelector(".play");
         const flipButtons = document.querySelectorAll(".flip");
-        const front = document.querySelector(".card-content span");
-        if (nextCardButton && editButton && clearButton && front && editButton && playButton && flipButtons.length > 0) {
+        const front = document.querySelector(".front .card-content span");
+        const back = document.querySelector(".back .card-content span");
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
+            this.back = back;
             this.nextCard = nextCardButton;
             this.edit = editButton;
             this.clear = clearButton;
@@ -544,9 +546,7 @@ class Ui {
             this.flip.forEach(element => {
                 element.onclick = () => this.flipCard(2);
             });
-            if (this.deck.loaded) {
-            }
-            else {
+            if (!this.deck.loaded) {
                 this.nextCard.classList.add("disabledPointer");
             }
             addEventListener('deckUpdated', () => {
@@ -641,7 +641,16 @@ class Ui {
     loadCard(playingCard) {
         return __awaiter(this, void 0, void 0, function* () {
             this.currentCard = playingCard;
+            console.log(this.currentCard);
             this.front.innerHTML = this.currentCard.sourceWord;
+            this.back.innerHTML = "";
+            const ul = document.createElement("ul");
+            this.currentCard.translations.forEach((element) => {
+                const li = document.createElement("li");
+                li.innerHTML = element.word;
+                ul.appendChild(li);
+            });
+            this.back.appendChild(ul);
             this.play.classList.remove("is-hidden");
             const fetchedAudio = yield fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
             const audioURL = window.URL.createObjectURL(yield fetchedAudio.blob());

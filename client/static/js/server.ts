@@ -73,10 +73,8 @@ class Server {
             logError(`Could not draw deck: ${response.status}`); 
         }
         else {
-            const responseText = await response.text()
+            const responseText = await response.text();
             StoredDeck.setItem(responseText);
-            // localStorage.setItem("deck", responseText);
-            // window.dispatchEvent(new Event("deckUpdated"));
         }
         
         return response;

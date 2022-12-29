@@ -13,6 +13,7 @@ class Ui {
     currentCard: PlayingCard | undefined;
     deck: Deck | undefined;
     front: HTMLSpanElement;
+    back: HTMLSpanElement;
 
     nextCard: HTMLAnchorElement;
     edit: HTMLAnchorElement;
@@ -29,21 +30,20 @@ class Ui {
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
 
-        // const previousDeck = StoredDeck.get();
-        // const previousDeck = new Deck();
-        // previousDeck.load();
         const user = localStorage.getItem('current_user');
         const nextCardButton: HTMLAnchorElement | null = document.querySelector(".begin");
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
         const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
         const playButton: HTMLButtonElement | null = document.querySelector(".play");
         const flipButtons: NodeListOf<HTMLButtonElement> = document.querySelectorAll(".flip");
-        const front: HTMLSpanElement | null = document.querySelector(".card-content span");
+        const front: HTMLSpanElement | null = document.querySelector(".front .card-content span");
+        const back: HTMLSpanElement | null = document.querySelector(".back .card-content span");
 
-        if (nextCardButton && editButton && clearButton && front && editButton && playButton  && flipButtons.length > 0) {
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
+            this.back = back;
             this.nextCard = nextCardButton;
             this.edit = editButton;
             this.clear = clearButton;
@@ -65,25 +65,10 @@ class Ui {
             this.flip.forEach(element => {
                 element.onclick = () => this.flipCard(2);
             })
-           
-            
-            
 
-            if (this.deck.loaded) {
-                // this.nextCard.onclick = () => {
-                //     this.begin();
-                //     // this.loadCard(this.deck![0]);
-                //     // this.nextCard.innerHTML = "Next";
-                // }
-            } else {
+            if (!this.deck.loaded) {
                 this.nextCard.classList.add("disabledPointer");
-            }
-
-            // addEventListener('begin', () => {
-            //     this.loadCard(this.deck![0]);
-            //     this.nextCard.innerHTML = "Next";
-            //     this.edit.classList.remove("disabledPointer");
-            // });
+            } 
 
             addEventListener('deckUpdated', () => { 
                 this.deck?.load();
@@ -167,7 +152,6 @@ class Ui {
             button.addEventListener('click', () => { callback() });
         }
         else if (LOGGING) console.error(`Could not assign 'click' to ${selector}`);
-        // failedFunctionError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
 
     addClickEventToSelectorAll(selector: string, callback: ()=> void ): void {
@@ -196,7 +180,16 @@ class Ui {
     // Update card UI to display playingCard data
     public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.currentCard = playingCard;
+        console.log(this.currentCard);
         this.front.innerHTML = this.currentCard.sourceWord;
+        this.back.innerHTML = "";
+        const ul = document.createElement("ul");
+        this.currentCard.translations.forEach((element: any) => {
+            const li = document.createElement("li");
+            li.innerHTML = element.word;
+            ul.appendChild(li);
+        } )
+        this.back.appendChild(ul);
         this.play.classList.remove("is-hidden");
 
         const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
