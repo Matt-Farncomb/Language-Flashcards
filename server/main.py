@@ -79,7 +79,7 @@ def upload_deck(id: int):
 
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
-       
+    print("worked")
     lang = [ v["language"] for k, v in new_languages.items()  ]
 
     db = Database()

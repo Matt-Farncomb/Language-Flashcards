@@ -11,6 +11,12 @@ type ServerCard = {
     difficulty: string
 }
 
+const languageAbbreviations: Record<string, string> = {
+    "es":"Spanish",
+    "fi": "Finnish",
+    "vi": "Vietnamese"
+}
+
 const deckUpdated = new CustomEvent('deckUpdated');
 const deckCleared = new CustomEvent('deckCleared');
 

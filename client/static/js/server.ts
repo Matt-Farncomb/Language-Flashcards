@@ -99,16 +99,16 @@ class Server {
 
     }
 
+    // Opens link in new tab to the user can easily go back to continue their game after referencing the table
     static async goToTable(sourceLanguage: string, targetLanguage: string) {
         const tableURL = new URL(this.baseURL);
         tableURL.pathname = "table";
         tableURL.searchParams.append("source_language", sourceLanguage);
         tableURL.searchParams.append("target_language", targetLanguage);
+        tableURL.searchParams.append("is_custom", JSON.stringify(true));
 
-        const response = await fetch(tableURL);
-        if (!response.ok) {
-            logError(`Could not get table: ${response.status}`); 
-        }
+        window.open(tableURL.toString());
+
     }
 
     

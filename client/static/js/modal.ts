@@ -315,6 +315,14 @@ abstract class CardModal extends Modal {
         return baseInputsReady && sourceWordReady && translationsReady;
     }
 
+    protected closeModal(): void {
+        super.closeModal();
+        console.log("fart");
+        const addedInputs = this.translations.slice(1);
+        addedInputs.forEach(input => input.removeFromDOM());
+        // TODO: Need to also remove each added input from remaining inputs siblings and list of translations 
+    }
+
 }
 
 class CreateDeckModal extends CardModal {
@@ -419,7 +427,6 @@ class EditCardModal extends CardModal {
                 if (translationJustAdded) {
                     const newWordInput = this.createNewInput(WordInput, translationJustAdded);
                     newWordInput.value = translation.word;
-                    console.log(translation.word)
                     newWordInput.addSiblings(this.translations);
                     this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                     this.translations.push(newWordInput);
@@ -451,8 +458,8 @@ class EditCardModal extends CardModal {
         this.addInputOnClick();
         
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
-            this.sourceLanguage.value = card.sourceLanguage;
-            this.targetLanguage.value = card.targetLanguage;
+            this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
+            this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
             this.sourceWord.value = card.sourceWord;
             console.log(card.translations.length)
             for (let i = 0; i > this.translations.length; i++) {

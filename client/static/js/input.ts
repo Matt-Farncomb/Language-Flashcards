@@ -69,6 +69,10 @@ abstract class ExtendedInput {
         }
     }
 
+    removeFromDOM() {
+        this._htmlElement.parentElement?.parentElement?.remove();
+    }
+
     // Check if any siblings (and this) have any duplicate values 
     // style appropriately if they do/don't
     protected checkIfUnique(): boolean {

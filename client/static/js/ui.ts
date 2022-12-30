@@ -177,8 +177,29 @@ class Ui {
 
     }
 
+    private setLanguagesInUI(playingCard: PlayingCard) {
+        const sourceLanguage = document.querySelector("#user-sl");
+        const targetLanguage = document.querySelector("#user-tl");
+
+        if (sourceLanguage && targetLanguage) {
+            sourceLanguage.innerHTML = languageAbbreviations[playingCard.sourceLanguage];
+            targetLanguage.innerHTML = languageAbbreviations[playingCard.targetLanguage];
+        }
+    }
+
+    private clearLanguagesInUI() {
+        const sourceLanguage = document.querySelector("#user-sl");
+        const targetLanguage = document.querySelector("#user-tl");
+
+        if (sourceLanguage && targetLanguage) {
+            sourceLanguage.innerHTML = "";
+            targetLanguage.innerHTML = "";
+        }
+    }
+
     // Update card UI to display playingCard data
     public async loadCard(playingCard: PlayingCard): Promise<void> {
+        this.setLanguagesInUI(playingCard)
         this.currentCard = playingCard;
         console.log(this.currentCard);
         this.front.innerHTML = this.currentCard.sourceWord;
@@ -204,6 +225,7 @@ class Ui {
         this.front.innerHTML = "";
         this.edit.classList.add("disabledPointer");
         this.play.classList.add("is-hidden");
+        this.clearLanguagesInUI();
     }
 
     private playClip() {

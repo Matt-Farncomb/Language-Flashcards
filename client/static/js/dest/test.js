@@ -417,6 +417,12 @@ class CardModal extends Modal {
             return baseInputsReady && sourceWordReady && translationsReady;
         });
     }
+    closeModal() {
+        super.closeModal();
+        console.log("fart");
+        const addedInputs = this.translations.slice(1);
+        addedInputs.forEach(input => input.removeFromDOM());
+    }
 }
 class CreateDeckModal extends CardModal {
     constructor(id) {
@@ -492,7 +498,6 @@ class EditCardModal extends CardModal {
                 if (translationJustAdded) {
                     const newWordInput = this.createNewInput(WordInput, translationJustAdded);
                     newWordInput.value = translation.word;
-                    console.log(translation.word);
                     newWordInput.addSiblings(this.translations);
                     this.translations.forEach(wordInput => wordInput.addSibling(newWordInput));
                     this.translations.push(newWordInput);
@@ -521,8 +526,8 @@ class EditCardModal extends CardModal {
         }
         this.addInputOnClick();
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
-            this.sourceLanguage.value = card.sourceLanguage;
-            this.targetLanguage.value = card.targetLanguage;
+            this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
+            this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
             this.sourceWord.value = card.sourceWord;
             console.log(card.translations.length);
             for (let i = 0; i > this.translations.length; i++) {
@@ -697,8 +702,25 @@ class Ui {
     }
     shuffle() {
     }
+    setLanguagesInUI(playingCard) {
+        const sourceLanguage = document.querySelector("#user-sl");
+        const targetLanguage = document.querySelector("#user-tl");
+        if (sourceLanguage && targetLanguage) {
+            sourceLanguage.innerHTML = languageAbbreviations[playingCard.sourceLanguage];
+            targetLanguage.innerHTML = languageAbbreviations[playingCard.targetLanguage];
+        }
+    }
+    clearLanguagesInUI() {
+        const sourceLanguage = document.querySelector("#user-sl");
+        const targetLanguage = document.querySelector("#user-tl");
+        if (sourceLanguage && targetLanguage) {
+            sourceLanguage.innerHTML = "";
+            targetLanguage.innerHTML = "";
+        }
+    }
     loadCard(playingCard) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
             console.log(this.currentCard);
             this.front.innerHTML = this.currentCard.sourceWord;
@@ -721,6 +743,7 @@ class Ui {
         this.front.innerHTML = "";
         this.edit.classList.add("disabledPointer");
         this.play.classList.add("is-hidden");
+        this.clearLanguagesInUI();
     }
     playClip() {
         var _a;
@@ -790,6 +813,10 @@ class ExtendedInput {
         else {
             this._htmlElement.classList.remove("is-danger", "is-primary");
         }
+    }
+    removeFromDOM() {
+        var _a, _b;
+        (_b = (_a = this._htmlElement.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
     }
     checkIfUnique() {
         let unique = true;
@@ -959,16 +986,19 @@ class Server {
             tableURL.pathname = "table";
             tableURL.searchParams.append("source_language", sourceLanguage);
             tableURL.searchParams.append("target_language", targetLanguage);
-            const response = yield fetch(tableURL);
-            if (!response.ok) {
-                logError(`Could not get table: ${response.status}`);
-            }
+            tableURL.searchParams.append("is_custom", JSON.stringify(true));
+            window.open(tableURL.toString());
         });
     }
 }
 _a = Server;
 Server.baseURL = "http://127.0.0.1:8000/";
 Server.validLangauges = _a.getValidLanguages();
+const languageAbbreviations = {
+    "es": "Spanish",
+    "fi": "Finnish",
+    "vi": "Vietnamese"
+};
 const deckUpdated = new CustomEvent('deckUpdated');
 const deckCleared = new CustomEvent('deckCleared');
 function logError(message) {
