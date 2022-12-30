@@ -588,7 +588,9 @@ class Ui {
         const flipButtons = document.querySelectorAll(".flip");
         const front = document.querySelector(".front .card-content span");
         const back = document.querySelector(".back .card-content span");
-        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && flipButtons.length > 0) {
+        const checkButton = document.querySelector("#check-answer");
+        const answerInput = document.querySelector("#answer");
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && checkButton && answerInput && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
@@ -598,6 +600,8 @@ class Ui {
             this.clear = clearButton;
             this.play = playButton;
             this.flip = flipButtons;
+            this.check = checkButton;
+            this.answer = answerInput;
             this.clear.onclick = () => {
                 StoredDeck.clear();
             };
@@ -606,6 +610,9 @@ class Ui {
             };
             this.play.onclick = () => {
                 this.playClip();
+            };
+            this.check.onclick = () => {
+                this.checkAnswer();
             };
             this.flip.forEach(element => {
                 element.onclick = () => this.flipCard(2);
@@ -664,6 +671,36 @@ class Ui {
             this.currentLanguages = DEFAULT_LANGUAGES;
         }
     }
+    unlockAnswer() {
+        this.answer.classList.remove("disabledPointer");
+        this.check.classList.remove("disabledPointer");
+    }
+    lockAnswer() {
+        this.answer.classList.add("disabledPointer");
+        this.check.classList.add("disabledPointer");
+    }
+    resetAnswer() {
+        this.answer.value = "";
+        this.answer.classList.remove("has-background-success-light");
+        this.check.classList.remove("has-background-success");
+        this.answer.classList.remove("has-background-danger-light");
+        this.check.classList.remove("has-background-danger");
+    }
+    checkAnswer() {
+        var _a;
+        if ((_a = this.currentCard) === null || _a === void 0 ? void 0 : _a.translations.some(translation => translation.word === this.answer.value)) {
+            this.answer.classList.add("has-background-success-light");
+            this.check.classList.add("has-background-success");
+            this.answer.classList.remove("has-background-danger-light");
+            this.check.classList.remove("has-background-danger");
+        }
+        else {
+            this.answer.classList.remove("has-background-success-light");
+            this.check.classList.remove("has-background-success");
+            this.answer.classList.add("has-background-danger-light");
+            this.check.classList.add("has-background-danger");
+        }
+    }
     begin() {
         var _a;
         const topCard = (_a = this.deck) === null || _a === void 0 ? void 0 : _a.drawCard();
@@ -671,6 +708,7 @@ class Ui {
             this.loadCard(topCard);
             this.nextCard.innerHTML = "Next";
             this.edit.classList.remove("disabledPointer");
+            this.unlockAnswer();
             this.nextCard.onclick = () => this.next();
         }
     }
@@ -694,10 +732,10 @@ class Ui {
     }
     next() {
         var _a;
-        console.log("fart next");
         const nextCard = (_a = this.deck) === null || _a === void 0 ? void 0 : _a.drawCard();
         if (nextCard) {
             this.loadCard(nextCard);
+            this.resetAnswer();
         }
     }
     shuffle() {
@@ -744,6 +782,7 @@ class Ui {
         this.edit.classList.add("disabledPointer");
         this.play.classList.add("is-hidden");
         this.clearLanguagesInUI();
+        this.lockAnswer();
     }
     playClip() {
         var _a;

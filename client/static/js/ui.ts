@@ -20,6 +20,8 @@ class Ui {
     clear: HTMLButtonElement;
     play: HTMLButtonElement;
     flip: NodeListOf<HTMLButtonElement>;
+    check: HTMLButtonElement;
+    answer: HTMLInputElement;
 
     clip: HTMLAudioElement | undefined;
 
@@ -38,8 +40,10 @@ class Ui {
         const flipButtons: NodeListOf<HTMLButtonElement> = document.querySelectorAll(".flip");
         const front: HTMLSpanElement | null = document.querySelector(".front .card-content span");
         const back: HTMLSpanElement | null = document.querySelector(".back .card-content span");
+        const checkButton: HTMLButtonElement | null = document.querySelector("#check-answer");
+        const answerInput: HTMLInputElement | null = document.querySelector("#answer");
 
-        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && flipButtons.length > 0) {
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && checkButton && answerInput && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
             this.front = front;
@@ -49,6 +53,8 @@ class Ui {
             this.clear = clearButton;
             this.play = playButton;
             this.flip = flipButtons;
+            this.check = checkButton;
+            this.answer = answerInput;
 
             this.clear.onclick = () => {
                 StoredDeck.clear(); 
@@ -60,6 +66,10 @@ class Ui {
 
             this.play.onclick = () => {
                 this.playClip();
+            }
+
+            this.check.onclick = () => {
+                this.checkAnswer();
             }
 
             this.flip.forEach(element => {
@@ -132,8 +142,42 @@ class Ui {
 
             this.currentLanguages = DEFAULT_LANGUAGES;
         }
-     }
+    }
 
+    unlockAnswer() {
+        this.answer.classList.remove("disabledPointer");
+        this.check.classList.remove("disabledPointer");
+    }
+
+    lockAnswer() {
+        this.answer.classList.add("disabledPointer");
+        this.check.classList.add("disabledPointer");
+    }
+
+    resetAnswer() {
+
+        this.answer.value = "";
+        this.answer.classList.remove("has-background-success-light");
+        this.check.classList.remove("has-background-success");
+        this.answer.classList.remove("has-background-danger-light");
+        this.check.classList.remove("has-background-danger");
+        
+    }
+
+    checkAnswer() {
+        if (this.currentCard?.translations.some(translation => translation.word === this.answer.value)) {
+            this.answer.classList.add("has-background-success-light");
+            this.check.classList.add("has-background-success");
+            this.answer.classList.remove("has-background-danger-light");
+            this.check.classList.remove("has-background-danger");
+        }
+        else {
+            this.answer.classList.remove("has-background-success-light");
+            this.check.classList.remove("has-background-success");
+            this.answer.classList.add("has-background-danger-light");
+            this.check.classList.add("has-background-danger");
+        }
+    }
     // draw a card and display its data
     // update UI to show the game has not started
     begin() {
@@ -142,6 +186,7 @@ class Ui {
             this.loadCard(topCard); // update card UI to show card info of "topCard"
             this.nextCard.innerHTML = "Next";
             this.edit.classList.remove("disabledPointer");
+            this.unlockAnswer();
             this.nextCard.onclick = () => this.next(); // the next button will now call "next()" instead of "begin()"
         }       
     }
@@ -166,10 +211,10 @@ class Ui {
 
 
     public next() {
-        console.log("fart next");
         const nextCard = this.deck?.drawCard();
         if (nextCard) {
             this.loadCard(nextCard);
+            this.resetAnswer();
         }
     }
 
@@ -226,6 +271,7 @@ class Ui {
         this.edit.classList.add("disabledPointer");
         this.play.classList.add("is-hidden");
         this.clearLanguagesInUI();
+        this.lockAnswer();
     }
 
     private playClip() {
