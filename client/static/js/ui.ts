@@ -7,6 +7,8 @@ class Ui {
     createDeckModal: CreateDeckModal;
     fetchDeckModal: FetchDeckModal;
     fetchTableModal: FetchTableModal;
+    logInModal: LogInModal;
+    signUpModal: SignUpModal;
 
     currentLanguages: LanguagePair;
 
@@ -31,6 +33,8 @@ class Ui {
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
+        this.logInModal = new LogInModal("#log-in-modal");
+        this.signUpModal = new SignUpModal("#sign-up-modal");
 
         const user = localStorage.getItem('current_user');
         const nextCardButton: HTMLAnchorElement | null = document.querySelector(".begin");
@@ -119,6 +123,16 @@ class Ui {
 
         this.addClickEventToSelector("#open-fetch-table-modal", () => {
             this.fetchTableModal.openModal()
+            }
+        );
+
+        this.addClickEventToSelector("#open-log-in-modal", () => {
+            this.logInModal.openModal()
+            }
+        );
+
+        this.addClickEventToSelector("#open-sign-up-modal", () => {
+            this.signUpModal.openModal()
             }
         );
         

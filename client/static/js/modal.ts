@@ -2,49 +2,26 @@ abstract class Modal {
 
     private _id: string;
     private _modal: HTMLDivElement;
-    protected sourceLanguage: LanguageInput;
-    protected targetLanguage: LanguageInput;
     protected submitButton: HTMLButtonElement;
-    // protected inputs: ExtendedInput[] = [];
 
     constructor(id: string) {
-        this._id = id;
-        
-        const modal: HTMLDivElement | null = document.querySelector(`${id}`);
-        const sourceLanguage = nullCheckedQuerySelector(modal, `.source-language`);
-        const targetLanguage = nullCheckedQuerySelector(modal, `.translation-language`);
 
-        if (modal && sourceLanguage && targetLanguage) {
+        this._id = id;
+
+        const modal: HTMLDivElement | null = document.querySelector(`${id}`);
+
+        if (modal) {
 
             this._modal = modal;
-            // this.sourceLanguage = new LanguageInput(sourceLanguage)
-            // this.targetLanguage = new LanguageInput(targetLanguage)
 
-            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
-            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
-
-            this.targetLanguage.addSibling(this.sourceLanguage);
-            this.sourceLanguage.addSibling(this.targetLanguage);
-            // this.inputs.push(this.sourceLanguage, this.targetLanguage);
-            
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
 
             this.addClickEventToModalElement(".submit", () => this.submit());
-            this.addClickEventToModalElement(".clear", () => this.clear());
             this.addClickEventToModalElements(".close", () => this.closeModal());
-
-            // this.inputs.forEach(element => {
-            //     element.addOnChangeEvent(() => console.log("farts are smelly"));
-            // })
-
-            // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-            // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-            
+        } else {
+        throw Error(`${this.id} modal cannot be found`);
         }
-        else {
-            throw Error(`${this.id} modal cannot be found`);
-        }
-
+    
     }
 
     protected get id() {
@@ -55,12 +32,6 @@ abstract class Modal {
         return this._modal;
     }
 
-    protected updateInputValue(input: HTMLInputElement, value: string) {
-        input.value = value;
-        input.dispatchEvent(new Event('change'));   
-    }
-
- 
     addClickEventToModalElement(selector: string, callback: ()=> void ): void {
         const button: HTMLButtonElement | null = this.modal.querySelector(selector);
         if (button) {
@@ -78,7 +49,7 @@ abstract class Modal {
         }
         else logError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
-    
+
     nullCheckedButtonQuerySelector(selector: string): HTMLButtonElement {
         const element: HTMLButtonElement | null = this.modal.querySelector(selector);
         if (element) {
@@ -87,25 +58,7 @@ abstract class Modal {
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
 
-    nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
-      
-        const elements: NodeListOf<HTMLInputElement> | undefined = this.modal.querySelectorAll(selector);
-
-        if (elements && elements.length > 0) {
-            return elements;
-        } else {
-            throw new Error(`Cannot find ${selector} in ${this._id}`);
-        }
-        
-    }
-
-    protected lockDownInput(selector: string) {
-        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
-    }
-
-    protected unlockInput(selector: string) {
-        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
-    }
+    abstract submit(): void;
 
     public openModal() {
         this.modal.classList.toggle("is-active");
@@ -116,15 +69,6 @@ abstract class Modal {
             this.clear();
             this.modal.classList.toggle("is-active");
         }
-    }
-
-
-    protected createNewInput(input: typeof WordInput | typeof LanguageInput | typeof NumberInput, element: HTMLInputElement) {
-        const newInput = new input(element);
-        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
-        return newInput;
-        // return (new input(element).addOnChangeEvent(() => this.toggleSubmitButton());)
-
     }
 
     protected clear() {
@@ -143,8 +87,84 @@ abstract class Modal {
 
     }
 
+}
 
-    abstract submit(): void;
+abstract class LanguageModal extends Modal {
+
+    protected sourceLanguage: LanguageInput;
+    protected targetLanguage: LanguageInput;
+    // protected inputs: ExtendedInput[] = [];
+
+    constructor(id: string) {
+        super(id);
+        
+        const sourceLanguage = nullCheckedQuerySelector(this.modal, `.source-language`);
+        const targetLanguage = nullCheckedQuerySelector(this.modal, `.translation-language`);
+
+        if (sourceLanguage && targetLanguage) {
+
+            // this.sourceLanguage = new LanguageInput(sourceLanguage)
+            // this.targetLanguage = new LanguageInput(targetLanguage)
+
+            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
+            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
+
+            this.targetLanguage.addSibling(this.sourceLanguage);
+            this.sourceLanguage.addSibling(this.targetLanguage);
+            // this.inputs.push(this.sourceLanguage, this.targetLanguage);
+            
+
+            // this.addClickEventToModalElement(".submit", () => this.submit());
+            this.addClickEventToModalElement(".clear", () => this.clear());
+            // this.addClickEventToModalElements(".close", () => this.closeModal());
+
+            // this.inputs.forEach(element => {
+            //     element.addOnChangeEvent(() => console.log("farts are smelly"));
+            // })
+
+            // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+            // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
+            
+        }
+        else {
+            throw Error(`${this.id} modal cannot be found`);
+        }
+
+    }
+
+    protected updateInputValue(input: HTMLInputElement, value: string) {
+        input.value = value;
+        input.dispatchEvent(new Event('change'));   
+    }
+
+    nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
+      
+        const elements: NodeListOf<HTMLInputElement> | undefined = this.modal.querySelectorAll(selector);
+
+        if (elements && elements.length > 0) {
+            return elements;
+        } else {
+            throw new Error(`Cannot find ${selector} in ${this.id}`);
+        }
+        
+    }
+
+    protected lockDownInput(selector: string) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
+    }
+
+    protected unlockInput(selector: string) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
+    }
+
+    protected createNewInput(input: typeof WordInput | typeof LanguageInput | typeof NumberInput, element: HTMLInputElement) {
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
+        // return (new input(element).addOnChangeEvent(() => this.toggleSubmitButton());)
+
+    }
+
 
     async readyToSubmit(): Promise<boolean> {
         return await this.sourceLanguage.isReady() && this.targetLanguage.isReady();
@@ -170,7 +190,7 @@ abstract class Modal {
 
 
 
-abstract class CardModal extends Modal {
+abstract class CardModal extends LanguageModal {
 
     protected recorder;
     protected sourceWord: WordInput;
@@ -475,7 +495,7 @@ class EditCardModal extends CardModal {
     }
 }
 
-class FetchDeckModal extends Modal {
+class FetchDeckModal extends LanguageModal {
 
     count: NumberInput;
 
@@ -506,9 +526,57 @@ class FetchDeckModal extends Modal {
 
 }
 
-class FetchTableModal extends Modal {
+class FetchTableModal extends LanguageModal {
 
     submit(): void {
         Server.goToTable(this.sourceLanguage.value, this.targetLanguage.value);
     }
+}
+
+class LogInModal extends Modal {
+
+    username: HTMLInputElement;
+    password: HTMLInputElement;
+
+    constructor(id: string) {
+        super(id);
+
+        const username: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".username");
+        const password: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".password");
+
+        if (username && password) {
+            this.username = username;
+            this.password = password;
+        }
+        else {
+            throw Error(`Class 'username' and/or 'password' cannot be found in ${this.id}`);
+        }
+    }
+
+    submit(): void {
+        // log in
+        this.closeModal();
+    }
+}
+
+class SignUpModal extends LogInModal {
+
+    firstname: HTMLInputElement;
+    lastname: HTMLInputElement;
+
+    constructor(id: string) {
+        super(id);
+
+        const firstname: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".username");
+        const lastname: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".password");
+
+        if (firstname && lastname) {
+            this.firstname = firstname;
+            this.lastname = lastname;
+        }
+        else {
+            throw Error(`Class 'firstname' and/or 'lastname' cannot be found in ${this.id}`);
+        }
+    }
+
 }

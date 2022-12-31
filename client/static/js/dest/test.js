@@ -172,17 +172,10 @@ class Modal {
     constructor(id) {
         this._id = id;
         const modal = document.querySelector(`${id}`);
-        const sourceLanguage = nullCheckedQuerySelector(modal, `.source-language`);
-        const targetLanguage = nullCheckedQuerySelector(modal, `.translation-language`);
-        if (modal && sourceLanguage && targetLanguage) {
+        if (modal) {
             this._modal = modal;
-            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
-            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
-            this.targetLanguage.addSibling(this.sourceLanguage);
-            this.sourceLanguage.addSibling(this.targetLanguage);
             this.submitButton = this.nullCheckedButtonQuerySelector(`.submit`);
             this.addClickEventToModalElement(".submit", () => this.submit());
-            this.addClickEventToModalElement(".clear", () => this.clear());
             this.addClickEventToModalElements(".close", () => this.closeModal());
         }
         else {
@@ -194,10 +187,6 @@ class Modal {
     }
     get modal() {
         return this._modal;
-    }
-    updateInputValue(input, value) {
-        input.value = value;
-        input.dispatchEvent(new Event('change'));
     }
     addClickEventToModalElement(selector, callback) {
         const button = this.modal.querySelector(selector);
@@ -224,21 +213,6 @@ class Modal {
         }
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
-    nullCheckedQuerySelectorAll(selector) {
-        const elements = this.modal.querySelectorAll(selector);
-        if (elements && elements.length > 0) {
-            return elements;
-        }
-        else {
-            throw new Error(`Cannot find ${selector} in ${this._id}`);
-        }
-    }
-    lockDownInput(selector) {
-        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
-    }
-    unlockInput(selector) {
-        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
-    }
     openModal() {
         this.modal.classList.toggle("is-active");
     }
@@ -247,11 +221,6 @@ class Modal {
             this.clear();
             this.modal.classList.toggle("is-active");
         }
-    }
-    createNewInput(input, element) {
-        const newInput = new input(element);
-        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
-        return newInput;
     }
     clear() {
         if (this.modal) {
@@ -266,6 +235,47 @@ class Modal {
                 logError(`Unable to find inputs in ${this._id}`);
             }
         }
+    }
+}
+class LanguageModal extends Modal {
+    constructor(id) {
+        super(id);
+        const sourceLanguage = nullCheckedQuerySelector(this.modal, `.source-language`);
+        const targetLanguage = nullCheckedQuerySelector(this.modal, `.translation-language`);
+        if (sourceLanguage && targetLanguage) {
+            this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
+            this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
+            this.targetLanguage.addSibling(this.sourceLanguage);
+            this.sourceLanguage.addSibling(this.targetLanguage);
+            this.addClickEventToModalElement(".clear", () => this.clear());
+        }
+        else {
+            throw Error(`${this.id} modal cannot be found`);
+        }
+    }
+    updateInputValue(input, value) {
+        input.value = value;
+        input.dispatchEvent(new Event('change'));
+    }
+    nullCheckedQuerySelectorAll(selector) {
+        const elements = this.modal.querySelectorAll(selector);
+        if (elements && elements.length > 0) {
+            return elements;
+        }
+        else {
+            throw new Error(`Cannot find ${selector} in ${this.id}`);
+        }
+    }
+    lockDownInput(selector) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.add("no-click"));
+    }
+    unlockInput(selector) {
+        this.nullCheckedQuerySelectorAll(selector).forEach(input => input.classList.remove("no-click"));
+    }
+    createNewInput(input, element) {
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
     }
     readyToSubmit() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -291,7 +301,7 @@ class Modal {
         });
     }
 }
-class CardModal extends Modal {
+class CardModal extends LanguageModal {
     constructor(id) {
         super(id);
         this.translations = [];
@@ -541,7 +551,7 @@ class EditCardModal extends CardModal {
         }
     }
 }
-class FetchDeckModal extends Modal {
+class FetchDeckModal extends LanguageModal {
     constructor(id) {
         super(id);
         const count = nullCheckedQuerySelector(this.modal, ".count");
@@ -569,9 +579,40 @@ class FetchDeckModal extends Modal {
         });
     }
 }
-class FetchTableModal extends Modal {
+class FetchTableModal extends LanguageModal {
     submit() {
         Server.goToTable(this.sourceLanguage.value, this.targetLanguage.value);
+    }
+}
+class LogInModal extends Modal {
+    constructor(id) {
+        super(id);
+        const username = nullCheckedQuerySelector(this.modal, ".username");
+        const password = nullCheckedQuerySelector(this.modal, ".password");
+        if (username && password) {
+            this.username = username;
+            this.password = password;
+        }
+        else {
+            throw Error(`Class 'username' and/or 'password' cannot be found in ${this.id}`);
+        }
+    }
+    submit() {
+        this.closeModal();
+    }
+}
+class SignUpModal extends LogInModal {
+    constructor(id) {
+        super(id);
+        const firstname = nullCheckedQuerySelector(this.modal, ".username");
+        const lastname = nullCheckedQuerySelector(this.modal, ".password");
+        if (firstname && lastname) {
+            this.firstname = firstname;
+            this.lastname = lastname;
+        }
+        else {
+            throw Error(`Class 'firstname' and/or 'lastname' cannot be found in ${this.id}`);
+        }
     }
 }
 class Ui {
@@ -580,6 +621,8 @@ class Ui {
         this.fetchTableModal = new FetchTableModal("#choose-language-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
+        this.logInModal = new LogInModal("#log-in-modal");
+        this.signUpModal = new SignUpModal("#sign-up-modal");
         const user = localStorage.getItem('current_user');
         const nextCardButton = document.querySelector(".begin");
         const editButton = document.querySelector(".edit");
@@ -652,6 +695,12 @@ class Ui {
         });
         this.addClickEventToSelector("#open-fetch-table-modal", () => {
             this.fetchTableModal.openModal();
+        });
+        this.addClickEventToSelector("#open-log-in-modal", () => {
+            this.logInModal.openModal();
+        });
+        this.addClickEventToSelector("#open-sign-up-modal", () => {
+            this.signUpModal.openModal();
         });
         if (user) {
             const currentSourceLanguage = localStorage.getItem('source_language');
