@@ -115,7 +115,7 @@ abstract class LanguageModal extends Modal {
             
 
             // this.addClickEventToModalElement(".submit", () => this.submit());
-            this.addClickEventToModalElement(".clear", () => this.clear());
+            
             // this.addClickEventToModalElements(".close", () => this.closeModal());
 
             // this.inputs.forEach(element => {
@@ -220,6 +220,9 @@ abstract class CardModal extends LanguageModal {
                 // wordInput.addOnChangeEvent(() => console.log("farts are smelly"));
                 }
             );
+
+            this.addClickEventToModalElement(".clear", () => this.clear());
+
         } else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
         }
@@ -468,9 +471,18 @@ class EditCardModal extends CardModal {
         )
     }
 
-    populateCard(card: BaseCard) {
+    async populateCard(card: BaseCard) {
         this.card = card;
         this.translations[0].value = card.translations[0].word;
+        const blob = this.card.audio;
+        if (blob) {
+            this.recorder.setAudioSource(blob);
+            // const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.card.audio}`);
+            // const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
+            // this.recorder.setAudioSource(audioURL);
+            this.recorder.clip  = blob;
+        }
+        
         if (card.translations.length > 1) {
             // this.removeTranslationInput();
             this.buildInputList(card.translations.slice(1));
@@ -481,7 +493,6 @@ class EditCardModal extends CardModal {
             this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
             this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
             this.sourceWord.value = card.sourceWord;
-            console.log(card.translations.length)
             for (let i = 0; i > this.translations.length; i++) {
                 this.translations[i].value = card.translations[i].word;
             }
@@ -490,6 +501,9 @@ class EditCardModal extends CardModal {
 
     submit(): void {
         if (this.card) {
+            if (this.recorder.clip) {
+                this.card.updateAudio(this.recorder.clip);
+            }
             Server.postEdit(this.card);
         }
     }

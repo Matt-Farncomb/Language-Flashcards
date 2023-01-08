@@ -1,4 +1,4 @@
-from fastapi import Query, Request, Response, UploadFile, File
+from fastapi import Query, Request, Response, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -7,7 +7,7 @@ from typing import List
 from app import app
 from deck import Deck, languages, new_languages, language_by_string
 from database import Database
-from schemas import Result, Refresh, UploadedDeck, BlobTest, Update
+from schemas import Result, Refresh, UploadedDeck, BlobTest, Update, Edit
 from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
 from fastapi.responses import FileResponse
@@ -79,7 +79,6 @@ def upload_deck(id: int):
 
 @app.get("/table/", response_class=HTMLResponse)
 def table(request: Request, source_language: str, target_language: str, is_custom: bool):  
-    print("worked")
     lang = [ v["language"] for k, v in new_languages.items()  ]
 
     db = Database()
@@ -226,12 +225,44 @@ def trimmed_wav():
     # something like this: clip = librosa.effects.trim(audio, top_db= 10)
     pass 
 
-@app.post("/update/")
-async def update_word(update: Update):
-    print(update)
+@app.post("/edit")
+async def edit(id: str = Form(...), source_word: str = Form(...), translations: str = Form(...), file: UploadFile = File(...)):
+    print(id)
+    print(source_word)
+    print(translations)
+    print(file.filename)
+    testfiles = []
+    contents = await file.read()
+    filename = file.filename
+    with open(filename, 'wb') as f:
+        f.write(contents)
+    testfiles.append(contents)
     db = Database()
-    db.update_word(update.id, update.source_word, update.translations)
-    return update
+    db.update_audio(id, testfiles)
+    # db.update_word(id, source_word, translations)
+    # pass
+    # print(id)
+    # print(source_word)
+    # print(translations)
+    # # print(file)
+    # upload_file = UploadFile(file)
+    # upload_file.filename = "blobby"
+    # # print(upload_file)
+    # testfiles = []
+   
+    # contents = await upload_file.read()
+    # filename = upload_file.filename
+    # with open(filename, 'wb') as f:
+    #     f.write(contents)
+        
+    # testfiles.append(contents)
+    # db = Database()
+    # print(upload_file)
+    # db.update_audio(id, testfiles)
+  
+    # db.update_audio(id, file)
+    # db.update_word(update.id, update.source_word, update.translations)
+    return "id"
 
 @app.post("/updateAudio/")
 async def update_audio(id: List[int], audio: List[UploadFile] = File(...)):
@@ -256,11 +287,15 @@ async def upload_deck(source_language: List[str], target_language: List[str], so
     loaded_translations = [ json.loads(translation) for translation in translations ]
     testFiles = []
     
+    print(file)
+    
     for e in range(len(file)):
         contents = await file[e].read()
         filename = file[e].filename
+        print(contents)
         with open(filename, 'wb') as f:
             f.write(contents)
+        
         # new_filename = f"{os.getcwd()}\\audio\{filename}"
         # os.renames(filename, f'{new_filename}.wav') 
         # audio, sr = librosa.load(f'{new_filename}.wav', sr= 8000, mono=True)

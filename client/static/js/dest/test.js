@@ -8,6 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class Word {
+    constructor(word, id = null, language = null, parent = null) {
+        this.word = word;
+        this.id = id;
+        this.language = language;
+        this.parent = parent;
+    }
+}
 class StoredDeck {
     static setItem(value) {
         localStorage.setItem("deck", value);
@@ -21,8 +29,13 @@ class StoredDeck {
         const json = localStorage.getItem("deck");
         if (json && json != "{}") {
             const localDeck = JSON.parse(json);
+            console.log(localDeck);
             const translationLanguage = localDeck[0].translations[0].__data__.language;
-            return localDeck.map(element => new PlayingCard(element.id, element.source_word.word, element.translations.map((translation) => translation.__data__), element.source_word.language, translationLanguage, element.source_word.voice));
+            return localDeck.map(element => new PlayingCard(element.id, element.source_word.word, element.translations.map((element) => {
+                const translation = element.__data__;
+                console.log(translation);
+                return new Word(translation["word"], translation["id"], translation["language"], translation["parent"]);
+            }), element.source_word.language, translationLanguage, element.source_word.voice));
         }
     }
 }
@@ -76,6 +89,9 @@ class BaseCard {
     }
     get audio() {
         return this._audio;
+    }
+    updateAudio(blob) {
+        this._audio = blob;
     }
 }
 class PlayingCard extends BaseCard {
@@ -136,6 +152,13 @@ class Recorder {
     }
     set clip(value) {
         this._clip = value;
+    }
+    setAudioSource(blob) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const fetchedAudio = yield fetch(`data:audio/ogg;base64,${blob}`);
+            const audioURL = window.URL.createObjectURL(yield fetchedAudio.blob());
+            this.audioPlayer.src = audioURL;
+        });
     }
     record() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -247,7 +270,6 @@ class LanguageModal extends Modal {
             this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
-            this.addClickEventToModalElement(".clear", () => this.clear());
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -315,6 +337,7 @@ class CardModal extends LanguageModal {
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
             });
+            this.addClickEventToModalElement(".clear", () => this.clear());
         }
         else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
@@ -529,24 +552,33 @@ class EditCardModal extends CardModal {
         });
     }
     populateCard(card) {
-        this.card = card;
-        this.translations[0].value = card.translations[0].word;
-        if (card.translations.length > 1) {
-            this.buildInputList(card.translations.slice(1));
-        }
-        this.addInputOnClick();
-        if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
-            this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
-            this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
-            this.sourceWord.value = card.sourceWord;
-            console.log(card.translations.length);
-            for (let i = 0; i > this.translations.length; i++) {
-                this.translations[i].value = card.translations[i].word;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.card = card;
+            this.translations[0].value = card.translations[0].word;
+            const blob = this.card.audio;
+            if (blob) {
+                this.recorder.setAudioSource(blob);
+                this.recorder.clip = blob;
             }
-        }
+            if (card.translations.length > 1) {
+                this.buildInputList(card.translations.slice(1));
+            }
+            this.addInputOnClick();
+            if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
+                this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
+                this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
+                this.sourceWord.value = card.sourceWord;
+                for (let i = 0; i > this.translations.length; i++) {
+                    this.translations[i].value = card.translations[i].word;
+                }
+            }
+        });
     }
     submit() {
         if (this.card) {
+            if (this.recorder.clip) {
+                this.card.updateAudio(this.recorder.clip);
+            }
             Server.postEdit(this.card);
         }
     }
@@ -618,7 +650,7 @@ class SignUpModal extends LogInModal {
 class Ui {
     constructor() {
         this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
-        this.fetchTableModal = new FetchTableModal("#choose-language-modal");
+        this.fetchTableModal = new FetchTableModal("#open-table-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
         this.logInModal = new LogInModal("#log-in-modal");
@@ -792,38 +824,46 @@ class Ui {
     setLanguagesInUI(playingCard) {
         const sourceLanguage = document.querySelector("#user-sl");
         const targetLanguage = document.querySelector("#user-tl");
-        if (sourceLanguage && targetLanguage) {
+        const toSpan = document.querySelector("#to-span");
+        if (sourceLanguage && targetLanguage && toSpan) {
             sourceLanguage.innerHTML = languageAbbreviations[playingCard.sourceLanguage];
             targetLanguage.innerHTML = languageAbbreviations[playingCard.targetLanguage];
+            toSpan.innerHTML = "to";
         }
     }
     clearLanguagesInUI() {
-        const sourceLanguage = document.querySelector("#user-sl");
-        const targetLanguage = document.querySelector("#user-tl");
-        if (sourceLanguage && targetLanguage) {
-            sourceLanguage.innerHTML = "";
-            targetLanguage.innerHTML = "";
+        const languageInfo = document.querySelectorAll(".displayed-language-info-container span");
+        if (languageInfo) {
+            languageInfo.forEach(element => element.innerHTML = "");
+        }
+        else {
+            logError("Could not find language info spans");
         }
     }
     loadCard(playingCard) {
         return __awaiter(this, void 0, void 0, function* () {
             this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
-            console.log(this.currentCard);
             this.front.innerHTML = this.currentCard.sourceWord;
             this.back.innerHTML = "";
             const ul = document.createElement("ul");
-            this.currentCard.translations.forEach((element) => {
+            this.currentCard.translations.forEach((translation) => {
                 const li = document.createElement("li");
-                li.innerHTML = element.word;
+                console.log(translation);
+                li.innerHTML = translation.word;
                 ul.appendChild(li);
             });
             this.back.appendChild(ul);
             this.play.classList.remove("is-hidden");
-            const fetchedAudio = yield fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
-            const audioURL = window.URL.createObjectURL(yield fetchedAudio.blob());
-            this.clip = new Audio();
-            this.clip.src = audioURL;
+            if (this.currentCard.audio) {
+                const fetchedAudio = yield fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
+                const audioURL = window.URL.createObjectURL(yield fetchedAudio.blob());
+                this.clip = new Audio();
+                this.clip.src = audioURL;
+            }
+            else {
+                logInfo(`Currently loaded card ${this.currentCard.sourceWord} has no audio`);
+            }
         });
     }
     unloadCard() {
@@ -984,30 +1024,20 @@ class Server {
     static postEdit(card) {
         return __awaiter(this, void 0, void 0, function* () {
             const editUrl = new URL(this.baseURL);
-            editUrl.pathname = "edit_card";
+            editUrl.pathname = "edit";
             const formData = new FormData();
+            formData.append("id", card.id);
             formData.append("source_word", card.sourceWord);
             formData.append("translations", JSON.stringify(card.translations));
             if (card.audio) {
-                formData.append("file", card.audio, card.sourceWord);
+                formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
             }
             const response = yield fetch(editUrl, { method: 'POST', body: formData });
             if (!response.ok) {
                 logError(`Could not submit edit: ${response.status}`);
             }
-        });
-    }
-    static getValidLanguages() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const languagesURL = new URL(this.baseURL);
-            languagesURL.pathname = "get_languages";
-            const response = yield fetch(languagesURL);
-            if (response.ok) {
-                return JSON.parse(yield response.json());
-            }
             else {
-                logError(`Could not get languages: ${response.status}`);
-                return [];
+                logInfo("Success!");
             }
         });
     }
@@ -1020,7 +1050,7 @@ class Server {
             formData.append("target_language", deck[0].targetLanguage);
             deck.forEach(card => {
                 formData.append("source_word", card.sourceWord);
-                formData.append("translations", JSON.stringify(card.translations));
+                formData.append("translations", JSON.stringify(card.translations.map(translation => translation.word)));
                 if (card.audio) {
                     formData.append("file", card.audio);
                 }
@@ -1050,6 +1080,20 @@ class Server {
                 StoredDeck.setItem(responseText);
             }
             return response;
+        });
+    }
+    static getValidLanguages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const languagesURL = new URL(this.baseURL);
+            languagesURL.pathname = "get_languages";
+            const response = yield fetch(languagesURL);
+            if (response.ok) {
+                return JSON.parse(yield response.json());
+            }
+            else {
+                logError(`Could not get languages: ${response.status}`);
+                return [];
+            }
         });
     }
     static updateScore(card, score) {
@@ -1119,13 +1163,5 @@ function addClickEventToSelector(containingDiv, selector, callback) {
     }
     else
         logError(`Could not find ${containingDiv}.`);
-}
-class Word {
-    constructor(word, id = null, language = null, parent = null) {
-        this.id = id;
-        this.word = word;
-        this.language = language;
-        this.parent = parent;
-    }
 }
 //# sourceMappingURL=test.js.map

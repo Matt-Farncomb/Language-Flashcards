@@ -5,8 +5,8 @@ class Word {
     parent: number | null;
 
     constructor(word: string, id: number | null=null, language: string | null=null, parent: number | null=null) {
-        this.id = id;
         this.word = word;
+        this.id = id;
         this.language = language;
         this.parent = parent;
     }

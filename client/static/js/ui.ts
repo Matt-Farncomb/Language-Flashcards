@@ -30,7 +30,7 @@ class Ui {
     constructor() {
         
         this.fetchDeckModal = new FetchDeckModal("#draw-deck-modal");
-        this.fetchTableModal = new FetchTableModal("#choose-language-modal");
+        this.fetchTableModal = new FetchTableModal("#open-table-modal");
         this.editModal = new EditCardModal("#edit-card-modal");
         this.createDeckModal = new CreateDeckModal("#create-deck-modal");
         this.logInModal = new LogInModal("#log-in-modal");
@@ -239,44 +239,60 @@ class Ui {
     private setLanguagesInUI(playingCard: PlayingCard) {
         const sourceLanguage = document.querySelector("#user-sl");
         const targetLanguage = document.querySelector("#user-tl");
+        const toSpan = document.querySelector("#to-span");
 
-        if (sourceLanguage && targetLanguage) {
+        if (sourceLanguage && targetLanguage && toSpan) {
             sourceLanguage.innerHTML = languageAbbreviations[playingCard.sourceLanguage];
             targetLanguage.innerHTML = languageAbbreviations[playingCard.targetLanguage];
+            toSpan.innerHTML = "to";
         }
     }
 
     private clearLanguagesInUI() {
-        const sourceLanguage = document.querySelector("#user-sl");
-        const targetLanguage = document.querySelector("#user-tl");
+        const languageInfo: NodeListOf<HTMLSpanElement> = document.querySelectorAll(".displayed-language-info-container span");
 
-        if (sourceLanguage && targetLanguage) {
-            sourceLanguage.innerHTML = "";
-            targetLanguage.innerHTML = "";
+        if (languageInfo) {
+            languageInfo.forEach(element => element.innerHTML = "");
+        } else {
+            logError("Could not find language info spans");
         }
+        // const sourceLanguage = document.querySelector("#user-sl");
+        // const targetLanguage = document.querySelector("#user-tl");
+        // const toSpan = document.querySelector("#to-span");
+
+
+        // if (sourceLanguage && targetLanguage && toSpan) {
+        //     sourceLanguage.innerHTML = "";
+        //     targetLanguage.innerHTML = "";
+        //     toSpan.innerHTML = "";
+        // }
     }
 
     // Update card UI to display playingCard data
     public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.setLanguagesInUI(playingCard)
         this.currentCard = playingCard;
-        console.log(this.currentCard);
+
         this.front.innerHTML = this.currentCard.sourceWord;
         this.back.innerHTML = "";
         const ul = document.createElement("ul");
-        this.currentCard.translations.forEach((element: any) => {
+        this.currentCard.translations.forEach((translation: any) => {
             const li = document.createElement("li");
-            li.innerHTML = element.word;
+            console.log(translation)
+            li.innerHTML = translation.word;
             ul.appendChild(li);
         } )
         this.back.appendChild(ul);
         this.play.classList.remove("is-hidden");
 
-        const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
-        const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
-
-        this.clip = new Audio();
-        this.clip.src = audioURL;
+        if (this.currentCard.audio) {
+            const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.currentCard.audio}`);
+            const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
+            this.clip = new Audio();
+            this.clip.src = audioURL;
+        } else {
+            logInfo(`Currently loaded card ${this.currentCard.sourceWord} has no audio`)
+        }
     }
 
     // Update card UI to display no data

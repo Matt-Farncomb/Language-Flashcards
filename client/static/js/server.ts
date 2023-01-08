@@ -7,35 +7,27 @@ class Server {
     // post edited card to server
     static async postEdit(card: BaseCard) {
         const editUrl = new URL(this.baseURL);
-        editUrl.pathname = "edit_card";
+        editUrl.pathname = "edit";
 
         const formData = new FormData();
-        formData.append("source_word", card.sourceWord)
+
+
+        formData.append("id", card.id);
+        formData.append("source_word", card.sourceWord);
         formData.append("translations", JSON.stringify(card.translations));
 
         if (card.audio) {
-            formData.append("file", card.audio, card.sourceWord); // file and filename        
+            formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
         }
        
         const response = await fetch(editUrl, {method: 'POST', body: formData});
+        
         if (!response.ok) {
             logError(`Could not submit edit: ${response.status}`)
-        }
-    }
-
-    static async getValidLanguages(): Promise<string[]> {
-        const languagesURL = new URL(this.baseURL);
-        languagesURL.pathname = "get_languages";
-
-        const response = await fetch(languagesURL);
-        if (response.ok) {
-            return JSON.parse(await response.json());
         } else {
-            logError(`Could not get languages: ${response.status}`);
-            return []; 
+            logInfo("Success!");
         }
     }
-
 
     // post new card deck to server
     static async uploadDeck(deck: BaseCard[]) {
@@ -47,7 +39,7 @@ class Server {
         formData.append("target_language", deck[0].targetLanguage);
         deck.forEach(card => {
             formData.append("source_word", card.sourceWord);
-            formData.append("translations", JSON.stringify(card.translations));
+            formData.append("translations", JSON.stringify(card.translations.map(translation => translation.word)));
             if (card.audio) {
                 formData.append("file", card.audio);
             }
@@ -79,6 +71,19 @@ class Server {
         
         return response;
         
+    }
+
+    static async getValidLanguages(): Promise<string[]> {
+        const languagesURL = new URL(this.baseURL);
+        languagesURL.pathname = "get_languages";
+
+        const response = await fetch(languagesURL);
+        if (response.ok) {
+            return JSON.parse(await response.json());
+        } else {
+            logError(`Could not get languages: ${response.status}`);
+            return []; 
+        }
     }
 
     // post new score to server and update local score of same card on success to ensure consistency

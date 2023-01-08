@@ -22,11 +22,15 @@ class UploadedDeck(BaseModel):
     
 class BlobTest(BaseModel):
     blob: bytes
+    
+class Edit(BaseModel):
+    id: str
+    source_word: str    
 
 class Update(BaseModel):
-    id: int
+    id: str
     source_word: str
-    translations: List[str]
+    # translations: List[str]
 
 
     

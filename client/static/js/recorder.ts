@@ -44,6 +44,12 @@ class Recorder {
         this._clip = value;
     }
 
+    async setAudioSource(blob: Blob) {
+        const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${blob}`);
+        const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
+        this.audioPlayer.src = audioURL;
+    }
+
 
     async record() {
 

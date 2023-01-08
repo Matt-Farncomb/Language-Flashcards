@@ -39,7 +39,7 @@
 
 {% block footer %}
     <button type="button" class="button is-success close disabledPointer submit">{% block submitstring %}{% endblock %}</button>
-    <button class="button is-danger clear">Clear</button>
+    {% block footer_extra %}{% endblock %}
     <button class="button close">Cancel</button>
 {% endblock %}
 

@@ -11,6 +11,7 @@
       "sourceMap": true
   },
   "files": [
+    "client/static/js/word.ts",
     "client/static/js/storedDeck.ts",
     "client/static/js/cards/deck.ts",
     "client/static/js/cards/baseCard.ts",

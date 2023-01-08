@@ -40,4 +40,8 @@ class BaseCard {
         return this._audio;
     }
 
+    public updateAudio(blob: Blob) {
+        this._audio = blob;
+    }
+
 }

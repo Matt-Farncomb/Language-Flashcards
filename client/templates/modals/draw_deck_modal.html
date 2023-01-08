@@ -1,4 +1,4 @@
-{% extends 'modals/include_duo.html' %}
+{% extends 'modals/choose_language_base_modal.html' %}
 
 {% block id %}draw-deck-modal{% endblock %}
 {% block titlestring %}Get new deck{% endblock %}
@@ -9,4 +9,5 @@
 {% block translation_language_id %}translation-language{% endblock %}
 {% block submitid %}draw-deck{% endblock %}
 {% block submitstring %}Draw Deck{% endblock %}
+{% block footer_extra %}<button class="button is-danger clear">Clear</button>{% endblock %}
 {% block closemodalclass %}close-deck-modal{% endblock %}

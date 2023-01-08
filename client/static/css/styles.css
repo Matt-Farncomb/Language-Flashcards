@@ -115,3 +115,7 @@ nav .buttons .button:last-child {
   .disabledText {
     color: lightgrey !important;
   }
+
+  .displayed-language-info-container {
+    min-height: 3em;
+  }
