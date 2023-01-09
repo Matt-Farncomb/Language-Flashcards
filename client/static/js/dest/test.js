@@ -332,7 +332,7 @@ class CardModal extends LanguageModal {
         const recorderDiv = this.modal.querySelector(`.recorder`);
         if (sourceWord && translations.length > 0 && recorderDiv) {
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
-            this.recorder = new Recorder(recorderDiv);
+            this._recorder = new Recorder(recorderDiv);
             translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             this.translations.forEach(wordInput => {
                 wordInput.addSiblings(this.translations);
@@ -342,6 +342,9 @@ class CardModal extends LanguageModal {
         else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
         }
+    }
+    get recorder() {
+        return this._recorder;
     }
     validateWord(wordInput) {
         if (wordInput.validity.patternMismatch || wordInput.value == "") {
@@ -555,7 +558,7 @@ class EditCardModal extends CardModal {
         return __awaiter(this, void 0, void 0, function* () {
             this.card = card;
             this.translations[0].value = card.translations[0].word;
-            const blob = this.card.audio;
+            const blob = card.audio;
             if (blob) {
                 this.recorder.setAudioSource(blob);
                 this.recorder.clip = blob;
@@ -575,11 +578,14 @@ class EditCardModal extends CardModal {
         });
     }
     submit() {
+        console.log("subvmitting");
         if (this.card) {
+            console.log("card exists");
             if (this.recorder.clip) {
                 this.card.updateAudio(this.recorder.clip);
             }
-            Server.postEdit(this.card);
+            const cardForUpload = new TestCard(this, this.card.id);
+            Server.postEdit(cardForUpload);
         }
     }
 }
@@ -667,7 +673,6 @@ class Ui {
         const answerInput = document.querySelector("#answer");
         if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && checkButton && answerInput && flipButtons.length > 0) {
             this.deck = new Deck();
-            this.deck.load();
             this.front = front;
             this.back = back;
             this.nextCard = nextCardButton;
@@ -1026,18 +1031,20 @@ class Server {
             const editUrl = new URL(this.baseURL);
             editUrl.pathname = "edit";
             const formData = new FormData();
-            formData.append("id", card.id);
-            formData.append("source_word", card.sourceWord);
-            formData.append("translations", JSON.stringify(card.translations));
-            if (card.audio) {
-                formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
-            }
-            const response = yield fetch(editUrl, { method: 'POST', body: formData });
-            if (!response.ok) {
-                logError(`Could not submit edit: ${response.status}`);
-            }
-            else {
-                logInfo("Success!");
+            if (card.sourceWord) {
+                formData.append("id", card.id);
+                formData.append("source_word", card.sourceWord);
+                formData.append("translations", JSON.stringify(card.translations));
+                if (card.audio) {
+                    formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
+                }
+                const response = yield fetch(editUrl, { method: 'POST', body: formData });
+                if (!response.ok) {
+                    logError(`Could not submit edit: ${response.status}`);
+                }
+                else {
+                    logInfo("Success!");
+                }
             }
         });
     }
@@ -1163,5 +1170,53 @@ function addClickEventToSelector(containingDiv, selector, callback) {
     }
     else
         logError(`Could not find ${containingDiv}.`);
+}
+class TestCard {
+    constructor(modal, id) {
+        this.modal = modal;
+        this.modalDiv = modal.modal;
+        this._id = id;
+    }
+    get id() {
+        return this._id;
+    }
+    get sourceLanguage() {
+        const sourceLanguage = this.modalDiv.querySelector(".source-language");
+        if (sourceLanguage) {
+            return sourceLanguage.value;
+        }
+        console.log("ccan't find source language");
+    }
+    get targetLanguage() {
+        const targetLanguage = this.modalDiv.querySelector(".translation-language");
+        if (targetLanguage) {
+            return targetLanguage.value;
+        }
+        console.log("ccan't find target Language");
+    }
+    get sourceWord() {
+        const sourceWord = this.modalDiv.querySelector(".source");
+        if (sourceWord) {
+            return sourceWord.value;
+        }
+        console.log("ccan't find source Word");
+    }
+    get translations() {
+        const translation_values = [];
+        const translation_inputs = this.modalDiv.querySelectorAll(".translation");
+        if (translation_inputs.length > 0) {
+            translation_inputs.forEach(element => translation_values.push(element.value));
+        }
+        else {
+            console.log("ccan't find source translations");
+        }
+        return translation_values;
+    }
+    get audio() {
+        return this.modal.recorder.clip;
+    }
+    updateAudio(blob) {
+        this._audio = blob;
+    }
 }
 //# sourceMappingURL=test.js.map

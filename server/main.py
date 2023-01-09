@@ -228,7 +228,6 @@ def trimmed_wav():
 @app.post("/edit")
 async def edit(id: str = Form(...), source_word: str = Form(...), translations: str = Form(...), file: UploadFile = File(...)):
     print(id)
-    print(source_word)
     print(translations)
     print(file.filename)
     testfiles = []
@@ -239,7 +238,7 @@ async def edit(id: str = Form(...), source_word: str = Form(...), translations: 
     testfiles.append(contents)
     db = Database()
     db.update_audio(id, testfiles)
-    # db.update_word(id, source_word, translations)
+    db.update_word(id, source_word, translations)
     # pass
     # print(id)
     # print(source_word)

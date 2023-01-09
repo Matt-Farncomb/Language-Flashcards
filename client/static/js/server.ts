@@ -5,28 +5,31 @@ class Server {
     static validLangauges: Promise<string[]> = this.getValidLanguages();
 
     // post edited card to server
-    static async postEdit(card: BaseCard) {
+    static async postEdit(card: TestCard) {
+    // static async postEdit(card: BaseCard) {
         const editUrl = new URL(this.baseURL);
         editUrl.pathname = "edit";
 
         const formData = new FormData();
 
-
-        formData.append("id", card.id);
-        formData.append("source_word", card.sourceWord);
-        formData.append("translations", JSON.stringify(card.translations));
-
-        if (card.audio) {
-            formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
+        if (card.sourceWord) {
+            formData.append("id", card.id);
+            formData.append("source_word", card.sourceWord);
+            formData.append("translations", JSON.stringify(card.translations));
+    
+            if (card.audio) {
+                formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
+            }
+           
+            const response = await fetch(editUrl, {method: 'POST', body: formData});
+            
+            if (!response.ok) {
+                logError(`Could not submit edit: ${response.status}`)
+            } else {
+                logInfo("Success!");
+            }
         }
        
-        const response = await fetch(editUrl, {method: 'POST', body: formData});
-        
-        if (!response.ok) {
-            logError(`Could not submit edit: ${response.status}`)
-        } else {
-            logInfo("Success!");
-        }
     }
 
     // post new card deck to server

@@ -28,7 +28,7 @@ abstract class Modal {
         return this._id;
     }
 
-    protected get modal() {
+    public get modal() {
         return this._modal;
     }
 
@@ -192,7 +192,7 @@ abstract class LanguageModal extends Modal {
 
 abstract class CardModal extends LanguageModal {
 
-    protected recorder;
+    private _recorder: Recorder;
     protected sourceWord: WordInput;
     protected translations: WordInput[] = [];    
 
@@ -210,7 +210,7 @@ abstract class CardModal extends LanguageModal {
         if (sourceWord && translations.length > 0 && recorderDiv) {
 
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
-            this.recorder = new Recorder(recorderDiv);
+            this._recorder = new Recorder(recorderDiv);
                       
             // create a word input for every translation
             translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
@@ -226,6 +226,10 @@ abstract class CardModal extends LanguageModal {
         } else {
             throw Error(`Class 'source' or 'translation' could not be found in ${this.id}`);
         }
+    }
+
+    get recorder() {
+        return this._recorder;
     }
 
     validateWord(wordInput: HTMLInputElement):boolean {
@@ -474,7 +478,7 @@ class EditCardModal extends CardModal {
     async populateCard(card: BaseCard) {
         this.card = card;
         this.translations[0].value = card.translations[0].word;
-        const blob = this.card.audio;
+        const blob = card.audio;
         if (blob) {
             this.recorder.setAudioSource(blob);
             // const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.card.audio}`);
@@ -499,12 +503,20 @@ class EditCardModal extends CardModal {
         }
     }
 
+    // updateCard() {
+    //     this.card.sourceWord = this.sourceWord.value;
+    // }
+
     submit(): void {
+        console.log("subvmitting")
         if (this.card) {
+            console.log("card exists")
             if (this.recorder.clip) {
                 this.card.updateAudio(this.recorder.clip);
             }
-            Server.postEdit(this.card);
+            const cardForUpload = new TestCard(this, this.card.id);
+            Server.postEdit(cardForUpload);
+            // Server.postEdit(this.card);
         }
     }
 }
