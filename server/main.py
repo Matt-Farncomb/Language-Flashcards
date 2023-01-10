@@ -180,6 +180,8 @@ def get_deck(source_language: str, target_language: str, count: int):
 
     for card in deck.deck:
         print(card.source_word.word)
+        for e in card.translations:
+            print(e.word)
     return deck.deck
 
 
@@ -228,7 +230,8 @@ def trimmed_wav():
 @app.post("/edit")
 async def edit(id: str = Form(...), source_word: str = Form(...), translations: str = Form(...), file: UploadFile = File(...)):
     print(id)
-    print(translations)
+    translations = json.loads(translations)
+    print(f"translations: {translations}")
     print(file.filename)
     testfiles = []
     contents = await file.read()
@@ -302,7 +305,8 @@ async def upload_deck(source_language: List[str], target_language: List[str], so
         # sf.write('poo.wav', clip[0], sr)
         
         testFiles.append(contents)
-    
+    print(f"source_language: {source_language[0]}")
+    print(f"target_language: {target_language[0]}")
     new_deck = Deck(source_language[0], target_language[0])
     new_deck.add_custom_deck_two(source_word, loaded_translations, testFiles)
     new_deck.upload_deck(is_custom=True)

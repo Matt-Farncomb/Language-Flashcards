@@ -158,12 +158,14 @@ class Database:
         
         source_word = WordModel.get(WordModel.id == id)
         source_word.word = word
+        translation_language = source_word.translations[0].language
         
         for old_translation in source_word.translations:
             old_translation.delete_instance() 
 
         for translation in translations:
-            new_translation = WordModel(word=translation, parent=source_word, language=source_word.language)
+            print(f"new word model translation: {translation}")
+            new_translation = WordModel(word=translation, parent=source_word, language=translation_language)
             new_translation.save()
         
         source_word.save()

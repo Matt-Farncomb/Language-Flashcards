@@ -107,6 +107,8 @@ class Deck:
             new_word = Word(source_words[i], self.source_language, audio_files[i])
             new_translations = []
             for e in translations[i]:
+                print(f"sl: {self.source_language}")
+                print(f"tl: {self.target_language}")
                 new_translations.append(Word(e, self.target_language))
             new_card = Card(None, new_word, new_translations)
             self.deck.append(new_card)

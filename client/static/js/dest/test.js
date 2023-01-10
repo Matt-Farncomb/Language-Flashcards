@@ -586,6 +586,7 @@ class EditCardModal extends CardModal {
             }
             const cardForUpload = new TestCard(this, this.card.id);
             Server.postEdit(cardForUpload);
+            this.closeModal();
         }
     }
 }
