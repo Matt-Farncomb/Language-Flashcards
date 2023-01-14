@@ -49,7 +49,7 @@ class Ui {
 
         if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && checkButton && answerInput && flipButtons.length > 0) {
             this.deck = new Deck();
-            // this.deck.load();
+            this.deck.load();
             this.front = front;
             this.back = back;
             this.nextCard = nextCardButton;
@@ -105,7 +105,7 @@ class Ui {
 
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard) {
-                this.editModal.populateCard(this.currentCard);
+                this.editModal.populateCard(this.currentCard, new UiCard(this.clip));
                 this.editModal.openModal();
                 }
             }

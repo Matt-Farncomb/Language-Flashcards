@@ -17,7 +17,6 @@ class StoredDeck {
         if (json && json != "{}") {
 
             const localDeck: Record<string, any>[] = JSON.parse(json);
-            console.log(localDeck)
             const translationLanguage = localDeck[0].translations[0].__data__.language;
        
             return localDeck.map(element => new PlayingCard(
@@ -25,7 +24,6 @@ class StoredDeck {
                 element.source_word.word,
                 element.translations.map((element: any) => {
                     const translation = element.__data__;
-                    console.log(translation);
                     return new Word(
                         translation["word"],
                         translation["id"],

@@ -19,6 +19,7 @@ const languageAbbreviations: Record<string, string> = {
 
 const deckUpdated = new CustomEvent('deckUpdated');
 const deckCleared = new CustomEvent('deckCleared');
+const clipCreated = new CustomEvent('clipCreated');
 
 function logError(message: string) {
     if (LOGGING) console.error(message);

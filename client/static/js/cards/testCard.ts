@@ -1,10 +1,6 @@
 class TestCard {
 
     protected _id: string;
-    // protected _sourceLanguage: string;
-    // protected _targetLanguage: string;
-    // protected _sourceWord: string;
-    // protected _translations: Word[];
     protected _audio: Blob | undefined;
     private modal: CardModal
     private modalDiv: HTMLDivElement;
@@ -14,15 +10,6 @@ class TestCard {
         this.modalDiv = modal.modal;
         this._id = id;
     }
-
-    // constructor() {
-    //     this._id = this.id;
-    //     this._sourceWord = sourceWord; 
-    //     this._translations = translations;
-    //     this._sourceLanguage = sourceLanguage;
-    //     this._targetLanguage = targetLanguage;
-    //     this._audio = audio;
-    // }
 
     public get id() {
         return this._id;
@@ -67,12 +54,10 @@ class TestCard {
         return translation_values;
     }
 
-    public get audio() {
-        return this.modal.recorder.clip;
-    }
-
-    public updateAudio(blob: Blob) {
-        this._audio = blob;
+    public get audio()  {
+        const clip = this.modal.recorder.clip;
+        console.log(clip);
+        return clip;
     }
 
 }

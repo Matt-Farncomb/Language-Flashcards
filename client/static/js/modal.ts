@@ -132,10 +132,10 @@ abstract class LanguageModal extends Modal {
 
     }
 
-    protected updateInputValue(input: HTMLInputElement, value: string) {
-        input.value = value;
-        input.dispatchEvent(new Event('change'));   
-    }
+    // protected updateInputValue(input: HTMLInputElement, value: string) {
+    //     input.value = value;
+    //     input.dispatchEvent(new Event('change'));   
+    // }
 
     nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
       
@@ -425,10 +425,15 @@ class CreateDeckModal extends CardModal {
 class EditCardModal extends CardModal {
 
     // card will be initialised whenever this modal is opened
+    private uiCard: UiCard | undefined;
 
     constructor(id: string) {
         super(id);
         // this.buildTranslationInputList();
+
+        addEventListener("clipCreated", () => { 
+            this.toggleSubmitButton();
+        });
 
     }
 
@@ -475,16 +480,17 @@ class EditCardModal extends CardModal {
         )
     }
 
-    async populateCard(card: BaseCard) {
+    async populateCard(card: BaseCard, uiCard: UiCard) {
         this.card = card;
+        this.uiCard = uiCard;
         this.translations[0].value = card.translations[0].word;
         const blob = card.audio;
         if (blob) {
             this.recorder.setAudioSource(blob);
-            // const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.card.audio}`);
+            const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.card.audio}`);
             // const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
             // this.recorder.setAudioSource(audioURL);
-            this.recorder.clip  = blob;
+            this.recorder.clip  = await fetchedAudio.blob();
         }
         
         if (card.translations.length > 1) {
@@ -511,12 +517,14 @@ class EditCardModal extends CardModal {
         console.log("subvmitting")
         if (this.card) {
             console.log("card exists")
-            if (this.recorder.clip) {
-                this.card.updateAudio(this.recorder.clip);
-            }
+            // if (this.recorder.clip) {
+            //     this.card.updateAudio(this.recorder.clip);
+            // }
             const cardForUpload = new TestCard(this, this.card.id);
             Server.postEdit(cardForUpload);
+            this.uiCard?.update(cardForUpload, this.recorder.audioSrc);
             this.closeModal();
+            
             // Server.postEdit(this.card);
         }
     }

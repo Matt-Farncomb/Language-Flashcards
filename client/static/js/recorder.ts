@@ -40,6 +40,10 @@ class Recorder {
         return this._clip;
     }
 
+    get audioSrc() {
+        return this.audioPlayer.src;
+    }
+
     set clip(value) {
         this._clip = value;
     }
@@ -73,6 +77,7 @@ class Recorder {
                 const audioURL: string = window.URL.createObjectURL(blob);
                 this.audioPlayer.src = audioURL;
                 this.clip = blob;
+                dispatchEvent(clipCreated);
             } 
 
          } else {
