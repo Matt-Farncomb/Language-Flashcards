@@ -1,4 +1,4 @@
-class TestCard {
+class EditedCard {
 
     protected _id: string;
     protected _audio: Blob | undefined;

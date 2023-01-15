@@ -4,8 +4,10 @@ class Server {
 
     static validLangauges: Promise<string[]> = this.getValidLanguages();
 
+    static fetchedDeckLength: string;
+
     // post edited card to server
-    static async postEdit(card: TestCard) {
+    static async postEdit(card: EditedCard, deckSize: number) {
     // static async postEdit(card: BaseCard) {
         const editUrl = new URL(this.baseURL);
         editUrl.pathname = "edit";
@@ -20,6 +22,9 @@ class Server {
             if (card.audio) {
                 formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
             }
+
+            const sl = card.sourceLanguage;
+            const tl = card.targetLanguage;
            
             const response = await fetch(editUrl, {method: 'POST', body: formData});
             
@@ -27,6 +32,13 @@ class Server {
                 logError(`Could not submit edit: ${response.status}`)
             } else {
                 logInfo("Success!");
+                setTimeout( () => {
+                    console.log("trying to get");
+                    console.log(tl)
+                    if (sl && tl) {
+                        Server.getDeck(JSON.stringify(deckSize), sl, tl);
+                    }
+                }, 3000);
             }
         }
        
@@ -57,11 +69,13 @@ class Server {
     }
 
     static async getDeck(count: string, sourceLanguage: string, targetLanguage: string): Promise<Response> {
+        console.log("getting")
         const editURL = new URL(this.baseURL);
         editURL.pathname = "get_deck";
         editURL.searchParams.append("count", count);
         editURL.searchParams.append("source_language", sourceLanguage);
         editURL.searchParams.append("target_language", targetLanguage);
+        this.fetchedDeckLength = count;
 
         const response = await fetch(editURL);
         if (!response.ok) {

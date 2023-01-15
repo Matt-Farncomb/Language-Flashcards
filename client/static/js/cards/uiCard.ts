@@ -5,11 +5,6 @@ class UiCard {
     private _translations: HTMLUListElement;
     public audio: HTMLAudioElement | undefined;
 
-    // nextCard: HTMLAnchorElement;
-    // edit: HTMLAnchorElement;
-    // play: HTMLButtonElement;
-    // flip: NodeListOf<HTMLButtonElement>;
-
     constructor(clip: HTMLAudioElement | undefined) {
         this.cardDiv = document.querySelector(".outer-card");
         this.audio = clip;
@@ -46,7 +41,8 @@ class UiCard {
         })
     }
 
-    update(card: TestCard, audioURL: string) {
+
+    update(card: EditedCard, audioURL: string) {
         console.log("updating")
         console.log(card)
         if (card.sourceWord) {

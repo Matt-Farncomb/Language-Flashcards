@@ -104,8 +104,8 @@ class Ui {
 
 
         this.addClickEventToSelector("#open-edit-card-modal", () => {
-            if (this.currentCard) {
-                this.editModal.populateCard(this.currentCard, new UiCard(this.clip));
+            if (this.currentCard && this.deck) {
+                this.editModal.populateCard(this.currentCard, new UiCard(this.clip), this.deck);
                 this.editModal.openModal();
                 }
             }

@@ -426,6 +426,7 @@ class EditCardModal extends CardModal {
 
     // card will be initialised whenever this modal is opened
     private uiCard: UiCard | undefined;
+    private deck: Deck | undefined;
 
     constructor(id: string) {
         super(id);
@@ -480,9 +481,10 @@ class EditCardModal extends CardModal {
         )
     }
 
-    async populateCard(card: BaseCard, uiCard: UiCard) {
+    async populateCard(card: BaseCard, uiCard: UiCard, deck: Deck) {
         this.card = card;
         this.uiCard = uiCard;
+        this.deck = deck;
         this.translations[0].value = card.translations[0].word;
         const blob = card.audio;
         if (blob) {
@@ -509,9 +511,6 @@ class EditCardModal extends CardModal {
         }
     }
 
-    // updateCard() {
-    //     this.card.sourceWord = this.sourceWord.value;
-    // }
 
     submit(): void {
         console.log("subvmitting")
@@ -520,9 +519,24 @@ class EditCardModal extends CardModal {
             // if (this.recorder.clip) {
             //     this.card.updateAudio(this.recorder.clip);
             // }
-            const cardForUpload = new TestCard(this, this.card.id);
-            Server.postEdit(cardForUpload);
+            const cardForUpload = new EditedCard(this, this.card.id);
+
+            const newCard = new PlayingCard(
+                this.id, 
+                this.sourceWord.value, 
+                this.translationValues().map(translation => new Word(translation)), 
+                this.sourceLanguage.value, 
+                this.targetLanguage.value, 
+                this.recorder.clip ? this.recorder.clip : null
+            );
+            
+            Server.postEdit(cardForUpload, this.deck?.deck.length ? this.deck?.deck.length : 1);
             this.uiCard?.update(cardForUpload, this.recorder.audioSrc);
+            // this.deck?.replaceCard(newCard);
+            // const stringified = this.deck?.deck;
+            // console.log(stringified);
+            // console.log(JSON.stringify(stringified));
+            // StoredDeck.setItem(JSON.stringify(stringified))
             this.closeModal();
             
             // Server.postEdit(this.card);

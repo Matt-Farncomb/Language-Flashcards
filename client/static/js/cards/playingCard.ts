@@ -4,7 +4,7 @@ class PlayingCard extends BaseCard {
     private _correctCount: number;
     private _difficulty: string;
 
-    constructor(id: string, sourceWord: string, translations: Word[], sourceLanguage: string, targetLanguage: string, audio: Blob) { 
+    constructor(id: string, sourceWord: string, translations: Word[], sourceLanguage: string, targetLanguage: string, audio: Blob | null) { 
         super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
         this._incorrectCount = this.incorrectCount;
         this._correctCount = this.correctCount;

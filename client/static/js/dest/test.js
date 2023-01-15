@@ -39,19 +39,22 @@ class StoredDeck {
 }
 class Deck {
     constructor() {
-        this.deck = [];
+        this._deck = [];
     }
     get loaded() {
         return this.deck.length > 0;
     }
+    get deck() {
+        return this._deck;
+    }
     load() {
         const storedDeck = StoredDeck.get();
         if (storedDeck) {
-            this.deck = storedDeck;
+            this._deck = storedDeck;
         }
     }
     clear() {
-        this.deck = [];
+        this._deck = [];
     }
     drawCard() {
         if (this.deck) {
@@ -59,6 +62,10 @@ class Deck {
             this.deck.push(top);
             return top;
         }
+    }
+    replaceCard(newCard) {
+        this._deck = this.deck.slice(0, -1);
+        this.deck.push(newCard);
     }
 }
 class BaseCard {
@@ -555,10 +562,11 @@ class EditCardModal extends CardModal {
             }
         });
     }
-    populateCard(card, uiCard) {
+    populateCard(card, uiCard, deck) {
         return __awaiter(this, void 0, void 0, function* () {
             this.card = card;
             this.uiCard = uiCard;
+            this.deck = deck;
             this.translations[0].value = card.translations[0].word;
             const blob = card.audio;
             if (blob) {
@@ -581,13 +589,14 @@ class EditCardModal extends CardModal {
         });
     }
     submit() {
-        var _a;
+        var _a, _b, _c;
         console.log("subvmitting");
         if (this.card) {
             console.log("card exists");
-            const cardForUpload = new TestCard(this, this.card.id);
-            Server.postEdit(cardForUpload);
-            (_a = this.uiCard) === null || _a === void 0 ? void 0 : _a.update(cardForUpload, this.recorder.audioSrc);
+            const cardForUpload = new EditedCard(this, this.card.id);
+            const newCard = new PlayingCard(this.id, this.sourceWord.value, this.translationValues().map(translation => new Word(translation)), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
+            Server.postEdit(cardForUpload, ((_a = this.deck) === null || _a === void 0 ? void 0 : _a.deck.length) ? (_b = this.deck) === null || _b === void 0 ? void 0 : _b.deck.length : 1);
+            (_c = this.uiCard) === null || _c === void 0 ? void 0 : _c.update(cardForUpload, this.recorder.audioSrc);
             this.closeModal();
         }
     }
@@ -723,8 +732,8 @@ class Ui {
             throw logError("Could not create UI");
         }
         this.addClickEventToSelector("#open-edit-card-modal", () => {
-            if (this.currentCard) {
-                this.editModal.populateCard(this.currentCard, new UiCard(this.clip));
+            if (this.currentCard && this.deck) {
+                this.editModal.populateCard(this.currentCard, new UiCard(this.clip), this.deck);
                 this.editModal.openModal();
             }
         });
@@ -1030,7 +1039,7 @@ catch (exception) {
 }
 var _a;
 class Server {
-    static postEdit(card) {
+    static postEdit(card, deckSize) {
         return __awaiter(this, void 0, void 0, function* () {
             const editUrl = new URL(this.baseURL);
             editUrl.pathname = "edit";
@@ -1042,12 +1051,21 @@ class Server {
                 if (card.audio) {
                     formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
                 }
+                const sl = card.sourceLanguage;
+                const tl = card.targetLanguage;
                 const response = yield fetch(editUrl, { method: 'POST', body: formData });
                 if (!response.ok) {
                     logError(`Could not submit edit: ${response.status}`);
                 }
                 else {
                     logInfo("Success!");
+                    setTimeout(() => {
+                        console.log("trying to get");
+                        console.log(tl);
+                        if (sl && tl) {
+                            Server.getDeck(JSON.stringify(deckSize), sl, tl);
+                        }
+                    }, 3000);
                 }
             }
         });
@@ -1077,11 +1095,13 @@ class Server {
     }
     static getDeck(count, sourceLanguage, targetLanguage) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("getting");
             const editURL = new URL(this.baseURL);
             editURL.pathname = "get_deck";
             editURL.searchParams.append("count", count);
             editURL.searchParams.append("source_language", sourceLanguage);
             editURL.searchParams.append("target_language", targetLanguage);
+            this.fetchedDeckLength = count;
             const response = yield fetch(editURL);
             if (!response.ok) {
                 logError(`Could not draw deck: ${response.status}`);
@@ -1176,7 +1196,7 @@ function addClickEventToSelector(containingDiv, selector, callback) {
     else
         logError(`Could not find ${containingDiv}.`);
 }
-class TestCard {
+class EditedCard {
     constructor(modal, id) {
         this.modal = modal;
         this.modalDiv = modal.modal;
