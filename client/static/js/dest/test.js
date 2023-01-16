@@ -526,6 +526,7 @@ class CreateDeckModal extends CardModal {
 class EditCardModal extends CardModal {
     constructor(id) {
         super(id);
+        this.deckSize = 1;
         addEventListener("clipCreated", () => {
             this.toggleSubmitButton();
         });
@@ -562,11 +563,10 @@ class EditCardModal extends CardModal {
             }
         });
     }
-    populateCard(card, uiCard, deck) {
+    populateCard(card, deckSize = 1) {
         return __awaiter(this, void 0, void 0, function* () {
             this.card = card;
-            this.uiCard = uiCard;
-            this.deck = deck;
+            this.deckSize = deckSize;
             this.translations[0].value = card.translations[0].word;
             const blob = card.audio;
             if (blob) {
@@ -589,14 +589,11 @@ class EditCardModal extends CardModal {
         });
     }
     submit() {
-        var _a, _b, _c;
         console.log("subvmitting");
         if (this.card) {
             console.log("card exists");
             const cardForUpload = new EditedCard(this, this.card.id);
-            const newCard = new PlayingCard(this.id, this.sourceWord.value, this.translationValues().map(translation => new Word(translation)), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
-            Server.postEdit(cardForUpload, ((_a = this.deck) === null || _a === void 0 ? void 0 : _a.deck.length) ? (_b = this.deck) === null || _b === void 0 ? void 0 : _b.deck.length : 1);
-            (_c = this.uiCard) === null || _c === void 0 ? void 0 : _c.update(cardForUpload, this.recorder.audioSrc);
+            Server.postEdit(cardForUpload, this.deckSize);
             this.closeModal();
         }
     }
@@ -716,6 +713,8 @@ class Ui {
             addEventListener('deckUpdated', () => {
                 var _a, _b;
                 (_a = this.deck) === null || _a === void 0 ? void 0 : _a.load();
+                this.next();
+                console.log("called");
                 (_b = this.nextCard) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
                 this.nextCard.onclick = () => {
                     this.begin();
@@ -733,7 +732,7 @@ class Ui {
         }
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard && this.deck) {
-                this.editModal.populateCard(this.currentCard, new UiCard(this.clip), this.deck);
+                this.editModal.populateCard(this.currentCard, this.deck.deck.length);
                 this.editModal.openModal();
             }
         });
@@ -1043,6 +1042,8 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             const editUrl = new URL(this.baseURL);
             editUrl.pathname = "edit";
+            const sl = card.sourceLanguage;
+            const tl = card.targetLanguage;
             const formData = new FormData();
             if (card.sourceWord) {
                 formData.append("id", card.id);
@@ -1051,21 +1052,16 @@ class Server {
                 if (card.audio) {
                     formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
                 }
-                const sl = card.sourceLanguage;
-                const tl = card.targetLanguage;
                 const response = yield fetch(editUrl, { method: 'POST', body: formData });
                 if (!response.ok) {
                     logError(`Could not submit edit: ${response.status}`);
                 }
                 else {
                     logInfo("Success!");
-                    setTimeout(() => {
-                        console.log("trying to get");
-                        console.log(tl);
-                        if (sl && tl) {
-                            Server.getDeck(JSON.stringify(deckSize), sl, tl);
-                        }
-                    }, 3000);
+                    console.log(card);
+                    if (sl && tl) {
+                        Server.getDeck(JSON.stringify(deckSize), sl, tl);
+                    }
                 }
             }
         });

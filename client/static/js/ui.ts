@@ -86,6 +86,8 @@ class Ui {
 
             addEventListener('deckUpdated', () => { 
                 this.deck?.load();
+                this.next();
+                console.log("called")
                 this.nextCard?.classList.remove("disabledPointer");
                 this.nextCard.onclick = () => {
                     this.begin();
@@ -105,7 +107,7 @@ class Ui {
 
         this.addClickEventToSelector("#open-edit-card-modal", () => {
             if (this.currentCard && this.deck) {
-                this.editModal.populateCard(this.currentCard, new UiCard(this.clip), this.deck);
+                this.editModal.populateCard(this.currentCard, this.deck.deck.length);
                 this.editModal.openModal();
                 }
             }

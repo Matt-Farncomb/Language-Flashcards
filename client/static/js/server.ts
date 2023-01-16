@@ -12,6 +12,8 @@ class Server {
         const editUrl = new URL(this.baseURL);
         editUrl.pathname = "edit";
 
+        const sl = card.sourceLanguage;
+        const tl = card.targetLanguage;
         const formData = new FormData();
 
         if (card.sourceWord) {
@@ -23,22 +25,22 @@ class Server {
                 formData.append("file", card.audio, `blob_${card.id}_${card.sourceWord}`);
             }
 
-            const sl = card.sourceLanguage;
-            const tl = card.targetLanguage;
-           
             const response = await fetch(editUrl, {method: 'POST', body: formData});
             
             if (!response.ok) {
                 logError(`Could not submit edit: ${response.status}`)
             } else {
                 logInfo("Success!");
-                setTimeout( () => {
-                    console.log("trying to get");
-                    console.log(tl)
-                    if (sl && tl) {
-                        Server.getDeck(JSON.stringify(deckSize), sl, tl);
-                    }
-                }, 3000);
+                if (sl && tl) {
+                    Server.getDeck(JSON.stringify(deckSize), sl, tl);
+                }
+                // setTimeout( () => {
+                //     console.log("trying to get");
+                //     console.log(tl)
+                //     if (sl && tl) {
+                //         Server.getDeck(JSON.stringify(deckSize), sl, tl);
+                //     }
+                // }, 3000);
             }
         }
        

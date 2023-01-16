@@ -425,8 +425,7 @@ class CreateDeckModal extends CardModal {
 class EditCardModal extends CardModal {
 
     // card will be initialised whenever this modal is opened
-    private uiCard: UiCard | undefined;
-    private deck: Deck | undefined;
+    private deckSize: number = 1;
 
     constructor(id: string) {
         super(id);
@@ -481,10 +480,9 @@ class EditCardModal extends CardModal {
         )
     }
 
-    async populateCard(card: BaseCard, uiCard: UiCard, deck: Deck) {
+    async populateCard(card: BaseCard, deckSize: number=1) {
         this.card = card;
-        this.uiCard = uiCard;
-        this.deck = deck;
+        this.deckSize = deckSize;
         this.translations[0].value = card.translations[0].word;
         const blob = card.audio;
         if (blob) {
@@ -521,17 +519,17 @@ class EditCardModal extends CardModal {
             // }
             const cardForUpload = new EditedCard(this, this.card.id);
 
-            const newCard = new PlayingCard(
-                this.id, 
-                this.sourceWord.value, 
-                this.translationValues().map(translation => new Word(translation)), 
-                this.sourceLanguage.value, 
-                this.targetLanguage.value, 
-                this.recorder.clip ? this.recorder.clip : null
-            );
+            // const newCard = new PlayingCard(
+            //     this.id, 
+            //     this.sourceWord.value, 
+            //     this.translationValues().map(translation => new Word(translation)), 
+            //     this.sourceLanguage.value, 
+            //     this.targetLanguage.value, 
+            //     this.recorder.clip ? this.recorder.clip : null
+            // );
             
-            Server.postEdit(cardForUpload, this.deck?.deck.length ? this.deck?.deck.length : 1);
-            this.uiCard?.update(cardForUpload, this.recorder.audioSrc);
+            Server.postEdit(cardForUpload, this.deckSize);
+            // this.uiCard?.update(cardForUpload, this.recorder.audioSrc);
             // this.deck?.replaceCard(newCard);
             // const stringified = this.deck?.deck;
             // console.log(stringified);
