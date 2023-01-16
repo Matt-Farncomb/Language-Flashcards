@@ -196,7 +196,7 @@ abstract class CardModal extends LanguageModal {
     protected sourceWord: WordInput;
     protected translations: WordInput[] = [];    
 
-    protected card: BaseCard | undefined;
+    // protected card: BaseCard | undefined;
 
     constructor(id: string) {
         super(id);
@@ -395,7 +395,7 @@ class CreateDeckModal extends CardModal {
     }
 
     addCardToDeck() {
-        this.card = new BaseCard(
+        const newCard = new BaseCard(
             this.id, 
             this.sourceWord.value, 
             this.translationValues().map(translation => new Word(translation)), 
@@ -403,7 +403,7 @@ class CreateDeckModal extends CardModal {
             this.targetLanguage.value, 
             this.recorder.clip ? this.recorder.clip : null
         );
-        this.deck.push(this.card);
+        this.deck.push(newCard);
         this.clearWords();
         this.lockDownInput(".language");
     }
@@ -426,6 +426,7 @@ class EditCardModal extends CardModal {
 
     // card will be initialised whenever this modal is opened
     private deckSize: number = 1;
+    private cardId: string | undefined;
 
     constructor(id: string) {
         super(id);
@@ -481,13 +482,13 @@ class EditCardModal extends CardModal {
     }
 
     async populateCard(card: BaseCard, deckSize: number=1) {
-        this.card = card;
+        this.cardId = card.id;
         this.deckSize = deckSize;
         this.translations[0].value = card.translations[0].word;
         const blob = card.audio;
         if (blob) {
             this.recorder.setAudioSource(blob);
-            const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${this.card.audio}`);
+            const fetchedAudio: Response = await fetch(`data:audio/ogg;base64,${card.audio}`);
             // const audioURL: string = window.URL.createObjectURL(await fetchedAudio.blob());
             // this.recorder.setAudioSource(audioURL);
             this.recorder.clip  = await fetchedAudio.blob();
@@ -512,29 +513,13 @@ class EditCardModal extends CardModal {
 
     submit(): void {
         console.log("subvmitting")
-        if (this.card) {
+        if (this.cardId) {
             console.log("card exists")
-            // if (this.recorder.clip) {
-            //     this.card.updateAudio(this.recorder.clip);
-            // }
-            const cardForUpload = new EditedCard(this, this.card.id);
 
-            // const newCard = new PlayingCard(
-            //     this.id, 
-            //     this.sourceWord.value, 
-            //     this.translationValues().map(translation => new Word(translation)), 
-            //     this.sourceLanguage.value, 
-            //     this.targetLanguage.value, 
-            //     this.recorder.clip ? this.recorder.clip : null
-            // );
+            const cardForUpload = new EditedCard(this, this.cardId);
             
             Server.postEdit(cardForUpload, this.deckSize);
-            // this.uiCard?.update(cardForUpload, this.recorder.audioSrc);
-            // this.deck?.replaceCard(newCard);
-            // const stringified = this.deck?.deck;
-            // console.log(stringified);
-            // console.log(JSON.stringify(stringified));
-            // StoredDeck.setItem(JSON.stringify(stringified))
+
             this.closeModal();
             
             // Server.postEdit(this.card);

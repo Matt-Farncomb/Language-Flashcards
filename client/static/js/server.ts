@@ -34,13 +34,6 @@ class Server {
                 if (sl && tl) {
                     Server.getDeck(JSON.stringify(deckSize), sl, tl);
                 }
-                // setTimeout( () => {
-                //     console.log("trying to get");
-                //     console.log(tl)
-                //     if (sl && tl) {
-                //         Server.getDeck(JSON.stringify(deckSize), sl, tl);
-                //     }
-                // }, 3000);
             }
         }
        

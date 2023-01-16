@@ -505,8 +505,8 @@ class CreateDeckModal extends CardModal {
         this.deck = [];
     }
     addCardToDeck() {
-        this.card = new BaseCard(this.id, this.sourceWord.value, this.translationValues().map(translation => new Word(translation)), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
-        this.deck.push(this.card);
+        const newCard = new BaseCard(this.id, this.sourceWord.value, this.translationValues().map(translation => new Word(translation)), this.sourceLanguage.value, this.targetLanguage.value, this.recorder.clip ? this.recorder.clip : null);
+        this.deck.push(newCard);
         this.clearWords();
         this.lockDownInput(".language");
     }
@@ -565,13 +565,13 @@ class EditCardModal extends CardModal {
     }
     populateCard(card, deckSize = 1) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.card = card;
+            this.cardId = card.id;
             this.deckSize = deckSize;
             this.translations[0].value = card.translations[0].word;
             const blob = card.audio;
             if (blob) {
                 this.recorder.setAudioSource(blob);
-                const fetchedAudio = yield fetch(`data:audio/ogg;base64,${this.card.audio}`);
+                const fetchedAudio = yield fetch(`data:audio/ogg;base64,${card.audio}`);
                 this.recorder.clip = yield fetchedAudio.blob();
             }
             if (card.translations.length > 1) {
@@ -590,9 +590,9 @@ class EditCardModal extends CardModal {
     }
     submit() {
         console.log("subvmitting");
-        if (this.card) {
+        if (this.cardId) {
             console.log("card exists");
-            const cardForUpload = new EditedCard(this, this.card.id);
+            const cardForUpload = new EditedCard(this, this.cardId);
             Server.postEdit(cardForUpload, this.deckSize);
             this.closeModal();
         }
@@ -1058,7 +1058,6 @@ class Server {
                 }
                 else {
                     logInfo("Success!");
-                    console.log(card);
                     if (sl && tl) {
                         Server.getDeck(JSON.stringify(deckSize), sl, tl);
                     }
@@ -1237,50 +1236,6 @@ class EditedCard {
         const clip = this.modal.recorder.clip;
         console.log(clip);
         return clip;
-    }
-}
-class UiCard {
-    constructor(clip) {
-        this.cardDiv = document.querySelector(".outer-card");
-        this.audio = clip;
-        if (this.cardDiv) {
-            const sourceWord = this.cardDiv.querySelector(".front .card-content span");
-            const translations = this.cardDiv.querySelector(".back .card-content span");
-            console.log(sourceWord);
-            console.log(translations);
-            if (sourceWord && translations) {
-                this._sourceWord = sourceWord;
-                this._translations = translations;
-            }
-            else {
-                throw Error("sourceWord or translations were not found");
-            }
-        }
-        else {
-            throw Error("cardDiv was not found");
-        }
-    }
-    set sourceWord(value) {
-        this._sourceWord.innerHTML = value;
-    }
-    set translations(values) {
-        this._translations.innerHTML = "";
-        values.forEach(value => {
-            const li = document.createElement("li");
-            li.innerHTML = value;
-            this._translations.append(li);
-        });
-    }
-    update(card, audioURL) {
-        console.log("updating");
-        console.log(card);
-        if (card.sourceWord) {
-            this.sourceWord = card.sourceWord;
-        }
-        this.translations = card.translations;
-        if (this.audio) {
-            this.audio.src = audioURL;
-        }
     }
 }
 //# sourceMappingURL=test.js.map
