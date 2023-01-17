@@ -30,10 +30,12 @@ class StoredDeck {
         if (json && json != "{}") {
             const localDeck = JSON.parse(json);
             const translationLanguage = localDeck[0].translations[0].__data__.language;
+            console.log(localDeck[0]);
+            console.log(localDeck[0].difficulty);
             return localDeck.map(element => new PlayingCard(element.id, element.source_word.word, element.translations.map((element) => {
                 const translation = element.__data__;
                 return new Word(translation["word"], translation["id"], translation["language"], translation["parent"]);
-            }), element.source_word.language, translationLanguage, element.source_word.voice));
+            }), element.source_word.language, translationLanguage, element.source_word.voice, element.difficulty));
         }
     }
 }
@@ -100,23 +102,12 @@ class BaseCard {
     }
 }
 class PlayingCard extends BaseCard {
-    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio) {
+    constructor(id, sourceWord, translations, sourceLanguage, targetLanguage, audio, difficulty = "medium") {
         super(id, sourceWord, translations, sourceLanguage, targetLanguage, audio);
-        this._incorrectCount = this.incorrectCount;
-        this._correctCount = this.correctCount;
-        this._difficulty = this.difficulty;
-    }
-    get incorrectCount() {
-        return this._incorrectCount;
-    }
-    get correctCount() {
-        return this._correctCount;
+        this._difficulty = difficulty;
     }
     get difficulty() {
         return this._difficulty;
-    }
-    updateLocalScore(score) {
-        this._correctCount += score;
     }
     serialiseData() {
         return JSON.stringify({
@@ -671,6 +662,7 @@ class Ui {
         this.logInModal = new LogInModal("#log-in-modal");
         this.signUpModal = new SignUpModal("#sign-up-modal");
         const user = localStorage.getItem('current_user');
+        const difficulty = document.querySelector("#difficulty");
         const nextCardButton = document.querySelector(".begin");
         const editButton = document.querySelector(".edit");
         const clearButton = document.querySelector(".clear-deck");
@@ -680,9 +672,10 @@ class Ui {
         const back = document.querySelector(".back .card-content span");
         const checkButton = document.querySelector("#check-answer");
         const answerInput = document.querySelector("#answer");
-        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && checkButton && answerInput && flipButtons.length > 0) {
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && checkButton && answerInput && difficulty && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
+            this.difficulty = difficulty;
             this.front = front;
             this.back = back;
             this.nextCard = nextCardButton;
@@ -861,6 +854,9 @@ class Ui {
         return __awaiter(this, void 0, void 0, function* () {
             this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
+            console.log("playingCard");
+            console.log(playingCard);
+            this.difficulty.innerHTML = playingCard.difficulty;
             this.front.innerHTML = this.currentCard.sourceWord;
             this.back.innerHTML = "";
             const ul = document.createElement("ul");
@@ -1128,13 +1124,11 @@ class Server {
             updateScoreURL.pathname = "update_score";
             const formData = new FormData();
             formData.append("id", card.id);
-            formData.append("score", (card.correctCount + score).toString());
             const response = yield fetch(updateScoreURL, { method: "POST", body: formData });
             if (!response.ok) {
                 logError(`Could not update score: ${response.status}`);
             }
             else {
-                card.updateLocalScore(score);
             }
         });
     }

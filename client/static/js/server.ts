@@ -105,13 +105,13 @@ class Server {
 
         const formData = new FormData();
         formData.append("id", card.id);
-        formData.append("score", (card.correctCount + score).toString());
+        // formData.append("score", (card.correctCount + score).toString());
         
         const response = await fetch(updateScoreURL, { method: "POST", body: formData });
         if (!response.ok) {
             logError(`Could not update score: ${response.status}`); 
         } else {
-            card.updateLocalScore(score);
+            // card.updateLocalScore(score);
         }
 
     }

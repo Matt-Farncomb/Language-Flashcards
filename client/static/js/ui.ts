@@ -11,6 +11,7 @@ class Ui {
     signUpModal: SignUpModal;
 
     currentLanguages: LanguagePair;
+    difficulty: HTMLSpanElement;
 
     currentCard: PlayingCard | undefined;
     deck: Deck | undefined;
@@ -37,6 +38,7 @@ class Ui {
         this.signUpModal = new SignUpModal("#sign-up-modal");
 
         const user = localStorage.getItem('current_user');
+        const difficulty: HTMLSpanElement | null = document.querySelector("#difficulty");
         const nextCardButton: HTMLAnchorElement | null = document.querySelector(".begin");
         const editButton: HTMLAnchorElement | null = document.querySelector(".edit");
         const clearButton: HTMLButtonElement | null = document.querySelector(".clear-deck");
@@ -47,9 +49,10 @@ class Ui {
         const checkButton: HTMLButtonElement | null = document.querySelector("#check-answer");
         const answerInput: HTMLInputElement | null = document.querySelector("#answer");
 
-        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && checkButton && answerInput && flipButtons.length > 0) {
+        if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && checkButton && answerInput && difficulty && flipButtons.length > 0) {
             this.deck = new Deck();
             this.deck.load();
+            this.difficulty = difficulty;
             this.front = front;
             this.back = back;
             this.nextCard = nextCardButton;
@@ -274,7 +277,9 @@ class Ui {
     public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.setLanguagesInUI(playingCard)
         this.currentCard = playingCard;
-
+        console.log("playingCard")
+        console.log(playingCard)
+        this.difficulty.innerHTML = playingCard.difficulty;
         this.front.innerHTML = this.currentCard.sourceWord;
         this.back.innerHTML = "";
         const ul = document.createElement("ul");
