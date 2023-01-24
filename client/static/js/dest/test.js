@@ -245,8 +245,13 @@ class Modal {
             this.modal.classList.toggle("is-active");
         }
     }
+    hideSubmitButton() {
+        var _a;
+        (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+    }
     clear() {
         if (this.modal) {
+            this.hideSubmitButton();
             const inputs = this.modal.querySelectorAll(".input");
             if (inputs.length > 0) {
                 inputs.forEach(element => {
@@ -304,12 +309,9 @@ class LanguageModal extends Modal {
         var _a;
         (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.remove("disabledPointer");
     }
-    hideSubmitButton() {
-        var _a;
-        (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
-    }
     toggleSubmitButton() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("called here");
             if (yield this.readyToSubmit()) {
                 this.revealSubmitButton();
             }
@@ -431,7 +433,9 @@ class CardModal extends LanguageModal {
     allTranslationsAreValid() {
         return __awaiter(this, void 0, void 0, function* () {
             for (let translation of this.translations) {
+                console.log(`translation: ${translation.value}`);
                 if (!(yield translation.isReady())) {
+                    console.log(`false translation: ${translation.value}`);
                     return false;
                 }
             }
@@ -446,6 +450,7 @@ class CardModal extends LanguageModal {
             const baseInputsReady = yield _super.readyToSubmit.call(this);
             const sourceWordReady = yield this.sourceWord.isValid();
             const translationsReady = yield this.allTranslationsAreValid();
+            this.translations.forEach(tran => console.log(tran.value));
             return baseInputsReady && sourceWordReady && translationsReady;
         });
     }
@@ -454,6 +459,7 @@ class CardModal extends LanguageModal {
         console.log("fart");
         const addedInputs = this.translations.slice(1);
         addedInputs.forEach(input => input.removeFromDOM());
+        this.translations = this.translations.slice(0, 1);
     }
 }
 class CreateDeckModal extends CardModal {
@@ -578,6 +584,9 @@ class EditCardModal extends CardModal {
                 }
             }
         });
+    }
+    closeModal() {
+        super.closeModal();
     }
     submit() {
         console.log("subvmitting");
@@ -854,15 +863,12 @@ class Ui {
         return __awaiter(this, void 0, void 0, function* () {
             this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
-            console.log("playingCard");
-            console.log(playingCard);
             this.difficulty.innerHTML = playingCard.difficulty;
             this.front.innerHTML = this.currentCard.sourceWord;
             this.back.innerHTML = "";
             const ul = document.createElement("ul");
             this.currentCard.translations.forEach((translation) => {
                 const li = document.createElement("li");
-                console.log(translation);
                 li.innerHTML = translation.word;
                 ul.appendChild(li);
             });
@@ -924,6 +930,9 @@ class ExtendedInput {
             }
         });
     }
+    clearSiblings() {
+        this._siblings = [];
+    }
     isEmpty() {
         return (this._htmlElement.value == "");
     }
@@ -958,6 +967,7 @@ class ExtendedInput {
     removeFromDOM() {
         var _a, _b;
         (_b = (_a = this._htmlElement.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.remove();
+        this.clearSiblings();
     }
     checkIfUnique() {
         let unique = true;

@@ -37,6 +37,10 @@ abstract class ExtendedInput {
         })
     }
 
+    public clearSiblings() {
+        this._siblings = [];
+    }
+
     public isEmpty() {
         return (this._htmlElement.value == "");
     }
@@ -71,6 +75,7 @@ abstract class ExtendedInput {
 
     removeFromDOM() {
         this._htmlElement.parentElement?.parentElement?.remove();
+        this.clearSiblings();
     }
 
     // Check if any siblings (and this) have any duplicate values 

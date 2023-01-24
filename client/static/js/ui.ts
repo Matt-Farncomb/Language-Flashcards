@@ -277,15 +277,12 @@ class Ui {
     public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.setLanguagesInUI(playingCard)
         this.currentCard = playingCard;
-        console.log("playingCard")
-        console.log(playingCard)
         this.difficulty.innerHTML = playingCard.difficulty;
         this.front.innerHTML = this.currentCard.sourceWord;
         this.back.innerHTML = "";
         const ul = document.createElement("ul");
         this.currentCard.translations.forEach((translation: any) => {
             const li = document.createElement("li");
-            console.log(translation)
             li.innerHTML = translation.word;
             ul.appendChild(li);
         } )

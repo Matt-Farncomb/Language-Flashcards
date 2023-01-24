@@ -21,7 +21,7 @@ abstract class Modal {
         } else {
         throw Error(`${this.id} modal cannot be found`);
         }
-    
+
     }
 
     protected get id() {
@@ -38,7 +38,7 @@ abstract class Modal {
             button.addEventListener('click', () => callback() );
         } else logError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
-        
+
 
     addClickEventToModalElements(selector: string, callback: ()=> void ): void {
         const elements: NodeListOf<HTMLButtonElement> = this.modal.querySelectorAll(selector);
@@ -71,8 +71,13 @@ abstract class Modal {
         }
     }
 
+    hideSubmitButton() {
+        this.modal.querySelector(".submit")?.classList.add("disabledPointer");
+    }
+
     protected clear() {
         if (this.modal) {
+            this.hideSubmitButton();
             const inputs: NodeListOf<HTMLInputElement> = this.modal.querySelectorAll(".input");
             if (inputs.length > 0) {
                 inputs.forEach(element => {
@@ -97,7 +102,7 @@ abstract class LanguageModal extends Modal {
 
     constructor(id: string) {
         super(id);
-        
+
         const sourceLanguage = nullCheckedQuerySelector(this.modal, `.source-language`);
         const targetLanguage = nullCheckedQuerySelector(this.modal, `.translation-language`);
 
@@ -112,10 +117,10 @@ abstract class LanguageModal extends Modal {
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
             // this.inputs.push(this.sourceLanguage, this.targetLanguage);
-            
+
 
             // this.addClickEventToModalElement(".submit", () => this.submit());
-            
+
             // this.addClickEventToModalElements(".close", () => this.closeModal());
 
             // this.inputs.forEach(element => {
@@ -124,7 +129,7 @@ abstract class LanguageModal extends Modal {
 
             // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
             // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-            
+
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -134,11 +139,11 @@ abstract class LanguageModal extends Modal {
 
     // protected updateInputValue(input: HTMLInputElement, value: string) {
     //     input.value = value;
-    //     input.dispatchEvent(new Event('change'));   
+    //     input.dispatchEvent(new Event('change'));
     // }
 
     nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
-      
+
         const elements: NodeListOf<HTMLInputElement> | undefined = this.modal.querySelectorAll(selector);
 
         if (elements && elements.length > 0) {
@@ -146,7 +151,7 @@ abstract class LanguageModal extends Modal {
         } else {
             throw new Error(`Cannot find ${selector} in ${this.id}`);
         }
-        
+
     }
 
     protected lockDownInput(selector: string) {
@@ -174,11 +179,12 @@ abstract class LanguageModal extends Modal {
         this.modal.querySelector(".submit")?.classList.remove("disabledPointer");
     }
 
-    hideSubmitButton() {
-        this.modal.querySelector(".submit")?.classList.add("disabledPointer");
-    }
+    // hideSubmitButton() {
+    //     this.modal.querySelector(".submit")?.classList.add("disabledPointer");
+    // }
 
     protected async toggleSubmitButton() {
+        console.log("called here")
         if (await this.readyToSubmit()) {
             this.revealSubmitButton();
         } else {
@@ -194,13 +200,13 @@ abstract class CardModal extends LanguageModal {
 
     private _recorder: Recorder;
     protected sourceWord: WordInput;
-    protected translations: WordInput[] = [];    
+    protected translations: WordInput[] = [];
 
     // protected card: BaseCard | undefined;
 
     constructor(id: string) {
         super(id);
-        
+
 
         const sourceWord: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, `.source`);
         const translations: NodeListOf<HTMLInputElement> | undefined = this.nullCheckedQuerySelectorAll(`.translation`);
@@ -211,7 +217,7 @@ abstract class CardModal extends LanguageModal {
 
             this.sourceWord = this.createNewInput(WordInput, sourceWord);
             this._recorder = new Recorder(recorderDiv);
-                      
+
             // create a word input for every translation
             translations.forEach(inputElement => this.translations.push(this.createNewInput(WordInput, inputElement)));
             // every translation word input gets every other translation word input added as a sibling
@@ -242,7 +248,7 @@ abstract class CardModal extends LanguageModal {
             wordInput.classList.add("is-primary");
             wordInput.classList.remove("is-danger")
             return true;
-        } 
+        }
     }
 
     // make list of translations available
@@ -257,7 +263,7 @@ abstract class CardModal extends LanguageModal {
         const template: HTMLTemplateElement | null = document.querySelector('.translation-template');
         if (template && 'content' in document.createElement('template')) {
             const clone = (template.content.cloneNode(true) as HTMLDivElement);
-            return clone;       
+            return clone;
         } else {
             logError("Could not create clone");
         }
@@ -278,10 +284,10 @@ abstract class CardModal extends LanguageModal {
     }
 
     protected addInput() {
-        
+
         const clone: HTMLDivElement | undefined = this.cloneInputBlockFromTemplate();
         if (clone) {
-            const translationJustAdded = this.addClonedInputToBlock(clone); 
+            const translationJustAdded = this.addClonedInputToBlock(clone);
             if (translationJustAdded) {
                 const newWordInput = this.createNewInput(WordInput, translationJustAdded);
                 newWordInput.addSiblings(this.translations);
@@ -301,8 +307,8 @@ abstract class CardModal extends LanguageModal {
             } else {
                 logError(`translation-block not found in ${this.id}`)
             }
-            
-        
+
+
     }
 
     protected addInputOnClick() {
@@ -323,12 +329,14 @@ abstract class CardModal extends LanguageModal {
                 }
             }
         }
-    }   
+    }
 
     async allTranslationsAreValid() {
         // const areAllValuesValid = (translations: WordInput[]) => translations.every(translation => await translation.isValid());
         for (let translation of this.translations) {
+            console.log(`translation: ${translation.value}`)
             if (!await translation.isReady()) {
+                console.log(`false translation: ${translation.value}`)
                 return false;
             }
         }
@@ -339,6 +347,7 @@ abstract class CardModal extends LanguageModal {
         const baseInputsReady = await super.readyToSubmit();
         const sourceWordReady = await this.sourceWord.isValid();
         const translationsReady = await this.allTranslationsAreValid();
+        this.translations.forEach(tran => console.log(tran.value))
         return baseInputsReady && sourceWordReady && translationsReady;
     }
 
@@ -347,7 +356,8 @@ abstract class CardModal extends LanguageModal {
         console.log("fart");
         const addedInputs = this.translations.slice(1);
         addedInputs.forEach(input => input.removeFromDOM());
-        // TODO: Need to also remove each added input from remaining inputs siblings and list of translations 
+        this.translations = this.translations.slice(0, 1);
+        // TODO: Need to also remove each added input from remaining inputs siblings and list of translations
     }
 
 }
@@ -359,7 +369,7 @@ class CreateDeckModal extends CardModal {
     constructor(id: string) {
         super(id);
         this.addInputOnClick();
-        
+
         const upload: HTMLButtonElement | null = this.modal.querySelector(`.upload-deck`);
 
         if (upload) {
@@ -396,11 +406,11 @@ class CreateDeckModal extends CardModal {
 
     addCardToDeck() {
         const newCard = new BaseCard(
-            this.id, 
-            this.sourceWord.value, 
-            this.translationValues().map(translation => new Word(translation)), 
-            this.sourceLanguage.value, 
-            this.targetLanguage.value, 
+            this.id,
+            this.sourceWord.value,
+            this.translationValues().map(translation => new Word(translation)),
+            this.sourceLanguage.value,
+            this.targetLanguage.value,
             this.recorder.clip ? this.recorder.clip : null
         );
         this.deck.push(newCard);
@@ -432,7 +442,7 @@ class EditCardModal extends CardModal {
         super(id);
         // this.buildTranslationInputList();
 
-        addEventListener("clipCreated", () => { 
+        addEventListener("clipCreated", () => {
             this.toggleSubmitButton();
         });
 
@@ -448,7 +458,7 @@ class EditCardModal extends CardModal {
     //     if (translationBlock) {
     //         translationBlock.innerHTML = "";
     //     }
-       
+
 
     // }
 
@@ -456,7 +466,7 @@ class EditCardModal extends CardModal {
         translations.forEach(translation => {
             const clone: HTMLDivElement | undefined = this.cloneInputBlockFromTemplate();
             if (clone) {
-                const translationJustAdded = this.addClonedInputToBlock(clone); 
+                const translationJustAdded = this.addClonedInputToBlock(clone);
                 if (translationJustAdded) {
                     const newWordInput = this.createNewInput(WordInput, translationJustAdded);
                     newWordInput.value = translation.word;
@@ -493,13 +503,13 @@ class EditCardModal extends CardModal {
             // this.recorder.setAudioSource(audioURL);
             this.recorder.clip  = await fetchedAudio.blob();
         }
-        
+
         if (card.translations.length > 1) {
             // this.removeTranslationInput();
             this.buildInputList(card.translations.slice(1));
         }
         this.addInputOnClick();
-        
+
         if (this.sourceLanguage && this.targetLanguage && this.sourceWord && this.translations.length > 0) {
             this.sourceLanguage.value = languageAbbreviations[card.sourceLanguage];
             this.targetLanguage.value = languageAbbreviations[card.targetLanguage];
@@ -510,6 +520,10 @@ class EditCardModal extends CardModal {
         }
     }
 
+    closeModal() {
+        super.closeModal();
+    }
+
 
     submit(): void {
         console.log("subvmitting")
@@ -517,11 +531,10 @@ class EditCardModal extends CardModal {
             console.log("card exists")
 
             const cardForUpload = new EditedCard(this, this.cardId);
-            
+
             Server.postEdit(cardForUpload, this.deckSize);
 
             this.closeModal();
-            
             // Server.postEdit(this.card);
         }
     }
@@ -549,9 +562,9 @@ class FetchDeckModal extends LanguageModal {
     }
 
     async readyToSubmit(): Promise<boolean> {
-        return await super.readyToSubmit() && await this.count.isValid(); 
+        return await super.readyToSubmit() && await this.count.isValid();
     }
-    
+
     async fetchDeck(): Promise<void> {
         const deck:any = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
     }
