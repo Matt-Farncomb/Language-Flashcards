@@ -273,11 +273,23 @@ class Ui {
         // }
     }
 
+    updateDifficulty(difficulty: string = "") {
+        this.difficulty.innerHTML = difficulty;
+        if (difficulty) {
+            this.difficulty.parentElement?.classList.remove("disabledText");
+        } else {
+            this.difficulty.parentElement?.classList.add("disabledText");
+        }
+        
+    }
+
     // Update card UI to display playingCard data
     public async loadCard(playingCard: PlayingCard): Promise<void> {
         this.setLanguagesInUI(playingCard)
         this.currentCard = playingCard;
-        this.difficulty.innerHTML = playingCard.difficulty;
+        this.updateDifficulty(playingCard.difficulty);
+        // this.difficulty.innerHTML = playingCard.difficulty;
+        // this.difficulty.parentElement?.classList.remove("disabledText");
         this.front.innerHTML = this.currentCard.sourceWord;
         this.back.innerHTML = "";
         const ul = document.createElement("ul");
@@ -306,6 +318,7 @@ class Ui {
         this.play.classList.add("is-hidden");
         this.clearLanguagesInUI();
         this.lockAnswer();
+        this.updateDifficulty();
     }
 
     private playClip() {

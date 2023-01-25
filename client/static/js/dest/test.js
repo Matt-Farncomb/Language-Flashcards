@@ -859,11 +859,21 @@ class Ui {
             logError("Could not find language info spans");
         }
     }
+    updateDifficulty(difficulty = "") {
+        var _a, _b;
+        this.difficulty.innerHTML = difficulty;
+        if (difficulty) {
+            (_a = this.difficulty.parentElement) === null || _a === void 0 ? void 0 : _a.classList.remove("disabledText");
+        }
+        else {
+            (_b = this.difficulty.parentElement) === null || _b === void 0 ? void 0 : _b.classList.add("disabledText");
+        }
+    }
     loadCard(playingCard) {
         return __awaiter(this, void 0, void 0, function* () {
             this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
-            this.difficulty.innerHTML = playingCard.difficulty;
+            this.updateDifficulty(playingCard.difficulty);
             this.front.innerHTML = this.currentCard.sourceWord;
             this.back.innerHTML = "";
             const ul = document.createElement("ul");
@@ -891,6 +901,7 @@ class Ui {
         this.play.classList.add("is-hidden");
         this.clearLanguagesInUI();
         this.lockAnswer();
+        this.updateDifficulty();
     }
     playClip() {
         var _a;
