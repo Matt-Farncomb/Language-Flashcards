@@ -51,7 +51,7 @@ class Ui {
 
         if (nextCardButton && editButton && clearButton && front && back && editButton && playButton  && checkButton && answerInput && difficulty && flipButtons.length > 0) {
             this.deck = new Deck();
-            this.deck.load();
+            // this.deck.load();
             this.difficulty = difficulty;
             this.front = front;
             this.back = back;
@@ -280,7 +280,6 @@ class Ui {
         } else {
             this.difficulty.parentElement?.classList.add("disabledText");
         }
-        
     }
 
     // Update card UI to display playingCard data

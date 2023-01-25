@@ -45,11 +45,6 @@ def get_js_files(dir: str):
             newPath = path.split("static")[1]+"\\\\"
             js_files.append(f"{newPath}{filename}")
     return js_files
-    # for path, dirs, fnames in os.walk(f"..\client\static\js\\{dir}"):
-    #     for filename in [f for f in fnames if f.endswith(".js")]:
-    #         newPath = path.split("static")[1]+"\\\\"
-    #         js_files.append(f"{newPath}{filename}")
-    # return js_files
 
 @app.get("/get_languages")
 def get_languages():
@@ -174,6 +169,7 @@ def get_cards(source_language: str, target_language: str, count: int, is_custom:
 def get_deck(source_language: str, target_language: str, count: int):
     # logging.info(f"get_cards called to get {count} in total")
     logger.info(f"getting cards")
+    print(f"getting cards: {target_language}")
     deck = Deck(source_language, target_language)
     
     deck.build_deck_from_db(count, 1)

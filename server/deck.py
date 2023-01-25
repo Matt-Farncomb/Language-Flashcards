@@ -70,6 +70,9 @@ class Card:
     
     def addTranslation(self, newTranslation):
         self.translations.append(newTranslation)
+    
+    def hasTranslations(self):
+        return len(self.translations) != 0
 
 class Deck:
     def __init__(self, source_language, target_language):
@@ -117,6 +120,8 @@ class Deck:
         self.db.upload_deck(self.deck, is_custom)
         
     def __get_words_from_db(self, count: int, is_custom):
+        print(f" getting {self.source_language} words")
+        print(f" target is {self.target_language} words")
         return self.db.get_words(count, self.source_language, is_custom) # type: ignore
     
     def build_deck_from_db(self, count, is_custom):
@@ -144,10 +149,14 @@ class Deck:
                 new_card = Card(word.id, new_word, [], word.wordinfo.difficulty())
                 #¤ new_word = Word(word.word, word.language)
                 for trans in word.translations:
+                    if trans.language != self.target_language:
+                        print(f"language wanted is {trans.language} and we want {self.target_language} ")
+                        break
                     new_card.addTranslation(trans)
                     #new_trans = Word(trans, trans.language)
                     # new_card = Card(new_word, new_trans)
-                cards.append(new_card)
+                if new_card.hasTranslations():
+                    cards.append(new_card)
             self.deck = cards
             # print("made it past")
     
