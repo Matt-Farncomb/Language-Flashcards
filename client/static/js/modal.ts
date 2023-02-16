@@ -569,6 +569,8 @@ class FetchDeckModal extends LanguageModal {
         const deck:any = await Server.getDeck(this.count.value, this.sourceLanguage.value, this.targetLanguage.value);
     }
 
+
+
 }
 
 class FetchTableModal extends LanguageModal {

@@ -15,8 +15,8 @@ class StoredDeck {
         const json: string | null = localStorage.getItem("deck");
 
         if (json && json != "{}") {
-
             const localDeck: Record<string, any>[] = JSON.parse(json);
+            console.log(json);
             const translationLanguage = localDeck[0].translations[0].__data__.language;
             console.log(localDeck[0])
             console.log(localDeck[0].difficulty)

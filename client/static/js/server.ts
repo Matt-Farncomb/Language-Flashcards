@@ -78,6 +78,7 @@ class Server {
         }
         else {
             const responseText = await response.text();
+            console.log(responseText)
             StoredDeck.setItem(responseText);
         }
         

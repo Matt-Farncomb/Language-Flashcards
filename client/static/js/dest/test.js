@@ -29,6 +29,7 @@ class StoredDeck {
         const json = localStorage.getItem("deck");
         if (json && json != "{}") {
             const localDeck = JSON.parse(json);
+            console.log(json);
             const translationLanguage = localDeck[0].translations[0].__data__.language;
             console.log(localDeck[0]);
             console.log(localDeck[0].difficulty);
@@ -1119,6 +1120,7 @@ class Server {
             }
             else {
                 const responseText = yield response.text();
+                console.log(responseText);
                 StoredDeck.setItem(responseText);
             }
             return response;

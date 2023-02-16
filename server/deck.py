@@ -148,10 +148,12 @@ class Deck:
                 print(word.wordinfo.difficulty())
                 new_card = Card(word.id, new_word, [], word.wordinfo.difficulty())
                 #¤ new_word = Word(word.word, word.language)
+                
                 for trans in word.translations:
+                    print(f"check tran: {word.translations}")
                     if trans.language != self.target_language:
                         print(f"language wanted is {trans.language} and we want {self.target_language} ")
-                        break
+                        # break
                     new_card.addTranslation(trans)
                     #new_trans = Word(trans, trans.language)
                     # new_card = Card(new_word, new_trans)
