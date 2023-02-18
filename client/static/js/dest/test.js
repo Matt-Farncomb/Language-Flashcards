@@ -684,6 +684,7 @@ class Ui {
         const answerInput = document.querySelector("#answer");
         if (nextCardButton && editButton && clearButton && front && back && editButton && playButton && checkButton && answerInput && difficulty && flipButtons.length > 0) {
             this.deck = new Deck();
+            this.deck.load();
             this.difficulty = difficulty;
             this.front = front;
             this.back = back;
@@ -871,6 +872,7 @@ class Ui {
     }
     loadCard(playingCard) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(playingCard);
             this.setLanguagesInUI(playingCard);
             this.currentCard = playingCard;
             this.updateDifficulty(playingCard.difficulty);

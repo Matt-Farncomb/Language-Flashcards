@@ -173,11 +173,11 @@ def get_deck(source_language: str, target_language: str, count: int):
     deck = Deck(source_language, target_language)
     
     deck.build_deck_from_db(count, 1)
-
+    print(deck.target_language)
     for card in deck.deck:
         print(card.source_word.word)
-        for e in card.translations:
-            print(e.word)
+        # for e in card.translations:
+            # print(e.word)
     return deck.deck
 
 

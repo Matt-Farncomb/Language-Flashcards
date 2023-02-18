@@ -153,12 +153,15 @@ class Deck:
                     print(f"check tran: {word.translations}")
                     if trans.language != self.target_language:
                         print(f"language wanted is {trans.language} and we want {self.target_language} ")
-                        # break
+                        break
                     new_card.addTranslation(trans)
                     #new_trans = Word(trans, trans.language)
                     # new_card = Card(new_word, new_trans)
                 if new_card.hasTranslations():
                     cards.append(new_card)
+                    count -= 1
+                    if count <= 0:
+                        break
             self.deck = cards
             # print("made it past")
     

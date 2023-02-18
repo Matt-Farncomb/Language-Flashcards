@@ -66,7 +66,7 @@ class Database:
             return (WordModel
          .select(WordModel, WordInfo, Audio).where(WordModel.language==language, WordModel.is_custom_word==is_custom)
          .join_from(WordModel, WordInfo)
-         .join_from(WordModel, Audio)).limit(word_limit)
+         .join_from(WordModel, Audio)) # .limit(word_limit)
          
         return (WordModel
          .select(WordModel, WordInfo, Audio).where(WordModel.language==language, WordModel.is_custom_word==is_custom)
