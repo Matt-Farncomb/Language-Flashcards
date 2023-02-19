@@ -18,8 +18,11 @@ class Word {
 }
 class StoredDeck {
     static setItem(value) {
-        localStorage.setItem("deck", value);
-        window.dispatchEvent(deckUpdated);
+        if (value !== "[]") {
+            console.log("setting");
+            localStorage.setItem("deck", value);
+            window.dispatchEvent(deckUpdated);
+        }
     }
     static clear() {
         localStorage.clear();
@@ -27,9 +30,8 @@ class StoredDeck {
     }
     static get() {
         const json = localStorage.getItem("deck");
-        if (json && json != "{}") {
+        if (json && json !== "[]") {
             const localDeck = JSON.parse(json);
-            console.log(json);
             const translationLanguage = localDeck[0].translations[0].__data__.language;
             console.log(localDeck[0]);
             console.log(localDeck[0].difficulty);
@@ -53,6 +55,7 @@ class Deck {
     load() {
         const storedDeck = StoredDeck.get();
         if (storedDeck) {
+            console.log("loaded");
             this._deck = storedDeck;
         }
     }
@@ -611,6 +614,7 @@ class FetchDeckModal extends LanguageModal {
         }
     }
     submit() {
+        StoredDeck.clear();
         this.fetchDeck();
     }
     readyToSubmit() {
@@ -714,20 +718,21 @@ class Ui {
                 this.nextCard.classList.add("disabledPointer");
             }
             addEventListener('deckUpdated', () => {
-                var _a, _b;
+                var _a;
                 (_a = this.deck) === null || _a === void 0 ? void 0 : _a.load();
                 this.next();
                 console.log("called");
-                (_b = this.nextCard) === null || _b === void 0 ? void 0 : _b.classList.remove("disabledPointer");
+                console.log("updated deck");
+                this.nextCard.classList.remove("disabledPointer");
                 this.nextCard.onclick = () => {
                     this.begin();
                 };
             });
             addEventListener('deckCleared', () => {
-                var _a, _b;
-                (_a = this.nextCard) === null || _a === void 0 ? void 0 : _a.classList.add("disabledPointer");
+                var _a;
                 this.unloadCard();
-                (_b = this.deck) === null || _b === void 0 ? void 0 : _b.clear();
+                (_a = this.deck) === null || _a === void 0 ? void 0 : _a.clear();
+                this.nextCard.classList.add("disabledPointer");
             });
         }
         else {
@@ -835,6 +840,7 @@ class Ui {
         var _a;
         const nextCard = (_a = this.deck) === null || _a === void 0 ? void 0 : _a.drawCard();
         if (nextCard) {
+            console.log("next card ready");
             this.loadCard(nextCard);
             this.resetAnswer();
         }
@@ -1122,7 +1128,6 @@ class Server {
             }
             else {
                 const responseText = yield response.text();
-                console.log(responseText);
                 StoredDeck.setItem(responseText);
             }
             return response;

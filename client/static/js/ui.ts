@@ -91,16 +91,17 @@ class Ui {
                 this.deck?.load();
                 this.next();
                 console.log("called")
-                this.nextCard?.classList.remove("disabledPointer");
+                console.log("updated deck")
+                this.nextCard.classList.remove("disabledPointer");
                 this.nextCard.onclick = () => {
                     this.begin();
                 }
             });
 
             addEventListener('deckCleared', () => { 
-                this.nextCard?.classList.add("disabledPointer");
                 this.unloadCard();
                 this.deck?.clear();
+                this.nextCard.classList.add("disabledPointer");
             });
 
         } else {
@@ -232,6 +233,7 @@ class Ui {
     public next() {
         const nextCard = this.deck?.drawCard();
         if (nextCard) {
+            console.log("next card ready")
             this.loadCard(nextCard);
             this.resetAnswer();
         }

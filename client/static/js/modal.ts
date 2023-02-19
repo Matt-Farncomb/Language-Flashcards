@@ -558,6 +558,7 @@ class FetchDeckModal extends LanguageModal {
     }
 
     submit(): void {
+        StoredDeck.clear();
         this.fetchDeck();
     }
 

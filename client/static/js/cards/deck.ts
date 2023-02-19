@@ -12,7 +12,9 @@ class Deck {
 
     load(): void {
         const storedDeck = StoredDeck.get();
+       
         if (storedDeck) {
+            console.log("loaded")
             this._deck = storedDeck;
         }
     }
