@@ -717,6 +717,9 @@ class Ui {
             if (!this.deck.loaded) {
                 this.nextCard.classList.add("disabledPointer");
             }
+            this.answer.addEventListener('change', () => {
+                this.resetAnswerColours();
+            });
             addEventListener('deckUpdated', () => {
                 var _a;
                 (_a = this.deck) === null || _a === void 0 ? void 0 : _a.load();
@@ -785,12 +788,15 @@ class Ui {
         this.answer.classList.add("disabledPointer");
         this.check.classList.add("disabledPointer");
     }
-    resetAnswer() {
-        this.answer.value = "";
+    resetAnswerColours() {
         this.answer.classList.remove("has-background-success-light");
         this.check.classList.remove("has-background-success");
         this.answer.classList.remove("has-background-danger-light");
         this.check.classList.remove("has-background-danger");
+    }
+    resetAnswer() {
+        this.answer.value = "";
+        this.resetAnswerColours();
     }
     checkAnswer() {
         var _a;

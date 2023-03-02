@@ -85,7 +85,11 @@ class Ui {
 
             if (!this.deck.loaded) {
                 this.nextCard.classList.add("disabledPointer");
-            } 
+            }
+            
+            this.answer.addEventListener('change', () => {
+                this.resetAnswerColours();
+            })
 
             addEventListener('deckUpdated', () => { 
                 this.deck?.load();
@@ -174,14 +178,16 @@ class Ui {
         this.check.classList.add("disabledPointer");
     }
 
-    resetAnswer() {
-
-        this.answer.value = "";
+    resetAnswerColours() {
         this.answer.classList.remove("has-background-success-light");
         this.check.classList.remove("has-background-success");
         this.answer.classList.remove("has-background-danger-light");
         this.check.classList.remove("has-background-danger");
-        
+    }
+
+    resetAnswer() {
+        this.answer.value = "";
+        this.resetAnswerColours();   
     }
 
     checkAnswer() {
