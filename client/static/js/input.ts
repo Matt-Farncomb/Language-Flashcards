@@ -55,7 +55,7 @@ abstract class ExtendedInput {
         } 
     }
 
-    styleValid() {
+    private styleValid() {
         if (!this.isEmpty()) {
             this._htmlElement.classList.add("is-primary");
             this._htmlElement.classList.remove("is-danger");
@@ -64,7 +64,7 @@ abstract class ExtendedInput {
         }
     }
 
-    styleInvalid() {
+    private styleInvalid() {
         if (!this.isEmpty()) {
             this._htmlElement.classList.add("is-danger");
             this._htmlElement.classList.remove("is-primary");
@@ -73,7 +73,7 @@ abstract class ExtendedInput {
         }
     }
 
-    removeFromDOM() {
+    public removeFromDOM() {
         this._htmlElement.parentElement?.parentElement?.remove();
         this.clearSiblings();
     }

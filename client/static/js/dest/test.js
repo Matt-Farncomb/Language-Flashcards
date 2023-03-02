@@ -10,10 +10,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class Word {
     constructor(word, id = null, language = null, parent = null) {
-        this.word = word;
-        this.id = id;
-        this.language = language;
-        this.parent = parent;
+        this._word = word;
+        this._id = id;
+        this._language = language;
+        this._parent = parent;
+    }
+    get id() {
+        return this._id;
+    }
+    get word() {
+        return this._word;
+    }
+    get language() {
+        return this._language;
+    }
+    get parent() {
+        return this._parent;
     }
 }
 class StoredDeck {
@@ -347,18 +359,6 @@ class CardModal extends LanguageModal {
     }
     get recorder() {
         return this._recorder;
-    }
-    validateWord(wordInput) {
-        if (wordInput.validity.patternMismatch || wordInput.value == "") {
-            wordInput.classList.add("is-danger");
-            wordInput.classList.remove("is-primary");
-            return false;
-        }
-        else {
-            wordInput.classList.add("is-primary");
-            wordInput.classList.remove("is-danger");
-            return true;
-        }
     }
     translationValues() {
         const values = [];

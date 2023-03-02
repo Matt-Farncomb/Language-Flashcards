@@ -32,7 +32,7 @@ abstract class Modal {
         return this._modal;
     }
 
-    addClickEventToModalElement(selector: string, callback: ()=> void ): void {
+    protected addClickEventToModalElement(selector: string, callback: ()=> void ): void {
         const button: HTMLButtonElement | null = this.modal.querySelector(selector);
         if (button) {
             button.addEventListener('click', () => callback() );
@@ -40,7 +40,7 @@ abstract class Modal {
     }
 
 
-    addClickEventToModalElements(selector: string, callback: ()=> void ): void {
+    protected addClickEventToModalElements(selector: string, callback: ()=> void ): void {
         const elements: NodeListOf<HTMLButtonElement> = this.modal.querySelectorAll(selector);
         if (elements.length > 0) {
             elements.forEach(element => {
@@ -50,7 +50,7 @@ abstract class Modal {
         else logError(`Could not assign 'click' to ${selector} in ${this.id}`);
     }
 
-    nullCheckedButtonQuerySelector(selector: string): HTMLButtonElement {
+    protected nullCheckedButtonQuerySelector(selector: string): HTMLButtonElement {
         const element: HTMLButtonElement | null = this.modal.querySelector(selector);
         if (element) {
             return element;
@@ -58,7 +58,7 @@ abstract class Modal {
         throw new Error(`Cannot find ${selector} in ${this._id}`);
     }
 
-    abstract submit(): void;
+    protected abstract submit(): void;
 
     public openModal() {
         this.modal.classList.toggle("is-active");
@@ -71,7 +71,7 @@ abstract class Modal {
         }
     }
 
-    hideSubmitButton() {
+    protected hideSubmitButton() {
         this.modal.querySelector(".submit")?.classList.add("disabledPointer");
     }
 
@@ -82,23 +82,19 @@ abstract class Modal {
             if (inputs.length > 0) {
                 inputs.forEach(element => {
                     element.value = "";
-                    // this.updateInputValue(element, "");
                     element.classList.remove("is-danger","is-primary");
                 })
             } else {
                 logError(`Unable to find inputs in ${this._id}`);
             }
         }
-
     }
-
 }
 
 abstract class LanguageModal extends Modal {
 
     protected sourceLanguage: LanguageInput;
     protected targetLanguage: LanguageInput;
-    // protected inputs: ExtendedInput[] = [];
 
     constructor(id: string) {
         super(id);
@@ -108,28 +104,11 @@ abstract class LanguageModal extends Modal {
 
         if (sourceLanguage && targetLanguage) {
 
-            // this.sourceLanguage = new LanguageInput(sourceLanguage)
-            // this.targetLanguage = new LanguageInput(targetLanguage)
-
             this.sourceLanguage = this.createNewInput(LanguageInput, sourceLanguage);
             this.targetLanguage = this.createNewInput(LanguageInput, targetLanguage);
 
             this.targetLanguage.addSibling(this.sourceLanguage);
             this.sourceLanguage.addSibling(this.targetLanguage);
-            // this.inputs.push(this.sourceLanguage, this.targetLanguage);
-
-
-            // this.addClickEventToModalElement(".submit", () => this.submit());
-
-            // this.addClickEventToModalElements(".close", () => this.closeModal());
-
-            // this.inputs.forEach(element => {
-            //     element.addOnChangeEvent(() => console.log("farts are smelly"));
-            // })
-
-            // this.sourceLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-            // this.targetLanguage.addOnChangeEvent(() => console.log("farts are smelly"))
-
         }
         else {
             throw Error(`${this.id} modal cannot be found`);
@@ -137,12 +116,7 @@ abstract class LanguageModal extends Modal {
 
     }
 
-    // protected updateInputValue(input: HTMLInputElement, value: string) {
-    //     input.value = value;
-    //     input.dispatchEvent(new Event('change'));
-    // }
-
-    nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
+    protected nullCheckedQuerySelectorAll(selector: string): NodeListOf<HTMLInputElement> {
 
         const elements: NodeListOf<HTMLInputElement> | undefined = this.modal.querySelectorAll(selector);
 
@@ -167,15 +141,14 @@ abstract class LanguageModal extends Modal {
         newInput.addOnChangeEvent(() => this.toggleSubmitButton());
         return newInput;
         // return (new input(element).addOnChangeEvent(() => this.toggleSubmitButton());)
-
     }
 
 
-    async readyToSubmit(): Promise<boolean> {
+    protected async readyToSubmit(): Promise<boolean> {
         return await this.sourceLanguage.isReady() && this.targetLanguage.isReady();
     }
 
-    revealSubmitButton() {
+    private revealSubmitButton() {
         this.modal.querySelector(".submit")?.classList.remove("disabledPointer");
     }
 
@@ -207,7 +180,6 @@ abstract class CardModal extends LanguageModal {
     constructor(id: string) {
         super(id);
 
-
         const sourceWord: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, `.source`);
         const translations: NodeListOf<HTMLInputElement> | undefined = this.nullCheckedQuerySelectorAll(`.translation`);
         const recorderDiv: HTMLDivElement | null  = this.modal.querySelector(`.recorder`);
@@ -234,22 +206,22 @@ abstract class CardModal extends LanguageModal {
         }
     }
 
-    get recorder() {
+    public get recorder() {
         return this._recorder;
     }
 
-    validateWord(wordInput: HTMLInputElement):boolean {
-        if (wordInput.validity.patternMismatch || wordInput.value == "") {
-            wordInput.classList.add("is-danger");
-            wordInput.classList.remove("is-primary");
-            return false;
-        }
-        else {
-            wordInput.classList.add("is-primary");
-            wordInput.classList.remove("is-danger")
-            return true;
-        }
-    }
+    // validateWord(wordInput: HTMLInputElement):boolean {
+    //     if (wordInput.validity.patternMismatch || wordInput.value == "") {
+    //         wordInput.classList.add("is-danger");
+    //         wordInput.classList.remove("is-primary");
+    //         return false;
+    //     }
+    //     else {
+    //         wordInput.classList.add("is-primary");
+    //         wordInput.classList.remove("is-danger")
+    //         return true;
+    //     }
+    // }
 
     // make list of translations available
     public translationValues() {
@@ -331,7 +303,7 @@ abstract class CardModal extends LanguageModal {
         }
     }
 
-    async allTranslationsAreValid() {
+    private async allTranslationsAreValid() {
         // const areAllValuesValid = (translations: WordInput[]) => translations.every(translation => await translation.isValid());
         for (let translation of this.translations) {
             console.log(`translation: ${translation.value}`)
@@ -343,7 +315,7 @@ abstract class CardModal extends LanguageModal {
        return true;
     }
 
-    async readyToSubmit(): Promise<boolean> {
+    protected async readyToSubmit(): Promise<boolean> {
         const baseInputsReady = await super.readyToSubmit();
         const sourceWordReady = await this.sourceWord.isValid();
         const translationsReady = await this.allTranslationsAreValid();
@@ -380,7 +352,7 @@ class CreateDeckModal extends CardModal {
         }
     }
 
-    async readyToSubmit(): Promise<boolean> {
+    protected async readyToSubmit(): Promise<boolean> {
         const baseInputsReady = await super.readyToSubmit();
         return baseInputsReady;
     }
@@ -562,7 +534,7 @@ class FetchDeckModal extends LanguageModal {
         this.fetchDeck();
     }
 
-    async readyToSubmit(): Promise<boolean> {
+    protected async readyToSubmit(): Promise<boolean> {
         return await super.readyToSubmit() && await this.count.isValid();
     }
 

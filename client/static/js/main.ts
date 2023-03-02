@@ -1,7 +1,5 @@
 const LOGGING = true; // if true, log errors
 console.info(`Logging: ${LOGGING}`)
-// customElements.define("fart-fart", FartFart);
-// customElements.define("fart-fart", FartFart, { extends: "input" });
 
 const DEFAULT_LANGUAGES: LanguagePair = {
     "source": "Spanish",

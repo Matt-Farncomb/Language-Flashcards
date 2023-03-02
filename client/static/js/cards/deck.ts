@@ -10,7 +10,7 @@ class Deck {
         return this._deck;
     }
 
-    load(): void {
+    public load(): void {
         const storedDeck = StoredDeck.get();
        
         if (storedDeck) {
@@ -19,11 +19,11 @@ class Deck {
         }
     }
 
-    clear(): void {
+    public clear(): void {
         this._deck = [];
     }
    
-    drawCard(): PlayingCard | undefined {
+    public drawCard(): PlayingCard | undefined {
         if (this.deck) {
             const top = this.deck.shift() as PlayingCard;
             this.deck.push(top);
@@ -31,7 +31,7 @@ class Deck {
         }
     }
 
-    replaceCard(newCard: PlayingCard) {
+    public replaceCard(newCard: PlayingCard) {
         this._deck = this.deck.slice(0, -1);
         this.deck.push(newCard);
     }
