@@ -200,25 +200,6 @@ class Deck:
         target_language_vocab = self.__get_vocab(self.target_language)
         logger.critical(f"before thread target vocab:{target_language_vocab}")
         
-        
-        # If the target language is only in duolingo, then use Duo to get the translations into english. then go from english to the target language via webxicon
-        
-        # if self.target_language in duo_only_languages:
-        #     target_language_vocab = self.lingo.get_translations(target_language_vocab, source=self.source_language, target="en")
-        #     # target_language_vocab = [ target_language_vocab[key] for key in target_language_vocab ]
-        #     for source_word,english_translations in target_language_vocab.items():
-        #         for translation in english_translations:
-        #             target_language_translations = self.__get_translations(translation)
-        #             target_language_vocab[source_word] = target_language_translations
-                    
-       
-
-        
-       
-        # print(target_language_vocab)
-        # print(f"target language is: {self.target_language}")
-        
-        
         for i in range(num_threads):
             logger.critical(f"launching thread")
             thread = threading.Thread(target=self.__run_thread, args=[q, cards, target_language_vocab,])
@@ -232,34 +213,7 @@ class Deck:
         return cards
     
     
-    # def run_thread(self, word, cards):
-    #     print(f"running thread on: {word}")
-    #     thread = threading.Thread(
-    #         target=self.create_card_for_word, 
-    #         args=[word, cards]
-    #     )
-    #     thread.start()
-    #     return thread
-    
-    # def spawn_threads(self, words):
-    #     cards = []
-    #     threads = []
-    #     break_int = 0
-    #     for word in words:
-    #         break_int += 1
-    #         if break_int > 10:
-    #             break
-    #         else:
-    #             print(word)
-    #             thread = self.run_thread(word, cards)
-    #             threads.append(thread)
-                
-    #     # threads = [ self.run_thread(word, cards) for word in words ]
-    #     for thread in threads:
-    #         thread.join()
 
-    #     return cards
-    
     
     
     def __create_card_deck(self, source_words: List[str]) -> List[Card]:
@@ -344,26 +298,7 @@ class Deck:
             self.logged_in = True
             return self.lingo
             
-    # def create_cards_for_word(self, source_word) -> List[Card]: 
-    #     source = Word(source_word, self.source_language)
-    #     translations: List[str] = self._get_translations(source_word)
-    #     matched_translations: List[Word] = self._get_matched_translations(translations)
-    #     print(matched_translations)
-    #     cards = [ Card(source, translation) for translation in matched_translations ]
-    #     return cards 
-    
-    # will be easier to insert into db
-    # each card will have the one source word and all the possible translations and possible answers
-    # makes more sense because like le and la in spansih  just mean the. So that should just be one card.
-    def old_create_card_for_word(self, source_word) -> Card: 
-        source = Word(source_word, self.source_language)
-        
-        translations: List[str] = self.__get_translations(source_word)
-        matched_translations: List[Word] = self.__get_matched_translations(translations)
-        card = Card(None, source, [])
-        for trans in matched_translations:
-            card.translations.append(trans)
-        return card
+ 
     
     def create_card_for_word(self, source_word, cards, target_language_vocab) -> Card: 
         # logger.critical(f"create_card_for_word:{target_language_vocab}")
@@ -373,8 +308,6 @@ class Deck:
         # print(f"before_matched: {source.word}: {translations}")
         matched_translations: List[Word] = self.__get_matched_translations(translations, target_language_vocab)
         
-
-            
         card = Card(None, source, [])
         for trans in matched_translations:
             # print(f"matched: {source.word}: {trans.word}")
