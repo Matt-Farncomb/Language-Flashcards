@@ -7,7 +7,7 @@ from typing import List
 from app import app
 from deck import Deck, languages, new_languages, language_by_string
 from database import Database
-from schemas import Result, Refresh, UploadedDeck, BlobTest, Update, Edit
+from schemas import Result, Refresh, UploadedDeck, BlobTest, Update, Edit, AuthData, SignUp
 from fastapi.middleware.cors import CORSMiddleware
 from base_logger import logging
 from fastapi.responses import FileResponse
@@ -88,8 +88,12 @@ def validate(content: str) -> bool:
     return True
 
 @app.post("/login/")
-def login(username: str, password: str):
-    pass
+def login(data: AuthData):
+    return f"Logged in {data.username}"
+
+@app.post("/sign_up/")
+def login(data: SignUp):
+    return f"signed up in {data.firstname}"
 
 @app.get("/get_deck/") 
 def get_deck(source_language: str, target_language: str, count: int):

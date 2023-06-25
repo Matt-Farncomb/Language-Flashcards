@@ -32,5 +32,13 @@ class Update(BaseModel):
     source_word: str
     # translations: List[str]
 
+class AuthData(BaseModel):
+    username: str
+    password: str
+    
+class SignUp(AuthData):
+    firstname: str
+    lastname: str
+
 
     

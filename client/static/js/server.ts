@@ -78,7 +78,6 @@ class Server {
         }
         else {
             const responseText = await response.text();
-           
             StoredDeck.setItem(responseText);
         }
         
@@ -126,7 +125,55 @@ class Server {
         tableURL.searchParams.append("is_custom", JSON.stringify(true));
 
         window.open(tableURL.toString());
+    }
 
+    static async logIn(username: string, password: string) {
+        const logInURL =  new URL(this.baseURL);
+        logInURL.pathname = "login";
+
+        // const formData = new FormData();
+        // formData.append("username", username);
+        // formData.append("password", password);
+
+        const data = {
+            "username": username,
+            "password": password
+        };
+        
+        const response = await fetch(logInURL, { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' }  })
+        if (!response.ok) {
+            logError(`Could not Log In: ${response.status}`);
+        } else {
+            logInfo(response.statusText);
+        }
+    }
+
+    static async signUp(username: string, password: string, firstname: string, lastname: string) {
+        const signUpURL =  new URL(this.baseURL);
+        signUpURL.pathname = "sign_up";
+
+        console.log("here i am working");
+        
+        // const formData = new FormData();
+        // formData.append("username", username);
+        // formData.append("password", password);
+        // formData.append("firstname", firstname);
+        // formData.append("lastname", lastname);
+
+        const data = {
+            "username": username,
+            "password": password,
+            "firstname": firstname,
+            "lastname": lastname
+        };
+        
+        const response = await fetch(signUpURL, { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } })
+        if (!response.ok) {
+            logError(`Could not Sign Up: ${response.status}`);
+        } else {
+            logInfo(response.statusText);
+        }
+       
     }
 
     

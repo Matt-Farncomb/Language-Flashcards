@@ -298,7 +298,26 @@ class Deck:
             self.logged_in = True
             return self.lingo
             
- 
+    # def create_cards_for_word(self, source_word) -> List[Card]: 
+    #     source = Word(source_word, self.source_language)
+    #     translations: List[str] = self._get_translations(source_word)
+    #     matched_translations: List[Word] = self._get_matched_translations(translations)
+    #     print(matched_translations)
+    #     cards = [ Card(source, translation) for translation in matched_translations ]
+    #     return cards 
+    
+    # will be easier to insert into db
+    # each card will have the one source word and all the possible translations and possible answers
+    # makes more sense because like le and la in spansih  just mean the. So that should just be one card.
+    def old_create_card_for_word(self, source_word) -> Card: 
+        source = Word(source_word, self.source_language)
+        
+        translations: List[str] = self.__get_translations(source_word)
+        matched_translations: List[Word] = self.__get_matched_translations(translations)
+        card = Card(None, source, [])
+        for trans in matched_translations:
+            card.translations.append(trans)
+        return card
     
     def create_card_for_word(self, source_word, cards, target_language_vocab) -> Card: 
         # logger.critical(f"create_card_for_word:{target_language_vocab}")
@@ -308,6 +327,8 @@ class Deck:
         # print(f"before_matched: {source.word}: {translations}")
         matched_translations: List[Word] = self.__get_matched_translations(translations, target_language_vocab)
         
+
+            
         card = Card(None, source, [])
         for trans in matched_translations:
             # print(f"matched: {source.word}: {trans.word}")

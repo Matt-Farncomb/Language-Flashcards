@@ -555,8 +555,8 @@ class FetchTableModal extends LanguageModal {
 
 class LogInModal extends Modal {
 
-    username: HTMLInputElement;
-    password: HTMLInputElement;
+    username: WordInput;
+    password: WordInput;
 
     constructor(id: string) {
         super(id);
@@ -565,24 +565,52 @@ class LogInModal extends Modal {
         const password: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".password");
 
         if (username && password) {
-            this.username = username;
-            this.password = password;
+            // this.username = username;
+            // this.password = password;
+
+            this.username = this.createNewInput(WordInput, username);
+            this.password = this.createNewInput(WordInput, password);
         }
         else {
             throw Error(`Class 'username' and/or 'password' cannot be found in ${this.id}`);
         }
     }
 
+    protected createNewInput(input: typeof WordInput | typeof LanguageInput | typeof NumberInput, element: HTMLInputElement) {
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
+        // return (new input(element).addOnChangeEvent(() => this.toggleSubmitButton());)
+    }
+
+    protected async toggleSubmitButton() {
+        console.log("called here")
+        if (await this.readyToSubmit()) {
+            this.revealSubmitButton();
+        } else {
+            this.hideSubmitButton();
+        }
+    }
+
+    async readyToSubmit() : Promise<boolean> {
+        return await this.username.isReady() && await this.password.isReady();
+    }
+
+    private revealSubmitButton() {
+        this.modal.querySelector(".submit")?.classList.remove("disabledPointer");
+    }
+
     submit(): void {
         // log in
+        Server.logIn(this.username.value, this.password.value);
         this.closeModal();
     }
 }
 
 class SignUpModal extends LogInModal {
 
-    firstname: HTMLInputElement;
-    lastname: HTMLInputElement;
+    firstname: WordInput;
+    lastname: WordInput;
 
     constructor(id: string) {
         super(id);
@@ -591,12 +619,28 @@ class SignUpModal extends LogInModal {
         const lastname: HTMLInputElement | undefined = nullCheckedQuerySelector(this.modal, ".password");
 
         if (firstname && lastname) {
-            this.firstname = firstname;
-            this.lastname = lastname;
+            // this.firstname = firstname;
+            // this.lastname = lastname;
+
+            this.firstname = this.createNewInput(WordInput, firstname);
+            this.lastname = this.createNewInput(WordInput, lastname);
+
+           
         }
         else {
             throw Error(`Class 'firstname' and/or 'lastname' cannot be found in ${this.id}`);
         }
+    }
+
+    async readyToSubmit() : Promise<boolean> {
+        return await this.firstname.isReady() && await this.lastname.isReady() && await this.username.isReady() && await this.password.isReady();
+    }
+
+
+    submit(): void {
+        // log in
+        Server.signUp(this.username.value, this.password.value, this.firstname.value, this.lastname.value);
+        this.closeModal();
     }
 
 }

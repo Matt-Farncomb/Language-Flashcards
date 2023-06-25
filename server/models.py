@@ -16,6 +16,9 @@ class BaseModel(Model): # type: ignore
 # So, right now if i say spanish to finnihs, it can only really check for spanish, not the finnish translations.
 # This means the same word can be in the server twice
 # This can be kinda avoided with another class where it is just the word string, not the translation link, then the Word Model is linked to that string thing
+
+# unless a word has another field. This field simply lists the translation languages it does have.
+
     
 class WordModel(BaseModel):
     word = CharField()

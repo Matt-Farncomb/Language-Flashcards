@@ -642,14 +642,40 @@ class LogInModal extends Modal {
         const username = nullCheckedQuerySelector(this.modal, ".username");
         const password = nullCheckedQuerySelector(this.modal, ".password");
         if (username && password) {
-            this.username = username;
-            this.password = password;
+            this.username = this.createNewInput(WordInput, username);
+            this.password = this.createNewInput(WordInput, password);
         }
         else {
             throw Error(`Class 'username' and/or 'password' cannot be found in ${this.id}`);
         }
     }
+    createNewInput(input, element) {
+        const newInput = new input(element);
+        newInput.addOnChangeEvent(() => this.toggleSubmitButton());
+        return newInput;
+    }
+    toggleSubmitButton() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("called here");
+            if (yield this.readyToSubmit()) {
+                this.revealSubmitButton();
+            }
+            else {
+                this.hideSubmitButton();
+            }
+        });
+    }
+    readyToSubmit() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield this.username.isReady()) && (yield this.password.isReady());
+        });
+    }
+    revealSubmitButton() {
+        var _a;
+        (_a = this.modal.querySelector(".submit")) === null || _a === void 0 ? void 0 : _a.classList.remove("disabledPointer");
+    }
     submit() {
+        Server.logIn(this.username.value, this.password.value);
         this.closeModal();
     }
 }
@@ -659,12 +685,21 @@ class SignUpModal extends LogInModal {
         const firstname = nullCheckedQuerySelector(this.modal, ".username");
         const lastname = nullCheckedQuerySelector(this.modal, ".password");
         if (firstname && lastname) {
-            this.firstname = firstname;
-            this.lastname = lastname;
+            this.firstname = this.createNewInput(WordInput, firstname);
+            this.lastname = this.createNewInput(WordInput, lastname);
         }
         else {
             throw Error(`Class 'firstname' and/or 'lastname' cannot be found in ${this.id}`);
         }
+    }
+    readyToSubmit() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield this.firstname.isReady()) && (yield this.lastname.isReady()) && (yield this.username.isReady()) && (yield this.password.isReady());
+        });
+    }
+    submit() {
+        Server.signUp(this.username.value, this.password.value, this.firstname.value, this.lastname.value);
+        this.closeModal();
     }
 }
 class Ui {
@@ -1175,6 +1210,44 @@ class Server {
             tableURL.searchParams.append("target_language", targetLanguage);
             tableURL.searchParams.append("is_custom", JSON.stringify(true));
             window.open(tableURL.toString());
+        });
+    }
+    static logIn(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const logInURL = new URL(this.baseURL);
+            logInURL.pathname = "login";
+            console.log(username);
+            const data = {
+                "username": username,
+                "password": password
+            };
+            const response = yield fetch(logInURL, { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
+            if (!response.ok) {
+                logError(`Could not Log In: ${response.status}`);
+            }
+            else {
+                logInfo(response.statusText);
+            }
+        });
+    }
+    static signUp(username, password, firstname, lastname) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const signUpURL = new URL(this.baseURL);
+            signUpURL.pathname = "sign_up";
+            console.log("here i am working");
+            const data = {
+                "username": username,
+                "password": password,
+                "firstname": firstname,
+                "lastname": lastname
+            };
+            const response = yield fetch(signUpURL, { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
+            if (!response.ok) {
+                logError(`Could not Sign Up: ${response.status}`);
+            }
+            else {
+                logInfo(response.statusText);
+            }
         });
     }
 }
